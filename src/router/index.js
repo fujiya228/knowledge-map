@@ -2,12 +2,18 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/components/pages/Home.vue'
 import About from '@/components/pages/About.vue'
+import FreeGraph from "@/components/pages/FreeGraph";
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'FreeGraph',
+    component: FreeGraph
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home
   },
