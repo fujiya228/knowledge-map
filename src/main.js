@@ -21,7 +21,7 @@ Vue.component('fa-icon', FontAwesomeIcon)
 Vue.use(VTooltip)
 
 Vue.config.productionTip = false
-console.log(helpers)
+console.log('helpers', helpers)
 new Vue({
   router,
   store,

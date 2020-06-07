@@ -1,5 +1,5 @@
 <template>
-  <div class="Details" :class="{ open:isDetailsOpen }">
+  <div class="Details" :class="{ open:isDetailsOpen && !isEditorOpen }">
     <div class="Details__close" :class="{ open:isDetailsOpen }" @click="switchDetailsMenu()">
       <Icon icon="arrow-left" :font="12" />
     </div>
@@ -32,7 +32,7 @@
         </label>
       </div>
       <FormCard class="Details__detail">
-        <textarea class="Textarea" placeholder="詳細を記述" v-model="detailsMenu.node.detail"></textarea>
+        <textarea class="Textarea" placeholder="出力" v-model="detailsMenu.node.detail"></textarea>
       </FormCard>
       <FormCard class="Details__relations">
         <TitleGroup text="関連"></TitleGroup>
@@ -58,6 +58,7 @@
           <div class="Details__tags__none" v-if="detailsMenu.relations.length === 0">ありません</div>
         </div>
       </FormCard>
+      <Btn class="full" @click.native="isEditorOpen = true">編集する</Btn>
       <Btn class="full cancel" @click.native="delNode(detailsMenu.node)">削除</Btn>
     </div>
   </div>
@@ -200,7 +201,8 @@ export default {
       "detailsMenu",
       "tagForm",
       "dataForm",
-      "moveNodeInfo"
+      "moveNodeInfo",
+      "isEditorOpen"
     ]),
     ...mapGetters(["isDetailsOpen"]),
     tags: {
@@ -210,6 +212,14 @@ export default {
       },
       set(val) {
         this.$store.commit("set_tags", val);
+      }
+    },
+    isEditorOpen: {
+      get() {
+        return this.$store.state.isEditorOpen;
+      },
+      set(val) {
+        this.$store.commit("set_isEditorOpen", val);
       }
     }
   }

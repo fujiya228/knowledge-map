@@ -1,7 +1,7 @@
 <template>
   <div
     id="FreeGraph"
-    :class="{open: isDetailsOpen}"
+    :class="{open: isDetailsOpen && !isEditorOpen}"
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : null"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : null"
   >
@@ -48,10 +48,27 @@
       }"
       @addFunction="addNode()"
     />
+    <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
+      <quill-editor
+        ref="MyQuillEditor"
+        class="edit-area"
+        v-model="detailsMenu.node.detail"
+        :options="editorOption"
+        @blur="onEditorBlur($event)"
+        @focus="onEditorFocus($event)"
+        @ready="onEditorReady($event)"
+      />
+    </div>
   </div>
 </template>
 
 <script>
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+
+import { quillEditor } from "vue-quill-editor";
+
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
 import Node from "@/components/molecules/Node";
@@ -60,7 +77,15 @@ export default {
   name: "FreeGraph",
   components: {
     Node,
-    AddNodeForm
+    AddNodeForm,
+    quillEditor
+  },
+  data() {
+    return {
+      editorOption: {
+        theme: "snow"
+      }
+    };
   },
   methods: {
     async selectRelaitonNode(v_base) {
@@ -190,7 +215,6 @@ export default {
       this.contextMenu.node = node;
       this.selectNode(node);
       this.closeAddNodeForm();
-      console.log("masakana");
     },
     initFreeNode() {
       this.nodes.forEach(node => {
@@ -204,7 +228,24 @@ export default {
       "closeAddNodeForm",
       "makeRelation"
     ]),
-    ...mapActions(["delRelation", "selectNode", "addNode"])
+    ...mapActions(["delRelation", "selectNode", "addNode"]),
+    onEditorBlur(quill) {
+      console.log("editor blur!", quill);
+    },
+    onEditorFocus(quill) {
+      console.log("editor focus!", quill);
+    },
+    onEditorReady(quill) {
+      console.log("editor ready!", quill);
+    },
+    onEditorChange({ quill, html, text }) {
+      console.log("editor change!", quill, html, text);
+      this.content = html;
+    },
+    closeEditor() {
+      console.log("fuck");
+      this.$store.commit("set_isEditorOpen", false);
+    }
   },
   computed: {
     ...mapState([
@@ -215,7 +256,8 @@ export default {
       "moveNodeInfo",
       "addNodeForm",
       "contextMenu",
-      "detailsMenu"
+      "detailsMenu",
+      "isEditorOpen"
     ]),
     ...mapGetters(["isDetailsOpen"]),
     isMakingRelation: {
@@ -225,11 +267,17 @@ export default {
       set(val) {
         this.$store.commit("set_isMakingRelation", val);
       }
+    },
+    editor() {
+      return this.detailsMenu.node
+        ? this.$refs.MyQuillEditor.quill
+        : "not selected";
     }
   },
   mounted() {
     // console.log('mounted')
     this.graphArea();
+    console.log("this is current quill instance object", this.editor);
   },
   created() {
     // console.log("created");
@@ -298,5 +346,27 @@ export default {
   &.select {
     stroke: $color-main;
   }
+}
+.Editor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(27, 31, 35, 0.5);
+  z-index: 500;
+  // cursor: pointer;
+  user-select: none;
+}
+.quill-editor,
+.ql-editor,
+.content {
+  background-color: white;
+}
+.edit-area {
+  height: 500px;
 }
 </style>
