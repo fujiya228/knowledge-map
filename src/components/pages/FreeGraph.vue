@@ -49,15 +49,18 @@
       @addFunction="addNode()"
     />
     <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
-      <quill-editor
-        ref="MyQuillEditor"
-        class="edit-area"
-        v-model="detailsMenu.node.detail"
-        :options="editorOption"
-        @blur="onEditorBlur($event)"
-        @focus="onEditorFocus($event)"
-        @ready="onEditorReady($event)"
-      />
+      <div class="Editor__wrapper">
+        <h2 class="Editor__title">Title:{{detailsMenu.node.title}}</h2>
+        <quill-editor
+          ref="MyQuillEditor"
+          class="edit-area"
+          v-model="detailsMenu.node.detail"
+          :options="editorOption"
+          @blur="onEditorBlur($event)"
+          @focus="onEditorFocus($event)"
+          @ready="onEditorReady($event)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -360,6 +363,15 @@ export default {
   z-index: 500;
   // cursor: pointer;
   user-select: none;
+  &__wrapper {
+    width: 80%;
+    max-width: 800px;
+  }
+  &__title {
+    background: white;
+    margin: 0;
+    padding: 16px;
+  }
 }
 .quill-editor,
 .ql-editor,
