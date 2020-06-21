@@ -9,6 +9,7 @@
     ]
   },
   "hosting": {
+    "site": "fujiya-knowledge-map",
     "public": "dist",
     "ignore": [
       "firebase.json",
