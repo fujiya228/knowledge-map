@@ -29,7 +29,7 @@ const auth = {
       state.auth.onAuthStateChanged((user) => {
         commit("SET_USER", { user: user })
       })
-    }
+    },
   }
 }
 

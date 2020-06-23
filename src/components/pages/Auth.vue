@@ -1,23 +1,31 @@
 <template>
   <div class="Auth">
-    <h1 v-if="isSignUpMode">Sign Up</h1>
-    <h1 v-else>Log In</h1>
+    <h1>{{titleText}}</h1>
     <div class="Auth__icon" v-if="isLoading">
       <Icon icon="spinner" :size="32" :font="24" />
     </div>
-    <div class="Auth__container">
-      <input class="Input" type="email" v-model="email" placeholder="email" />
-      <input class="Input" type="password" v-model="password" placeholder="password" />
-      <Btn v-if="isSignUpMode" @click.native="sigin_up()">Sign Up</Btn>
-      <Btn v-else @click.native="login()">Log In</Btn>
-    </div>
-    <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
+    <!-- アドレス未確認 -->
+    <template v-if="isEmailVerifyMode">
+      <div class="EmailVerify__container">
+        <p>{{email}}</p>
+        <p>上記のアドレスに確認用メールを送信しました。</p>
+        <Btn @click.native="isEmailVerifyMode = false">アドレスを確認済</Btn>
+      </div>
+    </template>
+    <!-- 上記以外 -->
+    <template v-else>
+      <div class="Auth__container">
+        <input class="Input" type="email" v-model="email" placeholder="email" />
+        <input class="Input" type="password" v-model="password" placeholder="password" />
+        <Btn @click.native="clickBtn()">{{titleText}}</Btn>
+      </div>
+      <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
+    </template>
   </div>
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/auth";
+import { mapState } from "vuex";
 
 import Icon from "@/components/atoms/Icon";
 import Btn from "@/components/atoms/Btn";
@@ -33,14 +41,17 @@ export default {
       email: "",
       password: "",
       isSignUpMode: false,
+      isEmailVerifyMode: false,
       isLoading: false
     };
   },
   methods: {
-    sigin_up() {
+    clickBtn() {
+      this.isSignUpMode ? this.sign_up() : this.login();
+    },
+    sign_up() {
       this.isLoading = true;
-      firebase
-        .auth()
+      this.auth
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(() => {
           alert("sigin up ok");
@@ -55,32 +66,61 @@ export default {
             alert(errorMessage);
           }
           console.log(error);
+        })
+        .then(() => {
+          this.isLoading = false;
         });
-      this.isLoading = false;
     },
     login() {
       this.isLoading = true;
-      firebase
-        .auth()
+      this.auth
         .signInWithEmailAndPassword(this.email, this.password)
         .then(async () => {
           this.$store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: true });
           await this.$store.dispatch("auth/setUser");
-          this.email = this.password = "";
-          const next = this.$route.query.next || "/";
-          this.$router.push(next);
+          this.isLoading = false;
+          // メールアドレス確認
+          if (this.user.emailVerified) {
+            // メールアドレス確認済み
+            this.email = this.password = "";
+            const next = this.$route.query.next || "/";
+            this.$router.push(next);
+          } else {
+            // メールアドレス未確認
+            this.isEmailVerifyMode = true;
+            this.sendEmail();
+          }
         })
         .catch(err => {
           console.log(err.message);
           alert(err.message);
           this.isLoading = false;
+          this.isSignUpMode = true;
+        });
+    },
+    sendEmail() {
+      this.user
+        .sendEmailVerification()
+        .then(function() {
+          console.log("email sent");
+        })
+        .catch(function(error) {
+          console.log("sendEmailVerification", error.message);
         });
     }
   },
   computed: {
+    titleText() {
+      if (this.isEmailVerifyMode) return "メールアドレス確認";
+      return this.isSignUpMode ? "Sign Up" : "Log In";
+    },
     switchText() {
       return this.isSignUpMode ? "ログイン" : "新規登録";
-    }
+    },
+    ...mapState({
+      auth: state => state.auth.auth,
+      user: state => state.auth.user
+    })
   }
 };
 </script>

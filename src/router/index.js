@@ -43,7 +43,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.state.auth.isLoggedIn
   const user = store.state.auth.user
-  console.log('route to', to)
+  // console.log('route to', to)
   if (to.matched.some(record => record.meta.requireAuth)) {
     // 認証情報の確認
     if (isLoggedIn && user) {
@@ -59,7 +59,7 @@ router.beforeEach((to, from, next) => {
         },
       })
     }
-  } else if (isLoggedIn && to.path === '/login') {
+  } else if (isLoggedIn && to.path === '/auth') {
     next({ path: '/' })
   } else {
     next()
