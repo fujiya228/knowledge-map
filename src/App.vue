@@ -1,19 +1,12 @@
 <template>
   <div id="app">
-    <Navigation />
-    <Details />
     <router-view />
   </div>
 </template>
 
 <script>
-import Navigation from "@/components/organisms/Navigation.vue";
-import Details from "@/components/organisms/Details.vue";
 export default {
-  components: {
-    Navigation,
-    Details
-  }
+  components: {}
 };
 </script>
 

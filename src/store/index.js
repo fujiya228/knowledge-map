@@ -4,6 +4,35 @@ import helpers from "../helpers/helpers.js";
 
 Vue.use(Vuex)
 
+const auth = {
+  strict: process.env.NODE_ENV !== "production",
+  namespaced: true,
+  state: {
+    auth: null,
+    isLoggedIn: false,
+    user: null,
+  },
+  getters: {
+    isLoggedIn: state => state.isLoggedIn,
+    user: state => state.user
+  },
+  mutations: {
+    SET_IS_LOGGED_IN(state, payload) {
+      state.isLoggedIn = payload.isLoggedIn
+    },
+    SET_USER(state, payload) {
+      state.user = payload.user
+    }
+  },
+  actions: {
+    setUser({ state, commit }) {
+      state.auth.onAuthStateChanged((user) => {
+        commit("SET_USER", { user: user })
+      })
+    },
+  }
+}
+
 export default new Vuex.Store({
   state: {
     width: 0,
@@ -333,5 +362,6 @@ export default new Vuex.Store({
     },
   },
   modules: {
+    auth: auth
   }
 });
