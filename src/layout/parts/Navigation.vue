@@ -1,5 +1,5 @@
 <template>
-  <div class="Header">
+  <div class="Navigation">
     <Actions />
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
 </script>
 
 <style lang="scss">
-.Header {
+.Navigation {
   box-sizing: border-box;
   width: 100%;
   height: 48px;

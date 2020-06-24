@@ -299,9 +299,9 @@ export default new Vuex.Store({
       // console.log('addNode')
       dispatch("selectNode", state.nodes[state.nodes.length - 1]);
       commit("closeAddNodeForm");
-      setTimeout(() => {
-        document.querySelector(".Details__detail > .Textarea").focus();
-      }, 100);
+      // setTimeout(() => {
+      //   document.querySelector(".Details__detail > .Textarea").focus();
+      // }, 100);
       // iOS 12はまだ0または1のセットでは機能しないため、setTimeout（cb、100）を設定します。
       // https://github.com/vuejs/vuex/issues/1023
     },

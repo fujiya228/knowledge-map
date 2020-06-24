@@ -40,7 +40,6 @@ select {
   width: 100%;
   height: 100%;
   min-height: 100%;
-  background: $color-main-l;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

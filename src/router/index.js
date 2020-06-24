@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/components/pages/Home.vue'
-import About from '@/components/pages/About.vue'
-import Auth from '@/components/pages/Auth.vue'
-import FreeGraph from "@/components/pages/FreeGraph";
+import Home from '@/pages/Home.vue'
+import About from '@/pages/About.vue'
+import Auth from '@/pages/Auth.vue'
+import GraphFree from "@/components/organisms/GraphFree";
+import Layout from "@/layout";
 import store from "@/store"
 
 Vue.use(VueRouter)
@@ -16,11 +17,16 @@ const routes = [
   },
   {
     path: '/',
-    name: 'FreeGraph',
-    component: FreeGraph,
-    meta: {
-      requireAuth: true
-    }
+    component: Layout,
+    redirect: 'graph-free',
+    meta: { requireAuth: true },
+    children: [
+      {
+        path: 'graph-free',
+        component: GraphFree,
+        name: 'GraphFree'
+      }
+    ]
   },
   {
     path: '/home',
@@ -31,6 +37,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
+  },
+  {
+    path: '*',
+    name: 'Not Found',
+    redirect: '/',
   }
 ]
 
