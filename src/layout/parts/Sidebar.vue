@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/auth";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
@@ -22,20 +24,14 @@ export default {
   },
   methods: {
     logout() {
-      this.auth.signOut().then(() => {
-        this.$store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: false });
-        this.$router.push("auth");
-      });
+      firebase.auth().signOut();
     },
     closeSidebar() {
       this.sidebar.isOpen = false;
     }
   },
   computed: {
-    ...mapState(["sidebar"]),
-    ...mapState({
-      auth: state => state.auth.auth
-    })
+    ...mapState(["sidebar"])
   }
 };
 </script>

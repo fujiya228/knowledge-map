@@ -1,50 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
 
 Vue.use(Vuex)
-
-const auth = {
-  strict: process.env.NODE_ENV !== "production",
-  namespaced: true,
-  state: {
-    auth: null,
-    isLoggedIn: false,
-    user: null,
-    unsubscribe: null
-  },
-  getters: {
-    isLoggedIn: state => state.isLoggedIn,
-    user: state => state.user
-  },
-  mutations: {
-    SET_IS_LOGGED_IN(state, payload) {
-      state.isLoggedIn = payload.isLoggedIn
-    },
-    SET_USER(state, payload) {
-      state.user = payload.user
-    },
-    UNSBSCRIBE(state) {
-      state.unsubscribe()
-      state.unsubscribe = null
-    }
-  },
-  actions: {
-    setUser({ state, commit }) {
-      /**
-       * https://stackoverflow.com/questions/37370224/firebase-stop-listening-onauthstatechanged
-       * onAuthStateChangedの解除の仕方
-       * unsubscribeというものを知った笑
-       */
-      state.unsubscribe = state.auth.onAuthStateChanged((user) => {
-        commit("SET_USER", { user: user })
-        if (!user) {
-          commit("UNSBSCRIBE")
-        }
-      })
-    },
-  }
-}
 
 export default new Vuex.Store({
   state: {

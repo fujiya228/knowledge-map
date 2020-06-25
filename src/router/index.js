@@ -52,17 +52,19 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = store.state.auth.isLoggedIn
   const user = store.state.auth.user
+  const isLoggedIn = store.state.auth.isLoggedIn
   // console.log('route to', to)
+  // console.log('user', user)
+  // console.log('isLoggedIn', isLoggedIn)
   if (to.matched.some(record => record.meta.requireAuth)) {
     // 認証情報の確認
     if (isLoggedIn && user) {
-      console.log('router.beforeEach: auth OK')
+      // console.log('router.beforeEach: auth OK')
       next()
     } else {
       // 認証できていない
-      console.log('router.beforeEach: auth NO')
+      // console.log('router.beforeEach: auth NO')
       next({
         path: '/auth',
         query: {
