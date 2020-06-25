@@ -20,12 +20,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/assets/variable.scss";
 .Navigation {
-  box-sizing: border-box;
-  width: 100%;
-  height: 48px;
-  padding: 8px 16px 8px;
-  display: flex;
+  @include header;
   background: #fff;
 }
 </style>
