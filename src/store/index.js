@@ -11,6 +11,7 @@ const auth = {
     auth: null,
     isLoggedIn: false,
     user: null,
+    unsubscribe: null
   },
   getters: {
     isLoggedIn: state => state.isLoggedIn,
@@ -22,12 +23,24 @@ const auth = {
     },
     SET_USER(state, payload) {
       state.user = payload.user
+    },
+    UNSBSCRIBE(state) {
+      state.unsubscribe()
+      state.unsubscribe = null
     }
   },
   actions: {
     setUser({ state, commit }) {
-      state.auth.onAuthStateChanged((user) => {
+      /**
+       * https://stackoverflow.com/questions/37370224/firebase-stop-listening-onauthstatechanged
+       * onAuthStateChangedの解除の仕方
+       * unsubscribeというものを知った笑
+       */
+      state.unsubscribe = state.auth.onAuthStateChanged((user) => {
         commit("SET_USER", { user: user })
+        if (!user) {
+          commit("UNSBSCRIBE")
+        }
       })
     },
   }
@@ -185,6 +198,10 @@ export default new Vuex.Store({
       node: null,
       relations: [],
     },
+    sidebar: {
+      isOpen: true
+    },
+
   },
   getters: {
     isDetailsOpen(state) {

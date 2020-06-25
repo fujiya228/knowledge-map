@@ -1,7 +1,7 @@
 <template>
   <div class="Layout">
     <Sidebar />
-    <div class="Layout__container">
+    <div class="Layout__container" :class="{full: !sidebar.isOpen}">
       <Navigation />
       <AppMain />
     </div>
@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
@@ -19,6 +20,9 @@ export default {
     Navigation,
     Sidebar,
     AppMain
+  },
+  computed: {
+    ...mapState(["sidebar"])
   }
 };
 </script>
@@ -37,6 +41,9 @@ export default {
     height: 100vh;
     max-height: 100%;
     background: white;
+    &.full {
+      width: 100%;
+    }
   }
 }
 </style>

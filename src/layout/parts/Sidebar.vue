@@ -1,8 +1,8 @@
 <template>
-  <div class="Sidebar">
+  <div class="Sidebar" v-show="sidebar.isOpen">
     <div class="Sidebar__header">
-      <div class="Sidebar__button">ログアウト</div>
-      <div class="Sidebar__close">
+      <div class="Sidebar__button" @click="logout()">ログアウト</div>
+      <div class="Sidebar__close" @click="closeSidebar()">
         <Icon icon="angle-double-left" :size="32" :font="20" />
       </div>
     </div>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
   name: "Sidebar",
@@ -19,8 +20,23 @@ export default {
   data() {
     return {};
   },
-  methods: {},
-  computed: {}
+  methods: {
+    logout() {
+      this.auth.signOut().then(() => {
+        this.$store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: false });
+        this.$router.push("auth");
+      });
+    },
+    closeSidebar() {
+      this.sidebar.isOpen = false;
+    }
+  },
+  computed: {
+    ...mapState(["sidebar"]),
+    ...mapState({
+      auth: state => state.auth.auth
+    })
+  }
 };
 </script>
 
@@ -31,6 +47,11 @@ export default {
   width: $sidebar-width;
   height: 100%;
   background: #eee;
+  &:hover {
+    .Sidebar__close {
+      opacity: 1;
+    }
+  }
   &__header {
     @include header;
     justify-content: space-between;
@@ -39,6 +60,7 @@ export default {
   &__button {
     height: 32px;
     line-height: 32px;
+    border-radius: 3px;
     padding: 0 8px;
     user-select: none;
     cursor: pointer;
@@ -50,6 +72,7 @@ export default {
     border-radius: 3px;
     cursor: pointer;
     @include button-hover;
+    opacity: 0;
   }
 }
 </style>
