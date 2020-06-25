@@ -1,7 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import store from "../store"
-import router from "../router"
+// import router from "../router"
 
 const state = store.state
 
@@ -32,12 +32,11 @@ const init = function () {
 const setOnAuth = function () {
   store.commit("auth/SET_IS_AUTH_STATE_CHANGED", { isAuthStateChanged: false })
   state.auth.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-    user = user ? user : {}
+    user = user ? user : false
     store.commit("auth/SET_USER", { user: user })
-    store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: !!user.uid })
+    store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: !!user })
     store.commit("auth/SET_IS_AUTH_STATE_CHANGED", { isAuthStateChanged: true })
     console.log('onAuthStateChanged')
-    user.uid ? router.push('/') : router.push('auth')
   })
 }
 

@@ -90,16 +90,18 @@ export default {
   },
   watch: {
     user() {
-      // メールアドレス確認
-      if (this.user.emailVerified) {
-        // メールアドレス確認済み
-        this.email = this.password = "";
-        const next = this.$route.query.next || "/";
-        this.$router.push(next);
-      } else {
-        // メールアドレス未確認
-        this.isEmailVerifyMode = true;
-        this.$store.dispatch("auth/sendEmail");
+      if (this.user) {
+        // メールアドレス確認
+        if (this.user.emailVerified) {
+          // メールアドレス確認済み
+          this.email = this.password = "";
+          const next = this.$route.query.next || "/";
+          this.$router.push(next);
+        } else {
+          // メールアドレス未確認
+          this.isEmailVerifyMode = true;
+          this.$store.dispatch("auth/sendEmail");
+        }
       }
     }
   },

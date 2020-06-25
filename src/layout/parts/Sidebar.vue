@@ -30,8 +30,16 @@ export default {
       this.sidebar.isOpen = false;
     }
   },
+  watch: {
+    user() {
+      if (!this.user) this.$router.push("/auth");
+    }
+  },
   computed: {
-    ...mapState(["sidebar"])
+    ...mapState(["sidebar"]),
+    ...mapState({
+      user: state => state.auth.user
+    })
   }
 };
 </script>
