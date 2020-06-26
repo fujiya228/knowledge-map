@@ -207,7 +207,7 @@ export default {
       this.addNodeForm.isFree = true;
       this.addNodeForm.x = X;
       this.addNodeForm.y = Y;
-      this.$nextTick(() => document.querySelector("textarea.Textarea").focus());
+      // this.$nextTick(() => document.querySelector("textarea.Textarea").focus());
     },
     openContextMenu(node = null) {
       // このメニューの位置決めるやつはイベントの起きたページの位置に変えるべき
@@ -295,14 +295,9 @@ export default {
 #FreeGraph {
   position: relative;
   overflow: scroll;
-  width: calc(100% - 24px);
-  // width: 100%;
-  // height: 100%;
-  height: calc(100% - 48px);
+  width: 100%;
+  height: 100%;
   transition: 0.25s ease-in-out;
-  &.open {
-    width: calc(100% - 324px);
-  }
 }
 .Free__area {
   display: block;

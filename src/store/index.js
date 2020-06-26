@@ -1,37 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
 
 Vue.use(Vuex)
-
-const auth = {
-  strict: process.env.NODE_ENV !== "production",
-  namespaced: true,
-  state: {
-    auth: null,
-    isLoggedIn: false,
-    user: null,
-  },
-  getters: {
-    isLoggedIn: state => state.isLoggedIn,
-    user: state => state.user
-  },
-  mutations: {
-    SET_IS_LOGGED_IN(state, payload) {
-      state.isLoggedIn = payload.isLoggedIn
-    },
-    SET_USER(state, payload) {
-      state.user = payload.user
-    }
-  },
-  actions: {
-    setUser({ state, commit }) {
-      state.auth.onAuthStateChanged((user) => {
-        commit("SET_USER", { user: user })
-      })
-    },
-  }
-}
 
 export default new Vuex.Store({
   state: {
@@ -185,6 +157,10 @@ export default new Vuex.Store({
       node: null,
       relations: [],
     },
+    sidebar: {
+      isOpen: true
+    },
+
   },
   getters: {
     isDetailsOpen(state) {
@@ -299,9 +275,9 @@ export default new Vuex.Store({
       // console.log('addNode')
       dispatch("selectNode", state.nodes[state.nodes.length - 1]);
       commit("closeAddNodeForm");
-      setTimeout(() => {
-        document.querySelector(".Details__detail > .Textarea").focus();
-      }, 100);
+      // setTimeout(() => {
+      //   document.querySelector(".Details__detail > .Textarea").focus();
+      // }, 100);
       // iOS 12はまだ0または1のセットでは機能しないため、setTimeout（cb、100）を設定します。
       // https://github.com/vuejs/vuex/issues/1023
     },

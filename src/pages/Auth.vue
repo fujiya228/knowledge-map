@@ -1,30 +1,35 @@
 <template>
   <div class="Auth">
-    <h1>{{titleText}}</h1>
-    <div class="Auth__icon" v-if="isLoading">
-      <Icon icon="spinner" :size="32" :font="24" />
-    </div>
-    <!-- アドレス未確認 -->
-    <template v-if="isEmailVerifyMode">
-      <div class="EmailVerify__container">
+    <template v-if="isAuthStateChanged">
+      <h1>{{titleText}}</h1>
+      <div class="Auth__icon" v-if="isLoading">
+        <Icon icon="spinner" :size="32" :font="24" />
+      </div>
+      <!-- アドレス未確認 -->
+      <div class="EmailVerify__container" v-if="isEmailVerifyMode">
         <p>{{email}}</p>
         <p>上記のアドレスに確認用メールを送信しました。</p>
         <Btn @click.native="isEmailVerifyMode = false">アドレスを確認済</Btn>
       </div>
+      <!-- 上記以外 -->
+      <template v-else>
+        <div class="Auth__container">
+          <input class="Input" type="email" v-model="email" placeholder="email" />
+          <input class="Input" type="password" v-model="password" placeholder="password" />
+          <Btn @click.native="clickBtn()">{{titleText}}</Btn>
+        </div>
+        <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
+      </template>
     </template>
-    <!-- 上記以外 -->
-    <template v-else>
-      <div class="Auth__container">
-        <input class="Input" type="email" v-model="email" placeholder="email" />
-        <input class="Input" type="password" v-model="password" placeholder="password" />
-        <Btn @click.native="clickBtn()">{{titleText}}</Btn>
-      </div>
-      <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
-    </template>
+    <div class="Auth__icon" v-else>
+      <Icon icon="spinner" :size="32" :font="24" />
+    </div>
   </div>
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/auth";
 import { mapState } from "vuex";
 
 import Icon from "@/components/atoms/Icon";
@@ -51,21 +56,18 @@ export default {
     },
     sign_up() {
       this.isLoading = true;
-      this.auth
+      firebase
+        .auth()
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(() => {
           alert("sigin up ok");
           this.login();
         })
         .catch(function(error) {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          if (errorCode == "auth/weak-password") {
-            alert("The password is too weak.");
-          } else {
-            alert(errorMessage);
-          }
           console.log(error);
+          error.code == "auth/weak-password"
+            ? alert("The password is too weak.")
+            : alert(error.message);
         })
         .then(() => {
           this.isLoading = false;
@@ -73,40 +75,34 @@ export default {
     },
     login() {
       this.isLoading = true;
-      this.auth
+      firebase
+        .auth()
         .signInWithEmailAndPassword(this.email, this.password)
-        .then(async () => {
-          this.$store.commit("auth/SET_IS_LOGGED_IN", { isLoggedIn: true });
-          await this.$store.dispatch("auth/setUser");
-          this.isLoading = false;
-          // メールアドレス確認
-          if (this.user.emailVerified) {
-            // メールアドレス確認済み
-            this.email = this.password = "";
-            const next = this.$route.query.next || "/";
-            this.$router.push(next);
-          } else {
-            // メールアドレス未確認
-            this.isEmailVerifyMode = true;
-            this.sendEmail();
-          }
-        })
         .catch(err => {
           console.log(err.message);
           alert(err.message);
-          this.isLoading = false;
           this.isSignUpMode = true;
-        });
-    },
-    sendEmail() {
-      this.user
-        .sendEmailVerification()
-        .then(function() {
-          console.log("email sent");
         })
-        .catch(function(error) {
-          console.log("sendEmailVerification", error.message);
+        .then(async () => {
+          this.isLoading = false;
         });
+    }
+  },
+  watch: {
+    user() {
+      if (this.user) {
+        // メールアドレス確認
+        if (this.user.emailVerified) {
+          // メールアドレス確認済み
+          this.email = this.password = "";
+          const next = this.$route.query.next || "/";
+          this.$router.push(next);
+        } else {
+          // メールアドレス未確認
+          this.isEmailVerifyMode = true;
+          this.$store.dispatch("auth/sendEmail");
+        }
+      }
     }
   },
   computed: {
@@ -118,8 +114,8 @@ export default {
       return this.isSignUpMode ? "ログイン" : "新規登録";
     },
     ...mapState({
-      auth: state => state.auth.auth,
-      user: state => state.auth.user
+      user: state => state.auth.user,
+      isAuthStateChanged: state => state.auth.isAuthStateChanged
     })
   }
 };
