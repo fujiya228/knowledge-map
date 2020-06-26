@@ -49,7 +49,8 @@ export default {
   user-select: none;
   transition: 0.25s ease-in-out;
   cursor: move;
-  &.drag {
+  &.drag,
+  &.selected {
     transition: 0s;
   }
   &.relation-target {

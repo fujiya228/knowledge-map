@@ -50,7 +50,9 @@
     />
     <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
       <div class="Editor__wrapper">
-        <h2 class="Editor__title">Title:{{detailsMenu.node.title}}</h2>
+        <h2 class="Editor__title">
+          <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
+        </h2>
         <quill-editor
           ref="MyQuillEditor"
           class="edit-area"
@@ -246,7 +248,7 @@ export default {
       this.content = html;
     },
     closeEditor() {
-      console.log("fuck");
+      console.log("closeEditor");
       this.$store.commit("set_isEditorOpen", false);
     }
   },
@@ -279,6 +281,14 @@ export default {
       return this.detailsMenu.node
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
+    }
+  },
+  watch: {
+    "detailsMenu.node.title"() {
+      let node = this.detailsMenu.node;
+      if (node) {
+        node.width_2 = document.getElementById(node.id).clientWidth / 2;
+      }
     }
   },
   mounted() {
@@ -368,9 +378,16 @@ export default {
     max-width: 800px;
   }
   &__title {
+    display: flex;
     background: white;
     margin: 0;
     padding: 16px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  &__input {
+    width: 100%;
+    font-size: 24px;
   }
 }
 .quill-editor,
