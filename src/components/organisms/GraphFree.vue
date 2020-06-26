@@ -145,14 +145,14 @@ export default {
       let FreeGraph = document.getElementById("FreeGraph");
       let x = e.pageX;
       let y = e.pageY;
-      let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
+      let X = x + FreeGraph.scrollLeft - this.sidebar_width; // 現在のポインタ位置
       let Y = y + FreeGraph.scrollTop;
-      if (x < 100) FreeGraph.scrollLeft -= 10;
-      if (x > this.width - 400 && X < 2000) FreeGraph.scrollLeft += 10;
+      if (x < 100 + this.sidebar_width) FreeGraph.scrollLeft -= 10;
+      if (x > this.width - 100 && X < 3000) FreeGraph.scrollLeft += 10;
       if (y < 100) FreeGraph.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 2000) FreeGraph.scrollTop += 10;
+      if (y > this.height - 100 && Y < 3000) FreeGraph.scrollTop += 10;
       node.x = node.free.x = Math.floor(X);
-      node.y = node.free.y = Math.floor(Y - 56);
+      node.y = node.free.y = Math.floor(Y - 48);
     },
     onGhost(node) {
       this.closeContextMenu();
@@ -200,8 +200,8 @@ export default {
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
       let FreeGraph = document.getElementById("FreeGraph");
-      let x = event.pageX;
-      let y = event.pageY - 56;
+      let x = event.pageX - this.sidebar_width;
+      let y = event.pageY - 48;
       let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
       let Y = y + FreeGraph.scrollTop;
       this.addNodeForm.isFree = true;
@@ -260,9 +260,13 @@ export default {
       "addNodeForm",
       "contextMenu",
       "detailsMenu",
-      "isEditorOpen"
+      "isEditorOpen",
+      "sidebar"
     ]),
     ...mapGetters(["isDetailsOpen"]),
+    sidebar_width() {
+      return this.sidebar.isOpen ? 256 : 0;
+    },
     isMakingRelation: {
       get() {
         return this.$store.state.isMakingRelation;
@@ -306,8 +310,9 @@ export default {
   // いや、それやと動的に出しづらいから負にするべきかも
   // いや、最大サイズが変わった時点ですべての座標を再計算でいける
   // TODO
-  width: 2000px;
-  height: 2000px;
+  width: 3000px;
+  height: 3000px;
+  background: $color-main-l;
 }
 .Circle {
   &__center {
