@@ -10,7 +10,7 @@
     :style="{ backgroundColor: statusColor(node.status) }"
     v-tooltip="node.title"
     @click.exact="selectNode(node)"
-  >{{ node.title[0] }}</div>
+  >{{ node.title }}</div>
 </template>
 
 <script>
@@ -38,9 +38,10 @@ export default {
 @import "@/assets/variable.scss";
 .Node {
   position: absolute;
-  width: 64px;
+  min-width: 32px;
   height: 64px;
-  border-radius: 50%;
+  padding: 0 16px;
+  border-radius: 32px;
   text-align: center;
   line-height: 64px;
   font-size: 30px;
@@ -65,7 +66,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 32px;
     border: solid 3px #67b7b3;
     box-sizing: border-box;
   }

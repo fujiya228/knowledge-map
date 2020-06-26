@@ -28,7 +28,7 @@
       :key="node.id"
       :node="node"
       :style="{
-          left: node.x - 32 + 'px',
+          left: node.x - node.width_2 + 'px',
           top: node.y - 32 + 'px',
         }"
       @touchstart.native="onGhost(node)"
