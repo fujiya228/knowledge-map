@@ -1,10 +1,7 @@
 <template>
   <div class="Actions">
-    <div class="Actions__button" @click="dataForm.isSave = true">
+    <div class="Actions__button" @click="saveData()">
       <Icon icon="save" />
-    </div>
-    <div class="Actions__button" @click="dataForm.isLoad = true">
-      <Icon icon="file-import" />
     </div>
     <div class="Actions__button" @click="isEditorOpen = true">
       <Icon icon="edit" />
@@ -13,16 +10,49 @@
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/functions";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+import helpers from "@/helpers/helpers.js";
 export default {
   name: "Actions",
   components: {
     Icon
   },
-  methods: {},
+  data() {
+    return {
+      setData: firebase.functions().httpsCallable("setData")
+    };
+  },
+  methods: {
+    saveData() {
+      let data = {
+        nodeNum: this.dataInfo.nodeNum,
+        statusNum: this.dataInfo.statusNum,
+        tagNum: this.dataInfo.tagNum,
+        nodes: helpers.deep(this.$store.state.nodes),
+        relations: helpers.deep(this.$store.state.relations),
+        statuses: this.$store.state.statuses,
+        tags: this.$store.state.tags,
+        updated_at: Date(Date.now())
+      };
+      data.nodes.forEach(item => {
+        delete item.x;
+        delete item.y;
+        delete item.byTheDeadline;
+      });
+      data.relations.forEach(item => {
+        delete item.base.node;
+        delete item.target.node;
+      });
+      this.setData(data).then(response => {
+        console.log(response.data);
+      });
+    }
+  },
   computed: {
-    ...mapState(["dataForm"]),
+    ...mapState(["dataInfo"]),
     isEditorOpen: {
       get() {
         return this.$store.state.isEditorOpen;

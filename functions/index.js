@@ -150,3 +150,23 @@ exports.getData = functions.https.onCall(async (data, context) => {
     return userData
   }
 })
+
+exports.setData = functions.https.onCall(async (data, context) => {
+  let usersRef = fireStore.collection('users')
+  let uid = context.auth.uid
+  let log = null
+  await usersRef.doc(uid).set(data, { merge: true }).then((res) => {
+    log = {
+      message: "Set success",
+      response: res,
+    }
+    return
+  }).catch((error) => {
+    log = {
+      message: "Set failure",
+      error: error
+    }
+    console.log("Error set data:", error)
+  })
+  return log
+})

@@ -34,7 +34,8 @@ export default {
   methods: {
     initData(data) {
       data.nodes.forEach(item => {
-        item.x = item.y = 0;
+        item.x = item.free.x;
+        item.y = item.free.y;
       });
       data.relations.forEach(item => {
         item.base.node = data.nodes.find(x => x.id === item.base.id);
