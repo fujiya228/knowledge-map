@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/functions";
 import { mapState } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
@@ -21,8 +23,39 @@ export default {
     Sidebar,
     AppMain
   },
+  data() {
+    return {
+      getData: null
+    };
+  },
   computed: {
-    ...mapState(["sidebar"])
+    ...mapState(["sidebar", "dataInfo", "detailsMenu"])
+  },
+  methods: {
+    initData(data) {
+      data.nodes.forEach(item => {
+        item.x = item.y = 0;
+      });
+      data.relations.forEach(item => {
+        item.base.node = data.nodes.find(x => x.id === item.base.id);
+        item.target.node = data.nodes.find(x => x.id === item.target.id);
+      });
+      this.dataInfo.nodeNum = data.nodeNum;
+      this.dataInfo.statusNum = data.statusNum;
+      this.dataInfo.tagNum = data.tagNum;
+      this.$store.state.nodes = data.nodes;
+      this.$store.state.relations = data.relations;
+      this.$store.state.statuses = data.statuses;
+      this.$store.state.tags = data.tags;
+      this.detailsMenu.node = null;
+    }
+  },
+  created() {
+    this.getData = firebase.functions().httpsCallable("getData");
+    this.getData().then(result => {
+      console.log(result);
+      this.initData(result.data);
+    });
   }
 };
 </script>

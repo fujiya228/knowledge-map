@@ -28,6 +28,7 @@ const auth = {
   },
   actions: {
     sendEmail() {
+      // Auth.vueの中でuserの存在確認済
       this.user
         .sendEmailVerification()
         .then(function () {

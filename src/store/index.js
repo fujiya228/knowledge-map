@@ -123,10 +123,7 @@ export default new Vuex.Store({
       x: 0,
       y: 0,
     },
-    dataForm: {
-      isSave: false,
-      isLoad: false,
-      title: "",
+    dataInfo: {
       nodeNum: 0,
       statusNum: 4,
       tagNum: 9,
@@ -252,7 +249,7 @@ export default new Vuex.Store({
       // console.log(new Date(now*1000).toISOString())
       // console.log(deadline)
       // console.log(helpers.checkDeadline(deadline))
-      let id = "node_" + state.dataForm.nodeNum++;
+      let id = "node_" + state.dataInfo.nodeNum++;
       state.nodes.push({
         id: id,
         archive: false,
