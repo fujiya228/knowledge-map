@@ -6,6 +6,9 @@
     <div class="Actions__button" @click="dataForm.isLoad = true">
       <Icon icon="file-import" />
     </div>
+    <div class="Actions__button" @click="isEditorOpen = true">
+      <Icon icon="edit" />
+    </div>
   </div>
 </template>
 
@@ -19,7 +22,15 @@ export default {
   },
   methods: {},
   computed: {
-    ...mapState(["dataForm"])
+    ...mapState(["dataForm"]),
+    isEditorOpen: {
+      get() {
+        return this.$store.state.isEditorOpen;
+      },
+      set(val) {
+        this.$store.commit("set_isEditorOpen", val);
+      }
+    }
   }
 };
 </script>

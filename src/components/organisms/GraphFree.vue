@@ -10,6 +10,8 @@
       @dblclick="openAddNodeForm($event)"
       @click.ctrl="openAddNodeForm($event)"
     >
+      <rect width="100%" height="100%" fill="url(#background)" />
+      <Background />
       <path
         class="Line"
         :class="{
@@ -28,7 +30,7 @@
       :key="node.id"
       :node="node"
       :style="{
-          left: node.x - 32 + 'px',
+          left: node.x - node.width_2 + 'px',
           top: node.y - 32 + 'px',
         }"
       @touchstart.native="onGhost(node)"
@@ -50,7 +52,9 @@
     />
     <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
       <div class="Editor__wrapper">
-        <h2 class="Editor__title">Title:{{detailsMenu.node.title}}</h2>
+        <h2 class="Editor__title">
+          <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
+        </h2>
         <quill-editor
           ref="MyQuillEditor"
           class="edit-area"
@@ -74,11 +78,13 @@ import { quillEditor } from "vue-quill-editor";
 
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
+import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
 export default {
   name: "FreeGraph",
   components: {
+    Background,
     Node,
     AddNodeForm,
     quillEditor
@@ -145,14 +151,14 @@ export default {
       let FreeGraph = document.getElementById("FreeGraph");
       let x = e.pageX;
       let y = e.pageY;
-      let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
+      let X = x + FreeGraph.scrollLeft - this.sidebar_width; // 現在のポインタ位置
       let Y = y + FreeGraph.scrollTop;
-      if (x < 100) FreeGraph.scrollLeft -= 10;
-      if (x > this.width - 400 && X < 2000) FreeGraph.scrollLeft += 10;
+      if (x < 100 + this.sidebar_width) FreeGraph.scrollLeft -= 10;
+      if (x > this.width - 100 && X < 3000) FreeGraph.scrollLeft += 10;
       if (y < 100) FreeGraph.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 2000) FreeGraph.scrollTop += 10;
+      if (y > this.height - 100 && Y < 3000) FreeGraph.scrollTop += 10;
       node.x = node.free.x = Math.floor(X);
-      node.y = node.free.y = Math.floor(Y - 56);
+      node.y = node.free.y = Math.floor(Y - 48);
     },
     onGhost(node) {
       this.closeContextMenu();
@@ -200,8 +206,8 @@ export default {
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
       let FreeGraph = document.getElementById("FreeGraph");
-      let x = event.pageX;
-      let y = event.pageY - 56;
+      let x = event.pageX - this.sidebar_width;
+      let y = event.pageY - 48;
       let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
       let Y = y + FreeGraph.scrollTop;
       this.addNodeForm.isFree = true;
@@ -246,7 +252,7 @@ export default {
       this.content = html;
     },
     closeEditor() {
-      console.log("fuck");
+      console.log("closeEditor");
       this.$store.commit("set_isEditorOpen", false);
     }
   },
@@ -260,9 +266,13 @@ export default {
       "addNodeForm",
       "contextMenu",
       "detailsMenu",
-      "isEditorOpen"
+      "isEditorOpen",
+      "sidebar"
     ]),
     ...mapGetters(["isDetailsOpen"]),
+    sidebar_width() {
+      return this.sidebar.isOpen ? 256 : 0;
+    },
     isMakingRelation: {
       get() {
         return this.$store.state.isMakingRelation;
@@ -275,6 +285,16 @@ export default {
       return this.detailsMenu.node
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
+    }
+  },
+  watch: {
+    "detailsMenu.node.title"() {
+      let node = this.detailsMenu.node;
+      if (node) {
+        this.$nextTick(() => {
+          node.width_2 = document.getElementById(node.id).clientWidth / 2;
+        });
+      }
     }
   },
   mounted() {
@@ -306,8 +326,9 @@ export default {
   // いや、それやと動的に出しづらいから負にするべきかも
   // いや、最大サイズが変わった時点ですべての座標を再計算でいける
   // TODO
-  width: 2000px;
-  height: 2000px;
+  width: 3000px;
+  height: 3000px;
+  // background: $color-main-l;
 }
 .Circle {
   &__center {
@@ -363,9 +384,16 @@ export default {
     max-width: 800px;
   }
   &__title {
+    display: flex;
     background: white;
     margin: 0;
     padding: 16px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  &__input {
+    width: 100%;
+    font-size: 24px;
   }
 }
 .quill-editor,
