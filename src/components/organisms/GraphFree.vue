@@ -10,6 +10,8 @@
       @dblclick="openAddNodeForm($event)"
       @click.ctrl="openAddNodeForm($event)"
     >
+      <rect width="100%" height="100%" fill="url(#background)" />
+      <Background />
       <path
         class="Line"
         :class="{
@@ -76,11 +78,13 @@ import { quillEditor } from "vue-quill-editor";
 
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
+import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
 export default {
   name: "FreeGraph",
   components: {
+    Background,
     Node,
     AddNodeForm,
     quillEditor
@@ -287,7 +291,9 @@ export default {
     "detailsMenu.node.title"() {
       let node = this.detailsMenu.node;
       if (node) {
-        node.width_2 = document.getElementById(node.id).clientWidth / 2;
+        this.$nextTick(() => {
+          node.width_2 = document.getElementById(node.id).clientWidth / 2;
+        });
       }
     }
   },
@@ -322,7 +328,7 @@ export default {
   // TODO
   width: 3000px;
   height: 3000px;
-  background: $color-main-l;
+  // background: $color-main-l;
 }
 .Circle {
   &__center {
