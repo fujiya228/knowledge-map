@@ -1,11 +1,12 @@
 <template>
   <div class="Actions">
-    <div class="Actions__button" @click="saveData()">
+    <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
       <Icon icon="save" />
     </div>
-    <div class="Actions__button" @click="isEditorOpen = true">
+    <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
       <Icon icon="edit" />
     </div>
+    <div class="Actions__info" v-show="isSaving">{{savingText}}</div>
   </div>
 </template>
 
@@ -22,11 +23,15 @@ export default {
   },
   data() {
     return {
-      setData: firebase.functions().httpsCallable("setData")
+      setData: firebase.functions().httpsCallable("setData"),
+      isSaving: false,
+      savingText: ""
     };
   },
   methods: {
     saveData() {
+      this.savingText = "保存中...";
+      this.isSaving = true;
       let data = {
         nodeNum: this.dataInfo.nodeNum,
         statusNum: this.dataInfo.statusNum,
@@ -46,9 +51,16 @@ export default {
         delete item.base.node;
         delete item.target.node;
       });
-      this.setData(data).then(response => {
-        console.log(response.data);
-      });
+      this.setData(data)
+        .then(response => {
+          console.log(response.data);
+        })
+        .then(() => {
+          this.savingText = "保存しました";
+          setTimeout(() => {
+            this.isSaving = false;
+          }, 3000);
+        });
     }
   },
   watch: {},
@@ -82,6 +94,12 @@ export default {
     &:hover {
       opacity: 0.8;
     }
+  }
+  &__info {
+    box-sizing: border-box;
+    height: 32px;
+    padding: 8px 8px 0;
+    font-size: 14px;
   }
 }
 </style>
