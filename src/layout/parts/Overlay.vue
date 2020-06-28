@@ -20,6 +20,7 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/variable";
 .Overlay {
+  z-index: 1000;
   position: fixed;
   top: 0;
   left: 0;

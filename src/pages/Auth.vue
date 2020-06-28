@@ -9,7 +9,7 @@
       <div class="EmailVerify__container" v-if="isEmailVerifyMode">
         <p>{{email}}</p>
         <p>上記のアドレスに確認用メールを送信しました。</p>
-        <Btn @click.native="isEmailVerifyMode = false">アドレスを確認済</Btn>
+        <Btn @click.native="verifiedEmail()">アドレスを確認済</Btn>
       </div>
       <!-- 上記以外 -->
       <template v-else>
@@ -86,6 +86,11 @@ export default {
         .then(async () => {
           this.isLoading = false;
         });
+    },
+    verifiedEmail() {
+      firebase.auth().signOut();
+      this.isSignUpMode = false;
+      this.isEmailVerifyMode = false;
     }
   },
   watch: {

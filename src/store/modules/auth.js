@@ -27,9 +27,9 @@ const auth = {
     }
   },
   actions: {
-    sendEmail() {
+    sendEmail({ state }) {
       // Auth.vueの中でuserの存在確認済
-      this.user
+      state.user
         .sendEmailVerification()
         .then(function () {
           console.log("email sent");
