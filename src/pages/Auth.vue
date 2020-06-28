@@ -133,9 +133,7 @@ export default {
   background: $color-dark;
   color: white;
   &__icon {
-    margin: 32px;
-    font-size: 32px;
-    animation: spin 1s linear infinite;
+    @include loading-icon;
   }
   &__container {
     max-width: 300px;
@@ -146,14 +144,6 @@ export default {
     font-size: 14px;
     text-decoration: underline;
     cursor: pointer;
-  }
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }
 </style>

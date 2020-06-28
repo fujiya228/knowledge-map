@@ -1,10 +1,11 @@
 <template>
-  <div class="Layout">
+  <div class="Layout" @click.stop>
     <Sidebar />
     <div class="Layout__container" :class="{full: !sidebar.isOpen}">
       <Navigation />
       <AppMain />
     </div>
+    <Overlay v-if="isLoading" />
   </div>
 </template>
 
@@ -15,17 +16,20 @@ import { mapState } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
+import Overlay from "@/layout/parts/Overlay";
 
 export default {
   name: "Layout",
   components: {
     Navigation,
     Sidebar,
-    AppMain
+    AppMain,
+    Overlay
   },
   data() {
     return {
-      getData: null
+      getData: firebase.functions().httpsCallable("getData"),
+      isLoading: false
     };
   },
   computed: {
@@ -52,11 +56,15 @@ export default {
     }
   },
   created() {
-    this.getData = firebase.functions().httpsCallable("getData");
-    this.getData().then(result => {
-      console.log(result);
-      this.initData(result.data);
-    });
+    this.isLoading = true;
+    this.getData()
+      .then(result => {
+        console.log(result);
+        this.initData(result.data);
+      })
+      .then(() => {
+        this.isLoading = false;
+      });
   }
 };
 </script>

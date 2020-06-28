@@ -31,10 +31,10 @@ export default {
         nodeNum: this.dataInfo.nodeNum,
         statusNum: this.dataInfo.statusNum,
         tagNum: this.dataInfo.tagNum,
-        nodes: helpers.deep(this.$store.state.nodes),
-        relations: helpers.deep(this.$store.state.relations),
-        statuses: this.$store.state.statuses,
-        tags: this.$store.state.tags,
+        nodes: helpers.deep(this.nodes),
+        relations: helpers.deep(this.relations),
+        statuses: this.statuses,
+        tags: this.tags,
         updated_at: Date(Date.now())
       };
       data.nodes.forEach(item => {
@@ -51,8 +51,9 @@ export default {
       });
     }
   },
+  watch: {},
   computed: {
-    ...mapState(["dataInfo"]),
+    ...mapState(["dataInfo", "nodes", "relations", "statuses", "tags"]),
     isEditorOpen: {
       get() {
         return this.$store.state.isEditorOpen;
