@@ -3,9 +3,15 @@
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
       <Icon icon="save" />
     </div>
-    <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
-      <Icon icon="edit" />
-    </div>
+    <template v-if="detailsMenu.node">
+      <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
+        <Icon icon="edit" />
+      </div>
+      <div class="Actions__button" @click="delNode(detailsMenu.node)" v-tooltip="'削除'">
+        <Icon icon="trash-alt" />
+      </div>
+      <div class="Actions__title">Select:{{detailsMenu.node.title}}</div>
+    </template>
     <div class="Actions__info" v-show="isSaving">{{savingText}}</div>
   </div>
 </template>
@@ -13,7 +19,7 @@
 <script>
 import * as firebase from "firebase/app";
 import "firebase/functions";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import helpers from "@/helpers/helpers.js";
 export default {
@@ -61,11 +67,19 @@ export default {
             this.isSaving = false;
           }, 3000);
         });
-    }
+    },
+    ...mapActions(["delNode"])
   },
   watch: {},
   computed: {
-    ...mapState(["dataInfo", "nodes", "relations", "statuses", "tags"]),
+    ...mapState([
+      "dataInfo",
+      "nodes",
+      "relations",
+      "statuses",
+      "tags",
+      "detailsMenu"
+    ]),
     isEditorOpen: {
       get() {
         return this.$store.state.isEditorOpen;
@@ -100,6 +114,18 @@ export default {
     height: 32px;
     padding: 8px 8px 0;
     font-size: 14px;
+  }
+  &__title {
+    box-sizing: border-box;
+    max-width: 250px;
+    height: 32px;
+    line-height: 24px;
+    padding: 8px 8px 0;
+    font-size: 16px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 </style>
