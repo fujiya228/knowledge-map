@@ -5,11 +5,7 @@
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : null"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : null"
   >
-    <svg
-      class="Free__area"
-      @dblclick="openAddNodeForm($event)"
-      @click.ctrl="openAddNodeForm($event)"
-    >
+    <svg class="Free__area" @click="openAddNodeForm($event)">
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
       <path
@@ -30,16 +26,16 @@
       :key="node.id"
       :node="node"
       :style="{
-          left: node.x - node.width_2 + 'px',
-          top: node.y - 32 + 'px',
-        }"
+    left: node.x - node.width_2 + 'px',
+    top: node.y - 32 + 'px',
+    }"
       @touchstart.native="onGhost(node)"
       @touchend.native="endGhost()"
-      @pointerdown.native="onGhost(node)"
+      @pointerdown.left.native="onGhost(node)"
       @mouseup.native="endGhost()"
-      @click.right.prevent.stop.native="openContextMenu(node)"
+      @click.right.prevent.stop.native="openContextMenu($event,node)"
       @click.ctrl.exact.stop.native="selectRelaitonNode(node)"
-      @dblclick.native="selectRelaitonNode(node)"
+      @dblclick.stop.native="isEditorOpen = true"
     />
     <AddNodeForm
       class="Add-node-form"
@@ -50,6 +46,7 @@
       }"
       @addFunction="addNode()"
     />
+    <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
     <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
       <div class="Editor__wrapper">
         <h2 class="Editor__title">
@@ -81,11 +78,13 @@ import helpers from "@/helpers/helpers";
 import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
+import ContextMenu from "@/components/molecules/ContextMenu";
 export default {
   name: "FreeGraph",
   components: {
     Background,
     Node,
+    ContextMenu,
     AddNodeForm,
     quillEditor
   },
@@ -215,11 +214,12 @@ export default {
       this.addNodeForm.y = Y;
       // this.$nextTick(() => document.querySelector("textarea.Textarea").focus());
     },
-    openContextMenu(node = null) {
-      // このメニューの位置決めるやつはイベントの起きたページの位置に変えるべき
-      // 拡大機能とかつけたらメニュー見えんくなる可能性があるから
-      this.contextMenu.x = node.x + 32;
-      this.contextMenu.y = node.y + 56;
+    openContextMenu(event, node = null) {
+      let e = event.type === "touchmove" ? event.changedTouches[0] : event;
+      let x = e.pageX;
+      let y = e.pageY;
+      this.contextMenu.x = x < this.width / 2 ? x : x - 120;
+      this.contextMenu.y = y < this.height / 2 ? y + 56 : y - 168;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
@@ -281,6 +281,14 @@ export default {
         this.$store.commit("set_isMakingRelation", val);
       }
     },
+    isEditorOpen: {
+      get() {
+        return this.$store.state.isEditorOpen;
+      },
+      set(val) {
+        this.$store.commit("set_isEditorOpen", val);
+      }
+    },
     editor() {
       return this.detailsMenu.node
         ? this.$refs.MyQuillEditor.quill
@@ -329,6 +337,7 @@ export default {
   width: 3000px;
   height: 3000px;
   // background: $color-main-l;
+  cursor: pointer;
 }
 .Circle {
   &__center {
