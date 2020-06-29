@@ -1,28 +1,71 @@
 <template>
   <div class="Actions">
-    <div class="Actions__button" @click="dataForm.isSave = true">
+    <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
       <Icon icon="save" />
     </div>
-    <div class="Actions__button" @click="dataForm.isLoad = true">
-      <Icon icon="file-import" />
-    </div>
-    <div class="Actions__button" @click="isEditorOpen = true">
+    <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
       <Icon icon="edit" />
     </div>
+    <div class="Actions__info" v-show="isSaving">{{savingText}}</div>
   </div>
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/functions";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+import helpers from "@/helpers/helpers.js";
 export default {
   name: "Actions",
   components: {
     Icon
   },
-  methods: {},
+  data() {
+    return {
+      setData: firebase.functions().httpsCallable("setData"),
+      isSaving: false,
+      savingText: ""
+    };
+  },
+  methods: {
+    saveData() {
+      this.savingText = "保存中...";
+      this.isSaving = true;
+      let data = {
+        nodeNum: this.dataInfo.nodeNum,
+        statusNum: this.dataInfo.statusNum,
+        tagNum: this.dataInfo.tagNum,
+        nodes: helpers.deep(this.nodes),
+        relations: helpers.deep(this.relations),
+        statuses: this.statuses,
+        tags: this.tags,
+        updated_at: Date(Date.now())
+      };
+      data.nodes.forEach(item => {
+        delete item.x;
+        delete item.y;
+        delete item.byTheDeadline;
+      });
+      data.relations.forEach(item => {
+        delete item.base.node;
+        delete item.target.node;
+      });
+      this.setData(data)
+        .then(response => {
+          console.log(response.data);
+        })
+        .then(() => {
+          this.savingText = "保存しました";
+          setTimeout(() => {
+            this.isSaving = false;
+          }, 3000);
+        });
+    }
+  },
+  watch: {},
   computed: {
-    ...mapState(["dataForm"]),
+    ...mapState(["dataInfo", "nodes", "relations", "statuses", "tags"]),
     isEditorOpen: {
       get() {
         return this.$store.state.isEditorOpen;
@@ -51,6 +94,12 @@ export default {
     &:hover {
       opacity: 0.8;
     }
+  }
+  &__info {
+    box-sizing: border-box;
+    height: 32px;
+    padding: 8px 8px 0;
+    font-size: 14px;
   }
 }
 </style>

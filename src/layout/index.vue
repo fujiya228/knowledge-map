@@ -1,28 +1,70 @@
 <template>
-  <div class="Layout">
+  <div class="Layout" @click.stop>
     <Sidebar />
     <div class="Layout__container" :class="{full: !sidebar.isOpen}">
       <Navigation />
       <AppMain />
     </div>
+    <Overlay v-if="isLoading" />
   </div>
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/functions";
 import { mapState } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
+import Overlay from "@/layout/parts/Overlay";
 
 export default {
   name: "Layout",
   components: {
     Navigation,
     Sidebar,
-    AppMain
+    AppMain,
+    Overlay
+  },
+  data() {
+    return {
+      getData: firebase.functions().httpsCallable("getData"),
+      isLoading: false
+    };
   },
   computed: {
-    ...mapState(["sidebar"])
+    ...mapState(["sidebar", "dataInfo", "detailsMenu"])
+  },
+  methods: {
+    initData(data) {
+      data.nodes.forEach(item => {
+        item.x = item.free.x;
+        item.y = item.free.y;
+      });
+      data.relations.forEach(item => {
+        item.base.node = data.nodes.find(x => x.id === item.base.id);
+        item.target.node = data.nodes.find(x => x.id === item.target.id);
+      });
+      this.dataInfo.nodeNum = data.nodeNum;
+      this.dataInfo.statusNum = data.statusNum;
+      this.dataInfo.tagNum = data.tagNum;
+      this.$store.state.nodes = data.nodes;
+      this.$store.state.relations = data.relations;
+      this.$store.state.statuses = data.statuses;
+      this.$store.state.tags = data.tags;
+      this.detailsMenu.node = null;
+    }
+  },
+  created() {
+    this.isLoading = true;
+    this.getData()
+      .then(result => {
+        console.log(result);
+        this.initData(result.data);
+      })
+      .then(() => {
+        this.isLoading = false;
+      });
   }
 };
 </script>
