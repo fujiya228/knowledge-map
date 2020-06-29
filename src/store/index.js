@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
+import { v4 as uuidv4 } from 'uuid';
 
 Vue.use(Vuex)
 
@@ -249,7 +250,7 @@ export default new Vuex.Store({
       // console.log(new Date(now*1000).toISOString())
       // console.log(deadline)
       // console.log(helpers.checkDeadline(deadline))
-      let id = "node_" + state.dataInfo.nodeNum++;
+      let id = uuidv4();
       state.nodes.push({
         id: id,
         archive: false,
