@@ -2,33 +2,12 @@
   <div class="Edit">
     <!-- 権限あるとき=>エディターを表示 -->
     <template v-if="detailsMenu.node">
-      <div id="toolbar">
-        <!-- Add a bold button -->
-        <button class="ql-bold">Bold</button>
-        <button class="ql-italic">Italic</button>
-        <!-- Add font size dropdown -->
-        <select class="ql-size">
-          <option value="small"></option>
-          <!-- Note a missing, thus falsy value, is used to reset to default -->
-          <option selected></option>
-          <option value="large"></option>
-          <option value="huge"></option>
-        </select>
-        <select class="ql-font">
-          <option selected="selected"></option>
-          <option value="serif"></option>
-          <option value="monospace"></option>
-        </select>
-        <!-- Add subscript and superscript buttons -->
-        <button class="ql-script" value="sub"></button>
-        <button class="ql-script" value="super"></button>
-        <!-- You can also add your own -->
-      </div>
+      <editor-toolbar />
       <quill-editor
         ref="MyQuillEditor"
         class="Edit__editor"
         v-model="detailsMenu.node.detail"
-        :options="editorOption"
+        :options="editorInfo.option"
         @blur="onEditorBlur($event)"
         @focus="onEditorFocus($event)"
         @ready="onEditorReady($event)"
@@ -46,20 +25,15 @@ import "quill/dist/quill.bubble.css";
 import { mapState } from "vuex";
 import { quillEditor } from "vue-quill-editor";
 
+import EditorToolbar from "@/components/atoms/EditorToolbar";
 export default {
   name: "Edit",
   components: {
-    quillEditor
+    quillEditor,
+    EditorToolbar
   },
   data() {
-    return {
-      editorOption: {
-        theme: "snow",
-        modules: {
-          toolbar: "#toolbar"
-        }
-      }
-    };
+    return {};
   },
   computed: {
     ...mapState(["detailsMenu", "editorInfo", "sidebar"])
@@ -106,7 +80,5 @@ export default {
       margin: 0 auto;
     }
   }
-}
-#toolbar {
 }
 </style>

@@ -15,7 +15,10 @@
       <div class="Actions__button" @click="delNode(detailsMenu.node)" v-tooltip="'削除'">
         <Icon icon="trash-alt" />
       </div>
-      <div class="Actions__title">Select:{{detailsMenu.node.title}}</div>
+      <div class="Actions__title">
+        Select:
+        <input type="text" v-model="detailsMenu.node.title" />
+      </div>
     </template>
     <div class="Actions__info" v-show="isSaving">{{savingText}}</div>
   </div>
@@ -124,6 +127,14 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    input {
+      display: inline;
+      line-height: 24px;
+      border-radius: 3px;
+      &:focus {
+        background: #eee;
+      }
+    }
   }
 }
 </style>

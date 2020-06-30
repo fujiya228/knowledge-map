@@ -52,11 +52,12 @@
         <h2 class="Editor__title">
           <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
         </h2>
+        <editor-toolbar />
         <quill-editor
           ref="MyQuillEditor"
           class="edit-area"
           v-model="detailsMenu.node.detail"
-          :options="editorOption"
+          :options="editorInfo.option"
           @blur="onEditorBlur($event)"
           @focus="onEditorFocus($event)"
           @ready="onEditorReady($event)"
@@ -75,6 +76,7 @@ import { quillEditor } from "vue-quill-editor";
 
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
+import EditorToolbar from "@/components/atoms/EditorToolbar";
 import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
@@ -86,14 +88,11 @@ export default {
     Node,
     ContextMenu,
     AddNodeForm,
-    quillEditor
+    quillEditor,
+    EditorToolbar
   },
   data() {
-    return {
-      editorOption: {
-        theme: "snow"
-      }
-    };
+    return {};
   },
   methods: {
     async selectRelaitonNode(v_base) {
