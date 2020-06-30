@@ -156,7 +156,7 @@ export default new Vuex.Store({
     },
     editorInfo: {
       isOpen: false,
-      isPage: false,
+      isEditPage: false,
     },
     sidebar: {
       isOpen: true

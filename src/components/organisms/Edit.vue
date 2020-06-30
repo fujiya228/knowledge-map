@@ -1,16 +1,39 @@
 <template>
   <div class="Edit">
     <!-- 権限あるとき=>エディターを表示 -->
-    <quill-editor
-      v-if="detailsMenu.node"
-      ref="MyQuillEditor"
-      class="Edit__editor"
-      v-model="detailsMenu.node.detail"
-      :options="editorOption"
-      @blur="onEditorBlur($event)"
-      @focus="onEditorFocus($event)"
-      @ready="onEditorReady($event)"
-    />
+    <template v-if="detailsMenu.node">
+      <div id="toolbar">
+        <!-- Add a bold button -->
+        <button class="ql-bold">Bold</button>
+        <button class="ql-italic">Italic</button>
+        <!-- Add font size dropdown -->
+        <select class="ql-size">
+          <option value="small"></option>
+          <!-- Note a missing, thus falsy value, is used to reset to default -->
+          <option selected></option>
+          <option value="large"></option>
+          <option value="huge"></option>
+        </select>
+        <select class="ql-font">
+          <option selected="selected"></option>
+          <option value="serif"></option>
+          <option value="monospace"></option>
+        </select>
+        <!-- Add subscript and superscript buttons -->
+        <button class="ql-script" value="sub"></button>
+        <button class="ql-script" value="super"></button>
+        <!-- You can also add your own -->
+      </div>
+      <quill-editor
+        ref="MyQuillEditor"
+        class="Edit__editor"
+        v-model="detailsMenu.node.detail"
+        :options="editorOption"
+        @blur="onEditorBlur($event)"
+        @focus="onEditorFocus($event)"
+        @ready="onEditorReady($event)"
+      ></quill-editor>
+    </template>
     <!-- 権限ないとき=>テキストのみ表示 -->
   </div>
 </template>
@@ -31,7 +54,10 @@ export default {
   data() {
     return {
       editorOption: {
-        theme: "snow"
+        theme: "snow",
+        modules: {
+          toolbar: "#toolbar"
+        }
       }
     };
   },
@@ -59,25 +85,28 @@ export default {
   },
   created() {
     console.log("created", this.$route.params.node_id);
+    this.editorInfo.isEditPage = true;
   }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "@/assets/variable.scss";
 .Edit {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   &__editor {
-    display: flex;
-    flex-direction: column;
-    max-width: 800px;
+    width: 100%;
     height: 100%;
-    padding: 0 100px;
-    margin: 0 auto;
-    div {
-      border: 0px;
+    overflow: auto;
+    .ql-container {
+      width: 80%;
+      margin: 0 auto;
     }
   }
+}
+#toolbar {
 }
 </style>

@@ -4,7 +4,12 @@
       <Icon icon="save" />
     </div>
     <template v-if="detailsMenu.node">
-      <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
+      <div
+        class="Actions__button"
+        v-if="!editorInfo.isEditPage"
+        @click="editorInfo.isOpen = true"
+        v-tooltip="'編集'"
+      >
         <Icon icon="edit" />
       </div>
       <div class="Actions__button" @click="delNode(detailsMenu.node)" v-tooltip="'削除'">
@@ -78,16 +83,9 @@ export default {
       "relations",
       "statuses",
       "tags",
-      "detailsMenu"
-    ]),
-    isEditorOpen: {
-      get() {
-        return this.$store.state.isEditorOpen;
-      },
-      set(val) {
-        this.$store.commit("set_isEditorOpen", val);
-      }
-    }
+      "detailsMenu",
+      "editorInfo"
+    ])
   }
 };
 </script>
