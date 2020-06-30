@@ -131,6 +131,9 @@ export default {
         const listener = resolve;
         // resolveがCBされることで同期完了？
         document.body.addEventListener("click", listener, { once: true });
+        document
+          .getElementById("FreeGraph")
+          .addEventListener("click", listener, { once: true });
         for (let target of DOMnodes) {
           target.addEventListener("click", listener, { once: true });
           target.classList.add("relation-target");
@@ -290,7 +293,7 @@ export default {
       }
     },
     editor() {
-      return this.detailsMenu.node
+      return this.detailsMenu.node && this.isEditorOpen
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
     }
@@ -308,7 +311,9 @@ export default {
   mounted() {
     // console.log('mounted')
     this.graphArea();
-    console.log("this is current quill instance object", this.editor);
+    this.$nextTick(() => {
+      console.log("this is current quill instance object", this.editor);
+    });
   },
   created() {
     // console.log("created");
