@@ -12,7 +12,6 @@ export default new Vuex.Store({
     height: 0,
     maxR: 0,
     isMakingRelation: false,
-    isEditorOpen: false,
     statuses: [
       {
         id: 0,
@@ -155,6 +154,10 @@ export default new Vuex.Store({
       node: null,
       relations: [],
     },
+    editorInfo: {
+      isOpen: false,
+      isPage: false,
+    },
     sidebar: {
       isOpen: true
     },
@@ -172,7 +175,6 @@ export default new Vuex.Store({
   mutations: {
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
-    set_isEditorOpen: (state, val) => (state.isEditorOpen = val),
     closeContextMenu(state) {
       state.contextMenu.isOpen = false;
       state.contextMenu.node = null;

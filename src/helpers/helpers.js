@@ -68,6 +68,8 @@ const searchNode = function (id) {
   for (let i = 0; i < length; i++) {
     if (state.nodes[i].id === id) return state.nodes[i]
   }
+  console.log('searchNode => not found')
+  return false
   // return this.nodes.find(item => item.id === id)
   /**
    * パフォーマンスと可読性の問題になってくるのだろうか？

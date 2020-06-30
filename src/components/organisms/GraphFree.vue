@@ -1,7 +1,7 @@
 <template>
   <div
     id="FreeGraph"
-    :class="{open: isDetailsOpen && !isEditorOpen}"
+    :class="{open: isDetailsOpen && !editorInfo.isOpen}"
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : null"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : null"
   >
@@ -35,7 +35,7 @@
       @mouseup.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
       @click.ctrl.exact.stop.native="selectRelaitonNode(node)"
-      @dblclick.stop.native="isEditorOpen = true"
+      @dblclick.stop.native="editorInfo.isOpen = true"
     />
     <AddNodeForm
       class="Add-node-form"
@@ -47,7 +47,7 @@
       @addFunction="addNode()"
     />
     <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
-    <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
+    <div class="Editor" v-if="detailsMenu.node && editorInfo.isOpen" @click.self="closeEditor()">
       <div class="Editor__wrapper">
         <h2 class="Editor__title">
           <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
@@ -256,7 +256,7 @@ export default {
     },
     closeEditor() {
       console.log("closeEditor");
-      this.$store.commit("set_isEditorOpen", false);
+      this.editorInfo.isOpen = false;
     }
   },
   computed: {
@@ -269,7 +269,7 @@ export default {
       "addNodeForm",
       "contextMenu",
       "detailsMenu",
-      "isEditorOpen",
+      "editorInfo",
       "sidebar"
     ]),
     ...mapGetters(["isDetailsOpen"]),
@@ -284,16 +284,8 @@ export default {
         this.$store.commit("set_isMakingRelation", val);
       }
     },
-    isEditorOpen: {
-      get() {
-        return this.$store.state.isEditorOpen;
-      },
-      set(val) {
-        this.$store.commit("set_isEditorOpen", val);
-      }
-    },
     editor() {
-      return this.detailsMenu.node && this.isEditorOpen
+      return this.detailsMenu.node && this.editorInfo.isOpen
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
     }
