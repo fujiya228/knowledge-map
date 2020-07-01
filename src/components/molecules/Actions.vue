@@ -1,5 +1,13 @@
 <template>
   <div class="Actions">
+    <div class="Actions__pages">
+      <div class="Actions__pages__current">{{curtPageName}}</div>
+      <div class="Actions__pages__container">
+        <div class="Actions__pages__item" v-for="page in pagesFilter" :key="page.path">
+          <router-link :to="page.path">{{page.name}}</router-link>
+        </div>
+      </div>
+    </div>
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
       <Icon icon="save" />
     </div>
@@ -39,7 +47,17 @@ export default {
     return {
       setData: firebase.functions().httpsCallable("setData"),
       isSaving: false,
-      savingText: ""
+      savingText: "",
+      pages: [
+        {
+          name: "free graph",
+          path: "/graph-free"
+        },
+        {
+          name: "設定",
+          path: "/settings"
+        }
+      ]
     };
   },
   methods: {
@@ -88,7 +106,14 @@ export default {
       "tags",
       "detailsMenu",
       "editorInfo"
-    ])
+    ]),
+    curtPageName() {
+      let page = this.pages.find(item => item.path === this.$route.path);
+      return page ? page.name : "Edit";
+    },
+    pagesFilter() {
+      return this.pages.filter(item => item.path !== this.$route.path);
+    }
   }
 };
 </script>
@@ -100,6 +125,40 @@ export default {
   height: 32px;
   display: flex;
   flex-wrap: wrap;
+  z-index: 40;
+  &__pages {
+    width: 100px;
+    height: 24px;
+    line-height: 24px;
+    margin: 4px;
+    background: #eee;
+    border-radius: 3px;
+    text-align: center;
+    &:hover {
+      border-radius: 3px 3px 0 0;
+      > .Actions__pages__container {
+        display: block;
+      }
+    }
+    &__current {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 8px;
+    }
+    &__container {
+      display: none;
+      background: #eee;
+      width: 100px;
+    }
+    &__item a {
+      text-decoration: none;
+      color: black;
+      font-size: 14px;
+      &:hover {
+        color: $color-link;
+      }
+    }
+  }
   &__button {
     width: 24px;
     margin: 4px;

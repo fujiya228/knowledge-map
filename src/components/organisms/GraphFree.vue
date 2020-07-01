@@ -34,7 +34,7 @@
       @pointerdown.left.native="onGhost(node)"
       @mouseup.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
-      @click.ctrl.exact.stop.native="selectRelaitonNode(node)"
+      @click.shift.exact.stop.native="selectRelaitonNode(node)"
       @dblclick.stop.native="editorInfo.isOpen = true"
     />
     <AddNodeForm
@@ -309,6 +309,8 @@ export default {
   created() {
     // console.log("created");
     this.initFreeNode();
+    this.editorInfo.isEditPage = false;
+    console.log(this.$route.path);
   },
   destroyed() {}
 };
