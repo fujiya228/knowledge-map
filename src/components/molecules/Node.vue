@@ -48,6 +48,7 @@ export default {
   font-weight: bold;
   user-select: none;
   transition: 0.25s ease-in-out;
+  white-space: nowrap;
   cursor: move;
   &.drag,
   &.selected {
