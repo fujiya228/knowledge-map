@@ -11,13 +11,13 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
   faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
-  faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt
+  faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
   faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
-  faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt
+  faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch
 )
 Vue.component('fa-icon', FontAwesomeIcon)
 Vue.use(VTooltip)

@@ -178,6 +178,9 @@ export default new Vuex.Store({
         // 各Move系がスタートしたときにisOpen = false にすればええ？
       );
     },
+    sidebar_width(state) {
+      return state.sidebar.isOpen ? 256 : 0;
+    },
   },
   mutations: {
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
