@@ -28,6 +28,13 @@ $navigation-height: 48px;
   font-size: 32px;
   animation: spin 1s linear infinite;
 }
+
+@mixin ellipse {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 // animation
 @keyframes spin {
   0% {

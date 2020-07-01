@@ -310,7 +310,6 @@ export default {
     // console.log("created");
     this.initFreeNode();
     this.editorInfo.isEditPage = false;
-    console.log(this.$route.path);
   },
   destroyed() {}
 };

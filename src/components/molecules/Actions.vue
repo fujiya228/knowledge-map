@@ -6,6 +6,9 @@
         <div class="Actions__pages__item" v-for="page in pagesFilter" :key="page.path">
           <router-link :to="page.path">{{page.name}}</router-link>
         </div>
+        <div class="Actions__pages__item" v-if="isEditLinkActive">
+          <router-link :to="detailsMenu.node.id">Edit {{detailsMenu.node.title}}</router-link>
+        </div>
       </div>
     </div>
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
@@ -52,10 +55,6 @@ export default {
         {
           name: "free graph",
           path: "/graph-free"
-        },
-        {
-          name: "設定",
-          path: "/settings"
         }
       ]
     };
@@ -109,10 +108,17 @@ export default {
     ]),
     curtPageName() {
       let page = this.pages.find(item => item.path === this.$route.path);
-      return page ? page.name : "Edit";
+      return page ? page.name : "editor";
     },
     pagesFilter() {
       return this.pages.filter(item => item.path !== this.$route.path);
+    },
+    isEditLinkActive() {
+      // 選択済みで編集ページのidと被っていなかったら
+      return (
+        this.detailsMenu.node &&
+        "/" + this.detailsMenu.node.id !== this.$route.path
+      );
     }
   }
 };
@@ -150,12 +156,16 @@ export default {
       background: #eee;
       width: 100px;
     }
-    &__item a {
-      text-decoration: none;
-      color: black;
-      font-size: 14px;
-      &:hover {
-        color: $color-link;
+    &__item {
+      a {
+        display: block;
+        text-decoration: none;
+        color: black;
+        font-size: 14px;
+        &:hover {
+          color: $color-link;
+          background: #ccc;
+        }
       }
     }
   }
