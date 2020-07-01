@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
+import { v4 as uuidv4 } from 'uuid';
 
 Vue.use(Vuex)
 
@@ -11,7 +12,6 @@ export default new Vuex.Store({
     height: 0,
     maxR: 0,
     isMakingRelation: false,
-    isEditorOpen: false,
     statuses: [
       {
         id: 0,
@@ -154,6 +154,17 @@ export default new Vuex.Store({
       node: null,
       relations: [],
     },
+    editorInfo: {
+      isOpen: false,
+      isEditPage: false,
+      option: {
+        theme: "snow",
+        placeholder: "入力する",
+        modules: {
+          toolbar: "#toolbar"
+        }
+      }
+    },
     sidebar: {
       isOpen: true
     },
@@ -171,7 +182,6 @@ export default new Vuex.Store({
   mutations: {
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
-    set_isEditorOpen: (state, val) => (state.isEditorOpen = val),
     closeContextMenu(state) {
       state.contextMenu.isOpen = false;
       state.contextMenu.node = null;
@@ -249,7 +259,7 @@ export default new Vuex.Store({
       // console.log(new Date(now*1000).toISOString())
       // console.log(deadline)
       // console.log(helpers.checkDeadline(deadline))
-      let id = "node_" + state.dataInfo.nodeNum++;
+      let id = uuidv4();
       state.nodes.push({
         id: id,
         archive: false,

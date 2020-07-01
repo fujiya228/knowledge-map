@@ -1,7 +1,7 @@
 <template>
   <div
     id="FreeGraph"
-    :class="{open: isDetailsOpen && !isEditorOpen}"
+    :class="{open: isDetailsOpen && !editorInfo.isOpen}"
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : null"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : null"
   >
@@ -34,8 +34,8 @@
       @pointerdown.left.native="onGhost(node)"
       @mouseup.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
-      @click.ctrl.exact.stop.native="selectRelaitonNode(node)"
-      @dblclick.stop.native="isEditorOpen = true"
+      @click.shift.exact.stop.native="selectRelaitonNode(node)"
+      @dblclick.stop.native="editorInfo.isOpen = true"
     />
     <AddNodeForm
       class="Add-node-form"
@@ -47,16 +47,17 @@
       @addFunction="addNode()"
     />
     <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
-    <div class="Editor" v-if="detailsMenu.node && isEditorOpen" @click.self="closeEditor()">
+    <div class="Editor" v-if="detailsMenu.node && editorInfo.isOpen" @click.self="closeEditor()">
       <div class="Editor__wrapper">
         <h2 class="Editor__title">
           <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
         </h2>
+        <editor-toolbar />
         <quill-editor
           ref="MyQuillEditor"
           class="edit-area"
           v-model="detailsMenu.node.detail"
-          :options="editorOption"
+          :options="editorInfo.option"
           @blur="onEditorBlur($event)"
           @focus="onEditorFocus($event)"
           @ready="onEditorReady($event)"
@@ -75,6 +76,7 @@ import { quillEditor } from "vue-quill-editor";
 
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
+import EditorToolbar from "@/components/atoms/EditorToolbar";
 import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
@@ -86,14 +88,11 @@ export default {
     Node,
     ContextMenu,
     AddNodeForm,
-    quillEditor
+    quillEditor,
+    EditorToolbar
   },
   data() {
-    return {
-      editorOption: {
-        theme: "snow"
-      }
-    };
+    return {};
   },
   methods: {
     async selectRelaitonNode(v_base) {
@@ -131,6 +130,9 @@ export default {
         const listener = resolve;
         // resolveがCBされることで同期完了？
         document.body.addEventListener("click", listener, { once: true });
+        document
+          .getElementById("FreeGraph")
+          .addEventListener("click", listener, { once: true });
         for (let target of DOMnodes) {
           target.addEventListener("click", listener, { once: true });
           target.classList.add("relation-target");
@@ -253,7 +255,7 @@ export default {
     },
     closeEditor() {
       console.log("closeEditor");
-      this.$store.commit("set_isEditorOpen", false);
+      this.editorInfo.isOpen = false;
     }
   },
   computed: {
@@ -266,7 +268,7 @@ export default {
       "addNodeForm",
       "contextMenu",
       "detailsMenu",
-      "isEditorOpen",
+      "editorInfo",
       "sidebar"
     ]),
     ...mapGetters(["isDetailsOpen"]),
@@ -281,16 +283,8 @@ export default {
         this.$store.commit("set_isMakingRelation", val);
       }
     },
-    isEditorOpen: {
-      get() {
-        return this.$store.state.isEditorOpen;
-      },
-      set(val) {
-        this.$store.commit("set_isEditorOpen", val);
-      }
-    },
     editor() {
-      return this.detailsMenu.node
+      return this.detailsMenu.node && this.editorInfo.isOpen
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
     }
@@ -308,11 +302,15 @@ export default {
   mounted() {
     // console.log('mounted')
     this.graphArea();
-    console.log("this is current quill instance object", this.editor);
+    this.$nextTick(() => {
+      console.log("this is current quill instance object", this.editor);
+    });
   },
   created() {
     // console.log("created");
     this.initFreeNode();
+    this.editorInfo.isEditPage = false;
+    console.log(this.$route.path);
   },
   destroyed() {}
 };

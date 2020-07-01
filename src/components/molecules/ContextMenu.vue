@@ -8,7 +8,7 @@
     >
       <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
       <div class="Context-menu__item" @click.stop="makeRelation()">結ぶ</div>
-      <div class="Context-menu__item">編集ページ</div>
+      <div class="Context-menu__item" @click.stop="goEditPage()">編集ページ</div>
     </div>
   </div>
 </template>
@@ -23,6 +23,10 @@ export default {
   methods: {
     makeRelation() {
       this.$emit("makeRelation");
+    },
+    goEditPage() {
+      this.$router.push("/" + this.contextMenu.node.id);
+      this.closeContextMenu();
     },
     ...mapMutations(["closeContextMenu"]),
     ...mapActions(["delNode"])

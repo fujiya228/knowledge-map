@@ -1,16 +1,32 @@
 <template>
   <div class="Actions">
+    <div class="Actions__pages">
+      <div class="Actions__pages__current">{{curtPageName}}</div>
+      <div class="Actions__pages__container">
+        <div class="Actions__pages__item" v-for="page in pagesFilter" :key="page.path">
+          <router-link :to="page.path">{{page.name}}</router-link>
+        </div>
+      </div>
+    </div>
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
       <Icon icon="save" />
     </div>
     <template v-if="detailsMenu.node">
-      <div class="Actions__button" @click="isEditorOpen = true" v-tooltip="'編集'">
+      <div
+        class="Actions__button"
+        v-if="!editorInfo.isEditPage"
+        @click="editorInfo.isOpen = true"
+        v-tooltip="'編集'"
+      >
         <Icon icon="edit" />
       </div>
       <div class="Actions__button" @click="delNode(detailsMenu.node)" v-tooltip="'削除'">
         <Icon icon="trash-alt" />
       </div>
-      <div class="Actions__title">Select:{{detailsMenu.node.title}}</div>
+      <div class="Actions__title">
+        Select:
+        <input type="text" v-model="detailsMenu.node.title" />
+      </div>
     </template>
     <div class="Actions__info" v-show="isSaving">{{savingText}}</div>
   </div>
@@ -31,7 +47,17 @@ export default {
     return {
       setData: firebase.functions().httpsCallable("setData"),
       isSaving: false,
-      savingText: ""
+      savingText: "",
+      pages: [
+        {
+          name: "free graph",
+          path: "/graph-free"
+        },
+        {
+          name: "設定",
+          path: "/settings"
+        }
+      ]
     };
   },
   methods: {
@@ -78,15 +104,15 @@ export default {
       "relations",
       "statuses",
       "tags",
-      "detailsMenu"
+      "detailsMenu",
+      "editorInfo"
     ]),
-    isEditorOpen: {
-      get() {
-        return this.$store.state.isEditorOpen;
-      },
-      set(val) {
-        this.$store.commit("set_isEditorOpen", val);
-      }
+    curtPageName() {
+      let page = this.pages.find(item => item.path === this.$route.path);
+      return page ? page.name : "Edit";
+    },
+    pagesFilter() {
+      return this.pages.filter(item => item.path !== this.$route.path);
     }
   }
 };
@@ -99,6 +125,40 @@ export default {
   height: 32px;
   display: flex;
   flex-wrap: wrap;
+  z-index: 40;
+  &__pages {
+    width: 100px;
+    height: 24px;
+    line-height: 24px;
+    margin: 4px;
+    background: #eee;
+    border-radius: 3px;
+    text-align: center;
+    &:hover {
+      border-radius: 3px 3px 0 0;
+      > .Actions__pages__container {
+        display: block;
+      }
+    }
+    &__current {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 8px;
+    }
+    &__container {
+      display: none;
+      background: #eee;
+      width: 100px;
+    }
+    &__item a {
+      text-decoration: none;
+      color: black;
+      font-size: 14px;
+      &:hover {
+        color: $color-link;
+      }
+    }
+  }
   &__button {
     width: 24px;
     margin: 4px;
@@ -126,6 +186,14 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    input {
+      display: inline;
+      line-height: 24px;
+      border-radius: 3px;
+      &:focus {
+        background: #eee;
+      }
+    }
   }
 }
 </style>

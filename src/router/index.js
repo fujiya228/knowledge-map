@@ -4,6 +4,7 @@ import Home from '@/pages/Home.vue'
 import About from '@/pages/About.vue'
 import Auth from '@/pages/Auth.vue'
 import GraphFree from "@/components/organisms/GraphFree";
+import Edit from "@/components/organisms/Edit";
 import Layout from "@/layout";
 import store from "@/store"
 
@@ -25,6 +26,18 @@ const routes = [
         path: 'graph-free',
         component: GraphFree,
         name: 'GraphFree'
+      }
+    ]
+  },
+  {
+    path: '/:node_id([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})',
+    component: Layout,
+    meta: { requireAuth: true },
+    children: [
+      {
+        path: '',
+        component: Edit,
+        name: 'Edit'
       }
     ]
   },

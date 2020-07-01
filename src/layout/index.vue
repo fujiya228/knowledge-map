@@ -18,6 +18,7 @@ import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
 import Overlay from "@/layout/parts/Overlay";
 
+import helpers from "@/helpers/helpers";
 export default {
   name: "Layout",
   components: {
@@ -61,6 +62,13 @@ export default {
       .then(result => {
         console.log(result);
         this.initData(result.data);
+        if (this.$route.params.node_id) {
+          console.log("search now", this.$route.params.node_id);
+          this.$store.dispatch(
+            "selectNode",
+            helpers.searchNode(this.$route.params.node_id)
+          );
+        }
       })
       .then(() => {
         this.isLoading = false;
