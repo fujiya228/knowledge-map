@@ -3,6 +3,9 @@
     display: flex;
     justify-content: flex-end;
     width: 100%;
+    .Button{
+      margin-left: 8px;
+    }
 }
 .Textarea {
   display: block;
