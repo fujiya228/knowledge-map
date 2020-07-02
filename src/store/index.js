@@ -168,7 +168,6 @@ export default new Vuex.Store({
     sidebar: {
       isOpen: true
     },
-
   },
   getters: {
     isDetailsOpen(state) {
@@ -185,6 +184,168 @@ export default new Vuex.Store({
   mutations: {
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
+    reset_data: (state) => {
+      state.width = 0
+      state.height = 0
+      state.maxR = 0
+      state.isMakingRelation = false
+      state.statuses = [
+        {
+          id: 0,
+          title: "status_1",
+          color: "#FFE082",
+          listForm: {
+            isOpen: false,
+          },
+        },
+        {
+          id: 1,
+          title: "status_2",
+          color: "#B0BEC5",
+          listForm: {
+            isOpen: false,
+          },
+        },
+        {
+          id: 2,
+          title: "status_3",
+          color: "#A5D6A7",
+          listForm: {
+            isOpen: false,
+          },
+        },
+        {
+          id: 3,
+          title: "status_4",
+          color: "#81D4FA",
+          listForm: {
+            isOpen: false,
+          },
+        },
+      ]
+      state.tags = [
+        {
+          id: 0,
+          title: "",
+          color: "#E91E63",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 1,
+          title: "",
+          color: "#FF5722",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 2,
+          title: "",
+          color: "#FFC107",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 3,
+          title: "",
+          color: "#CDDC39",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 4,
+          title: "",
+          color: "#4CAF50",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 5,
+          title: "",
+          color: "#00BCD4",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 6,
+          title: "",
+          color: "#2196F3",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 7,
+          title: "",
+          color: "#673AB7",
+          description: "",
+          isActive: false,
+        },
+        {
+          id: 8,
+          title: "",
+          color: "#607D8B",
+          description: "",
+          isActive: false,
+        },
+      ]
+      state.nodes = []
+      state.relations = []
+      state.moveNodeInfo = {
+        isOn: false,
+        id: -1,
+        Lv: 0,
+        beforeLv: -1, // nodeMove前のレベル数、つまりはレベル上げ判定の基準
+        status: -1,
+        target: null,
+        x: 0,
+        y: 0,
+      }
+      state.dataInfo = {
+        nodeNum: 0,
+        statusNum: 4,
+        tagNum: 9,
+      }
+      state.addNodeForm = {
+        isFree: false,
+        isCircle: false,
+        isTree: false,
+        isCard: false,
+        isRelation: false,
+        status: 0,
+        x: 0,
+        y: 0,
+        title: "",
+        level: 0,
+        pie: 0,
+      }
+      state.contextMenu = {
+        isOpen: false,
+        x: 0,
+        y: 0,
+        node: null,
+      }
+      state.detailsMenu = {
+        isOpen: false,
+        isTagForm: false, // 編集中確認用
+        nodeId: null,
+        node: null,
+        relations: [],
+      }
+      state.editorInfo = {
+        isOpen: false,
+        isEditPage: false,
+        option: {
+          theme: "snow",
+          placeholder: "入力する",
+          modules: {
+            toolbar: "#toolbar"
+          }
+        }
+      }
+      state.sidebar = {
+        isOpen: true
+      }
+    },
     closeContextMenu(state) {
       state.contextMenu.isOpen = false;
       state.contextMenu.node = null;
