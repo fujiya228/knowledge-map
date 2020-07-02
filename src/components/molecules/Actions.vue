@@ -163,6 +163,8 @@ export default {
         text-decoration: none;
         color: black;
         font-size: 14px;
+        padding: 0 8px;
+        @include ellipse;
         &:hover {
           color: $color-link;
           background: #ccc;
