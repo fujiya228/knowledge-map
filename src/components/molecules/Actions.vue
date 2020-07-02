@@ -82,16 +82,17 @@ export default {
         delete item.base.node;
         delete item.target.node;
       });
-      this.setData(data)
-        .then(response => {
-          console.log(response.data);
-        })
-        .then(() => {
+      this.setData(data).then(response => {
+        console.log(response.data);
+        if (response.data.response) {
           this.savingText = "保存しました";
-          setTimeout(() => {
-            this.isSaving = false;
-          }, 3000);
-        });
+        } else {
+          this.savingText = "保存に失敗しました";
+        }
+        setTimeout(() => {
+          this.isSaving = false;
+        }, 3000);
+      });
     },
     ...mapActions(["delNode"])
   },
