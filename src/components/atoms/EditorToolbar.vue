@@ -15,7 +15,6 @@
     <button class="ql-direction" value="rtl"></button>
     <button class="ql-clean"></button>
     <button class="ql-link"></button>
-    <button class="ql-image"></button>
     <button class="ql-video"></button>
     <select class="ql-header">
       <option value="1">h1</option>
