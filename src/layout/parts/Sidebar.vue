@@ -15,6 +15,7 @@
         class="Sidebar__node Sidebar__item"
         v-for="node in nodeFilter"
         :key="node.id"
+        :class="{selected: node == detailsMenu.node}"
         @click="goToNode(node)"
       >{{node.title}}</div>
     </div>
@@ -61,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["width", "height", "nodes", "sidebar"]),
+    ...mapState(["width", "height", "nodes", "detailsMenu", "sidebar"]),
     ...mapState({
       user: state => state.auth.user
     }),
@@ -137,6 +138,9 @@ export default {
     cursor: pointer;
     &:hover {
       background: #ccc;
+    }
+    &.selected {
+      background: $color-main-l;
     }
   }
 }
