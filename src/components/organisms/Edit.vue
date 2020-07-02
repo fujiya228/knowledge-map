@@ -26,6 +26,7 @@ import { mapState } from "vuex";
 import { quillEditor } from "vue-quill-editor";
 
 import EditorToolbar from "@/components/atoms/EditorToolbar";
+import helpers from "@/helpers/helpers.js";
 export default {
   name: "Edit",
   components: {
@@ -58,8 +59,10 @@ export default {
     }
   },
   created() {
-    console.log("created", this.$route.params.node_id);
+    let id = this.$route.params.node_id;
+    console.log("created", id);
     this.editorInfo.isEditPage = true;
+    this.$store.dispatch("selectNode", helpers.searchNode(id));
   }
 };
 </script>

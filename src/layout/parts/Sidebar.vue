@@ -45,10 +45,10 @@ export default {
       this.sidebar.isOpen = false;
     },
     goToNode(node) {
-      this.$store.dispatch("selectNode", node);
-      console.log(this.$route.name);
+      // console.log(this.$route.name);
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
+        this.$store.dispatch("selectNode", node);
         let FreeGraph = document.getElementById("FreeGraph");
         let area_width = this.width - this.$store.getters["sidebar_width"];
         FreeGraph.scrollLeft = node.x - area_width / 2;
