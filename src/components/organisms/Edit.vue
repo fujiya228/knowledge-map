@@ -30,7 +30,9 @@ export default {
     let id = this.$route.params.node_id;
     console.log("created", id);
     this.editorInfo.isEditPage = true;
-    this.$store.dispatch("selectNode", helpers.searchNode(id));
+    let node = helpers.searchNode(id);
+    if (node) this.$store.dispatch("selectNode", node);
+    else this.$router.push("/404");
   }
 };
 </script>
