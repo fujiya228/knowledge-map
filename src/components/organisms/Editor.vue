@@ -134,7 +134,7 @@ export default {
       this.content = this.detailsMenu.node.detail;
     },
     onEditorChange({ html }) {
-      console.log("editor change!", html);
+      // console.log("editor change!", html);
       this.content = html;
     }
   },
