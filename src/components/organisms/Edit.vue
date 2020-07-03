@@ -23,16 +23,22 @@ export default {
     return {};
   },
   computed: {
-    ...mapState(["detailsMenu", "editorInfo", "sidebar"])
+    ...mapState(["nodes", "detailsMenu", "editorInfo", "sidebar"])
   },
   methods: {},
   created() {
     let id = this.$route.params.node_id;
-    console.log("created", id);
+    console.log("Edit.vue created", id);
     this.editorInfo.isEditPage = true;
-    let node = helpers.searchNode(id);
-    if (node) this.$store.dispatch("selectNode", node);
-    else this.$router.push("/404");
+    // index.vueのinitの方が遅いので読み込まれていない時は行わない
+    // index.vueの方で、selectNodeやっているので問題ない
+    // index.vueはEdit.vueからのページ遷移ではインスタンスが保持される
+    // が、Editは毎回破棄されて作り直しするのでそこの注意が必要
+    if (this.nodes.length) {
+      let node = helpers.searchNode(id);
+      if (node) this.$store.dispatch("selectNode", node);
+      else this.$router.push("/404");
+    }
   }
 };
 </script>

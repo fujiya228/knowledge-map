@@ -54,6 +54,7 @@ export default {
       this.$store.state.statuses = data.statuses;
       this.$store.state.tags = data.tags;
       this.detailsMenu.node = null;
+      console.log("init fin");
     }
   },
   created() {
@@ -64,10 +65,10 @@ export default {
         this.initData(result.data);
         if (this.$route.params.node_id) {
           console.log("search now", this.$route.params.node_id);
-          this.$store.dispatch(
-            "selectNode",
-            helpers.searchNode(this.$route.params.node_id)
-          );
+          let node = helpers.searchNode(this.$route.params.node_id);
+          console.log(node);
+          if (node) this.$store.dispatch("selectNode", node);
+          else this.$router.push("/404");
         }
       })
       .then(() => {
