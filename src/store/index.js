@@ -157,6 +157,7 @@ export default new Vuex.Store({
     editorInfo: {
       isOpen: false,
       isEditPage: false,
+      ref: null,
       option: {
         theme: "snow",
         placeholder: "入力する",

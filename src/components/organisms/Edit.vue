@@ -2,36 +2,22 @@
   <div class="Edit">
     <!-- 権限あるとき=>エディターを表示 -->
     <template v-if="detailsMenu.node">
-      <editor-toolbar />
-      <quill-editor
-        ref="MyQuillEditor"
-        class="Edit__editor"
-        v-model="detailsMenu.node.detail"
-        :options="editorInfo.option"
-        @blur="onEditorBlur($event)"
-        @focus="onEditorFocus($event)"
-        @ready="onEditorReady($event)"
-      ></quill-editor>
+      <editor editorClass="Edit__editor" />
     </template>
     <!-- 権限ないとき=>テキストのみ表示 -->
   </div>
 </template>
 
 <script>
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-
 import { mapState } from "vuex";
-import { quillEditor } from "vue-quill-editor";
 
-import EditorToolbar from "@/components/atoms/EditorToolbar";
 import helpers from "@/helpers/helpers.js";
+import Editor from "@/components/organisms/Editor";
+
 export default {
   name: "Edit",
   components: {
-    quillEditor,
-    EditorToolbar
+    Editor
   },
   data() {
     return {};
@@ -39,25 +25,7 @@ export default {
   computed: {
     ...mapState(["detailsMenu", "editorInfo", "sidebar"])
   },
-  methods: {
-    onEditorBlur(quill) {
-      console.log("editor blur!", quill);
-    },
-    onEditorFocus(quill) {
-      console.log("editor focus!", quill);
-    },
-    onEditorReady(quill) {
-      console.log("editor ready!", quill);
-    },
-    onEditorChange({ quill, html, text }) {
-      console.log("editor change!", quill, html, text);
-      this.content = html;
-    },
-    closeEditor() {
-      console.log("closeEditor");
-      this.editorInfo.isOpen = false;
-    }
-  },
+  methods: {},
   created() {
     let id = this.$route.params.node_id;
     console.log("created", id);
@@ -75,13 +43,8 @@ export default {
   display: flex;
   flex-direction: column;
   &__editor {
-    width: 100%;
     height: 100%;
     overflow: auto;
-    .ql-container {
-      width: 80%;
-      margin: 0 auto;
-    }
   }
 }
 </style>
