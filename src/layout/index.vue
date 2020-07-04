@@ -83,7 +83,7 @@ export default {
       });
   },
   destroyed() {
-    console.log("destroyed");
+    // console.log("destroyed");
     window.removeEventListener("resize", this.graphArea);
   }
 };

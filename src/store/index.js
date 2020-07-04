@@ -452,7 +452,7 @@ export default new Vuex.Store({
       dispatch("selectNode", state.nodes[state.nodes.length - 1]);
       commit("closeAddNodeForm");
       setTimeout(() => {
-        console.log(document.getElementById(id).clientWidth)
+        // console.log(document.getElementById(id).clientWidth)
         state.nodes[state.nodes.length - 1].width_2 = document.getElementById(id).clientWidth / 2;
       }, 100);
       // setTimeout(() => {

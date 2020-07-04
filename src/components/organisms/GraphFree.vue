@@ -2,10 +2,14 @@
   <div
     id="FreeGraph"
     :class="{open: isDetailsOpen && !editorInfo.isOpen}"
-    @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : null"
-    @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : null"
+    @touchstart="onGraphMove($event)"
+    @touchend="endGraphMove()"
+    @pointerdown.left="onGraphMove($event)"
+    @mouseup="endGraphMove()"
+    @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
+    @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
   >
-    <svg class="Free__area" @click="openAddNodeForm($event)">
+    <svg class="Free__area" :class="{moving: isGraphMove}" @click="openAddNodeForm($event)">
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
       <path
@@ -26,9 +30,9 @@
       :key="node.id"
       :node="node"
       :style="{
-    left: node.x - node.width_2 + 'px',
-    top: node.y - 32 + 'px',
-    }"
+        left: node.x - node.width_2 + 'px',
+        top: node.y - 32 + 'px',
+      }"
       @touchstart.native="onGhost(node)"
       @touchend.native="endGhost()"
       @pointerdown.left.native="onGhost(node)"
@@ -81,7 +85,12 @@ export default {
     Editor
   },
   data() {
-    return {};
+    return {
+      isGraphMove: false,
+      canOpenAddNodeForm: true,
+      pointerX: 0,
+      pointerY: 0
+    };
   },
   methods: {
     async selectRelaitonNode(v_base) {
@@ -162,6 +171,30 @@ export default {
       this.moveNodeInfo.id = -1;
       this.moveNodeInfo.isOn = false;
     },
+    moveGraph(event) {
+      if (!this.isGraphMove) return;
+      this.canOpenAddNodeForm = false;
+      let e = event.type === "touchmove" ? event.changedTouches[0] : event;
+      let FreeGraph = document.getElementById("FreeGraph");
+      let x = e.pageX;
+      let y = e.pageY;
+      FreeGraph.scrollLeft += this.pointerX - x;
+      FreeGraph.scrollTop += this.pointerY - y;
+      this.pointerX = x;
+      this.pointerY = y;
+    },
+    onGraphMove(event) {
+      this.canOpenAddNodeForm = true;
+      if (this.isGraphMove) return;
+      this.isGraphMove = true;
+      let e = event.type === "touchmove" ? event.changedTouches[0] : event;
+      this.pointerX = e.pageX;
+      this.pointerY = e.pageY;
+    },
+    endGraphMove() {
+      if (!this.isGraphMove) return;
+      this.isGraphMove = false;
+    },
     graphPath(line) {
       return (
         "M" +
@@ -195,6 +228,7 @@ export default {
     },
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
+      if (!this.canOpenAddNodeForm) return;
       let FreeGraph = document.getElementById("FreeGraph");
       let x = event.pageX - this.sidebar_width;
       let y = event.pageY - 48;
@@ -314,6 +348,9 @@ export default {
   height: 3000px;
   // background: $color-main-l;
   cursor: pointer;
+  &.moving {
+    cursor: move;
+  }
 }
 .Circle {
   &__center {
