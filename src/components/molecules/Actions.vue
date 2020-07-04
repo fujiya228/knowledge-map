@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
+    <div class="Actions__button" @click="saveData()" v-tooltip="'保存 (Ctrl + S)'">
       <Icon icon="save" />
     </div>
     <template v-if="detailsMenu.node">
