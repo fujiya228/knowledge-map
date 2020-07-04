@@ -121,6 +121,14 @@ export default {
         "/" + this.detailsMenu.node.id !== this.$route.path
       );
     }
+  },
+  created() {
+    document.addEventListener("keydown", e => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        this.saveData();
+      }
+    });
   }
 };
 </script>
