@@ -109,7 +109,7 @@
         <div class="Editor__popup__list" v-if="isMakeRelation">
           <div
             class="Editor__popup__item"
-            v-for="node in detailsMenu.unrelated"
+            v-for="node in unrelatedFilter"
             :key="node.id"
             @click="makeRel(node)"
           >{{node.title}}</div>
@@ -213,6 +213,11 @@ export default {
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
+    },
+    unrelatedFilter() {
+      return this.detailsMenu.unrelated.filter(
+        item => item.title.indexOf(this.query) !== -1
+      );
     },
     isDisplayOpen() {
       return this.isEditorOpen || this.isPreviewOpen;
