@@ -388,12 +388,15 @@ export default new Vuex.Store({
       });
     },
     makeRelation(state, payload) {
+      // 同じであれば排除
+      if (payload.base.id === payload.target.id) return;
+      let relationId = payload.base.id + "_" + payload.target.id
       // すでにあったらreturn
-      if (payload.base.id + "_" + payload.target.id in payload.base.relations) return;
+      if (relationId in payload.base.relations) return;
       // 逆もすでにあったらreturn
       if (payload.target.id + "_" + payload.base.id in payload.base.relations) return;
       state.relations.push({
-        id: payload.base.id + "_" + payload.target.id,
+        id: relationId,
         base: {
           id: payload.base.id,
           node: payload.base,
@@ -408,10 +411,10 @@ export default new Vuex.Store({
       // payload.target.relations.push({id:payload.base.id + '_' + payload.target.id,pair_id:payload.base.id})
 
       // relationsプロパティがObjectの場合
-      payload.base.relations[payload.base.id + "_" + payload.target.id] = {
+      payload.base.relations[relationId] = {
         pair_id: payload.target.id,
       };
-      payload.target.relations[payload.base.id + "_" + payload.target.id] = {
+      payload.target.relations[relationId] = {
         pair_id: payload.base.id,
       };
     },
@@ -501,10 +504,11 @@ export default new Vuex.Store({
         context.dispatch("selectNode", context.state.detailsMenu.node);
     },
     selectNode({ commit, state }, node) {
-      commit("saveTag");
+      commit("saveTag"); // tagInfoくらい作ってisEditingてきなので解す減らしたい
       state.detailsMenu.nodeId = node.id;
       state.detailsMenu.node = state.nodes.find((item) => item.id === node.id);
       state.detailsMenu.relations = helpers.searchRelationNodes(node)
+      state.detailsMenu.unrelated = helpers.searchRelationNodes(node, false)
       state.detailsMenu.isOpen = true;
     },
   },

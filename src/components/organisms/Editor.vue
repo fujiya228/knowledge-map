@@ -54,16 +54,24 @@
       </select>
     </div>
     <div class="Editor__display" :class="editorClass">
-      <div class="Editor__link-list" v-show="isRelationOpen">
+      <div
+        class="Editor__link"
+        v-show="isRelationOpen"
+        v-tooltip.right-start="'関連リンク'"
+        @click="isMakeRelation = true"
+      >
+        <div class="Editor__link__item" v-tooltip="'新規作成'">
+          <Icon icon="plus" />
+        </div>
         <div
-          class="Editor__link"
+          class="Editor__link__item"
           v-for="node in detailsMenu.relations"
           :key="node.id"
           v-tooltip.top="node.title"
           @click="goToNode(node)"
         >{{node.title}}</div>
         <div
-          class="Editor__link"
+          class="Editor__link__item"
           v-if="detailsMenu.relations.length === 0"
           v-tooltip.top="notFoundText"
         >{{notFoundText}}</div>
@@ -83,19 +91,27 @@
         <h2>何も開かれていません</h2>
       </div>
     </div>
-    <div class="Editor__popup" v-show="isPopupOpen" @click.self="isPopupOpen = false">
+    <div class="Editor__popup" v-show="isPopupOpen" @click.self="closePopup()">
       <div class="Editor__popup__container">
         <div class="Editor__popup__title">リンク先を選ぶ</div>
         <div class="Editor__popup__search">
           <Icon icon="search" />
           <input type="text" v-model="query" />
         </div>
-        <div class="Editor__popup__list">
+        <div class="Editor__popup__list" v-if="isMakeCustomLink">
           <div
             class="Editor__popup__item"
             v-for="node in nodeFilter"
             :key="node.id"
             @click="makeLink(node)"
+          >{{node.title}}</div>
+        </div>
+        <div class="Editor__popup__list" v-if="isMakeRelation">
+          <div
+            class="Editor__popup__item"
+            v-for="node in detailsMenu.unrelated"
+            :key="node.id"
+            @click="makeRel(node)"
           >{{node.title}}</div>
         </div>
       </div>
@@ -125,7 +141,8 @@ export default {
   data() {
     return {
       query: "",
-      isPopupOpen: false,
+      isMakeCustomLink: false,
+      isMakeRelation: false,
       isRelationOpen: true,
       isEditorOpen: true,
       isPreviewOpen: false,
@@ -146,11 +163,32 @@ export default {
     },
     clickCustomLink() {
       // console.log(this.$refs.MyQuillEditor.quill.getSelection()); // 位置とってこれる
-      this.isPopupOpen = true;
+      let quill = this.$refs.MyQuillEditor.quill;
+      quill.focus();
+      let length = quill.getSelection().length;
+      if (length === 0) {
+        alert("文章を選択してください");
+        return;
+      }
+      this.isMakeCustomLink = true;
     },
     makeLink(node) {
+      // 関連付けするかどうかのボタンも用意しておく
       this.$refs.MyQuillEditor.quill.format("link", node.id);
-      this.isPopupOpen = false;
+      this.isMakeCustomLink = false;
+    },
+    makeRel(node) {
+      // 関連付けするかどうかのボタンも用意しておく
+      this.$store.commit("makeRelation", {
+        base: this.detailsMenu.node,
+        target: node
+      });
+      // detailsMenuに反映=>これはmakeRelationがわでやるべき？TODO
+      this.$store.dispatch("selectNode", this.detailsMenu.node);
+      this.isMakeRelation = false;
+    },
+    closePopup() {
+      this.isMakeCustomLink = this.isMakeRelation = false;
     },
     onEditorBlur() {
       console.log("editor blur!");
@@ -169,6 +207,9 @@ export default {
   },
   computed: {
     ...mapState(["width", "height", "nodes", "editorInfo", "detailsMenu"]),
+    isPopupOpen() {
+      return this.isMakeCustomLink || this.isMakeRelation;
+    },
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
@@ -186,23 +227,26 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  &__link-list {
+  &__link {
     box-sizing: border-box;
     width: 20%;
     min-width: 150px;
     border: 1px solid #ccc;
     overflow: auto;
-  }
-  &__link {
-    box-sizing: border-box;
-    width: 100%;
-    height: 32px;
-    line-height: 24px;
-    padding: 4px 8px;
-    @include ellipse;
-    cursor: pointer;
-    &:hover {
-      background: #ccc;
+    &__item {
+      box-sizing: border-box;
+      width: 100%;
+      height: 32px;
+      line-height: 24px;
+      padding: 4px 8px;
+      @include ellipse;
+      cursor: pointer;
+      &:hover {
+        background: #ccc;
+      }
+      .Icon {
+        margin: 0 auto;
+      }
     }
   }
   &__display {

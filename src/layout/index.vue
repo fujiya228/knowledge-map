@@ -66,7 +66,7 @@ export default {
         if (this.$route.params.node_id) {
           console.log("search now", this.$route.params.node_id);
           let node = helpers.searchNode(this.$route.params.node_id);
-          console.log(node);
+          // console.log(node);
           if (node) this.$store.dispatch("selectNode", node);
           else this.$router.push("/404");
         }
