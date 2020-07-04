@@ -135,7 +135,14 @@ export default {
   },
   methods: {
     goToNode(node) {
-      this.$router.push(node.id);
+      if (this.$route.name === "Edit") this.$router.push(node.id);
+      else {
+        this.$store.dispatch("selectNode", node);
+        let FreeGraph = document.getElementById("FreeGraph");
+        let area_width = this.width - this.$store.getters["sidebar_width"];
+        FreeGraph.scrollLeft = node.x - area_width / 2;
+        FreeGraph.scrollTop = node.y - this.height / 2;
+      }
     },
     clickCustomLink() {
       // console.log(this.$refs.MyQuillEditor.quill.getSelection()); // 位置とってこれる
@@ -161,7 +168,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["nodes", "editorInfo", "detailsMenu"]),
+    ...mapState(["width", "height", "nodes", "editorInfo", "detailsMenu"]),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
