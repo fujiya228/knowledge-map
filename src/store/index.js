@@ -167,7 +167,7 @@ export default new Vuex.Store({
       }
     },
     sidebar: {
-      isOpen: true
+      isOpen: false
     },
   },
   getters: {
@@ -181,6 +181,16 @@ export default new Vuex.Store({
     sidebar_width(state) {
       return state.sidebar.isOpen ? 256 : 0;
     },
+    relationNodes(state) {
+      if (!state.detailsMenu.node) return []
+      let node = state.detailsMenu.node
+      return state.nodes.filter(item => {
+        for (let rel in node.relations) {
+          if (node.relations[rel].pair_id === item.id) return true;
+        }
+        return false;
+      });
+    }
   },
   mutations: {
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),

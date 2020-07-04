@@ -51,6 +51,20 @@
       </select>
     </div>
     <div class="Editor__display" :class="editorClass">
+      <div class="Editor__link-list">
+        <div
+          class="Editor__link"
+          v-for="node in relationNodes"
+          :key="node.id"
+          v-tooltip.top="node.title"
+          @click="goToNode(node)"
+        >{{node.title}}</div>
+        <div
+          class="Editor__link"
+          v-if="relationNodes.length === 0"
+          v-tooltip.top="notFoundText"
+        >{{notFoundText}}</div>
+      </div>
       <quill-editor
         v-show="isEditorOpen"
         ref="MyQuillEditor"
@@ -92,7 +106,7 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
   name: "Editor",
@@ -111,10 +125,14 @@ export default {
       isPopupOpen: false,
       isEditorOpen: true,
       isPreviewOpen: false,
-      content: ""
+      content: "",
+      notFoundText: "関連リンクはありませんでした"
     };
   },
   methods: {
+    goToNode(node) {
+      this.$router.push(node.id);
+    },
     clickCustomLink() {
       // console.log(this.$refs.MyQuillEditor.quill.getSelection()); // 位置とってこれる
       this.isPopupOpen = true;
@@ -140,6 +158,7 @@ export default {
   },
   computed: {
     ...mapState(["nodes", "editorInfo", "detailsMenu"]),
+    ...mapGetters(["relationNodes"]),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
@@ -157,6 +176,24 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
+  &__link-list {
+    box-sizing: border-box;
+    width: 20%;
+    min-width: 150px;
+    border: 1px solid #ccc;
+    overflow: auto;
+  }
+  &__link {
+    box-sizing: border-box;
+    width: 100%;
+    height: 32px;
+    padding: 4px 8px;
+    @include ellipse;
+    cursor: pointer;
+    &:hover {
+      background: #ccc;
+    }
+  }
   &__display {
     display: flex;
     width: 100%;
@@ -171,11 +208,13 @@ export default {
     border: 1px solid #ccc;
   }
   &__not-open {
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid #ccc;
   }
   &__popup {
     display: flex;
