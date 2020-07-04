@@ -105,6 +105,7 @@
             :key="node.id"
             @click="makeLink(node)"
           >{{node.title}}</div>
+          <div class="Editor__popup__not-found" v-if="nodeFilter.length === 0">対象の要素はありませんでした</div>
         </div>
         <div class="Editor__popup__list" v-if="isMakeRelation">
           <div
@@ -166,6 +167,10 @@ export default {
       let quill = this.$refs.MyQuillEditor.quill;
       quill.focus();
       let length = quill.getSelection().length;
+      if (!this.isEditorOpen) {
+        alert("エディターを開いてください");
+        return;
+      }
       if (length === 0) {
         alert("文章を選択してください");
         return;
@@ -221,7 +226,11 @@ export default {
     },
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
-      return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
+      return this.nodes.filter(
+        item =>
+          item.title.indexOf(this.query) !== -1 &&
+          item.id !== this.detailsMenu.nodeId
+      );
     },
     unrelatedFilter() {
       return this.detailsMenu.unrelated.filter(
