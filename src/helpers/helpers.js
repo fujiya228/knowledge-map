@@ -102,6 +102,7 @@ const tagColor = function (id) {
 
 const searchRelationNodes = function (node, already = true) {
   return state.nodes.filter(item => {
+    if (node.id === item.id) return;
     for (let rel in node.relations) {
       if (node.relations[rel].pair_id === item.id) return false ^ already; // 排他的論理和で切り替え
     }
