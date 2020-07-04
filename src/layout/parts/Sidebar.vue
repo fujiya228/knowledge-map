@@ -132,7 +132,7 @@ export default {
     box-sizing: border-box;
     height: calc(100% - 80px);
     width: 100%;
-    overflow: scroll;
+    overflow: auto;
     padding-bottom: 24px;
   }
   &__node {
