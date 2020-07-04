@@ -54,13 +54,8 @@
       </select>
     </div>
     <div class="Editor__display" :class="editorClass">
-      <div
-        class="Editor__link"
-        v-show="isRelationOpen"
-        v-tooltip.right-start="'関連リンク'"
-        @click="isMakeRelation = true"
-      >
-        <div class="Editor__link__item" v-tooltip="'新規作成'">
+      <div class="Editor__link" v-show="isRelationOpen" v-tooltip.right-start="'関連リンク'">
+        <div class="Editor__link__item" v-tooltip="'新規作成'" @click="isMakeRelation = true">
           <Icon icon="plus" />
         </div>
         <div
