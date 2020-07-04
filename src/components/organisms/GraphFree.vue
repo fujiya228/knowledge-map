@@ -55,6 +55,7 @@
       <div class="Free__editor__wrapper">
         <h2 class="Free__editor__title">
           <input class="Free__editor__input" type="text" v-model="detailsMenu.node.title" />
+          <div class="Free__editor__to-edit" @click="goToEdit()">編集ページへ</div>
         </h2>
         <editor editorClass="free-editor" />
       </div>
@@ -215,6 +216,9 @@ export default {
       this.selectNode(node);
       this.closeAddNodeForm();
     },
+    goToEdit() {
+      this.$router.push(this.detailsMenu.node.id);
+    },
     initFreeNode() {
       this.nodes.forEach(node => {
         node.x = node.free.x;
@@ -373,8 +377,23 @@ export default {
     box-sizing: border-box;
   }
   &__input {
-    width: 100%;
+    width: calc(100% - 100px);
+    height: 28px;
     font-size: 24px;
+  }
+  &__to-edit {
+    box-sizing: border-box;
+    width: 100px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    text-align: center;
+    background: #eee;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 }
 .free-editor {
