@@ -193,15 +193,16 @@ export default {
   &__info {
     box-sizing: border-box;
     height: 32px;
-    padding: 8px 8px 0;
+    padding: 4px 8px;
     font-size: 14px;
+    line-height: 24px;
   }
   &__title {
     box-sizing: border-box;
     max-width: 250px;
     height: 32px;
     line-height: 24px;
-    padding: 8px 8px 0;
+    padding: 4px 8px;
     font-size: 16px;
     font-weight: bold;
     overflow: hidden;
