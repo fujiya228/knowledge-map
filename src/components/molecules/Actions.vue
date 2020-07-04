@@ -211,7 +211,11 @@ export default {
       display: inline;
       line-height: 24px;
       border-radius: 3px;
+      padding: 0 4px;
       &:focus {
+        background: #eee;
+      }
+      &:hover {
         background: #eee;
       }
     }
