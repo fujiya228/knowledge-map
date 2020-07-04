@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <div class="Actions__button" @click="saveData()" v-tooltip="'保存'">
+    <div class="Actions__button" @click="saveData()" v-tooltip="'保存 (Ctrl + S)'">
       <Icon icon="save" />
     </div>
     <template v-if="detailsMenu.node">
@@ -121,6 +121,14 @@ export default {
         "/" + this.detailsMenu.node.id !== this.$route.path
       );
     }
+  },
+  created() {
+    document.addEventListener("keydown", e => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        this.saveData();
+      }
+    });
   }
 };
 </script>
@@ -185,15 +193,16 @@ export default {
   &__info {
     box-sizing: border-box;
     height: 32px;
-    padding: 8px 8px 0;
+    padding: 4px 8px;
     font-size: 14px;
+    line-height: 24px;
   }
   &__title {
     box-sizing: border-box;
     max-width: 250px;
     height: 32px;
     line-height: 24px;
-    padding: 8px 8px 0;
+    padding: 4px 8px;
     font-size: 16px;
     font-weight: bold;
     overflow: hidden;
@@ -203,7 +212,11 @@ export default {
       display: inline;
       line-height: 24px;
       border-radius: 3px;
+      padding: 0 4px;
       &:focus {
+        background: #eee;
+      }
+      &:hover {
         background: #eee;
       }
     }

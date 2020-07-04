@@ -54,13 +54,8 @@
       </select>
     </div>
     <div class="Editor__display" :class="editorClass">
-      <div
-        class="Editor__link"
-        v-show="isRelationOpen"
-        v-tooltip.right-start="'関連リンク'"
-        @click="isMakeRelation = true"
-      >
-        <div class="Editor__link__item" v-tooltip="'新規作成'">
+      <div class="Editor__link" v-show="isRelationOpen" v-tooltip.right-start="'関連リンク'">
+        <div class="Editor__link__item" v-tooltip="'新規作成'" @click="isMakeRelation = true">
           <Icon icon="plus" />
         </div>
         <div
@@ -69,9 +64,14 @@
           :key="node.id"
           v-tooltip.top="node.title"
           @click="goToNode(node)"
-        >{{node.title}}</div>
+        >
+          <div class="Editor__link__title">{{node.title}}</div>
+          <div class="Editor__link__icon" @click.stop="delRel(node)">
+            <Icon icon="trash-alt" />
+          </div>
+        </div>
         <div
-          class="Editor__link__item"
+          class="Editor__link__not-found"
           v-if="detailsMenu.relations.length === 0"
           v-tooltip.top="notFoundText"
         >{{notFoundText}}</div>
@@ -187,6 +187,15 @@ export default {
       this.$store.dispatch("selectNode", this.detailsMenu.node);
       this.isMakeRelation = false;
     },
+    delRel(node) {
+      let rels = this.detailsMenu.node.relations; // relsはオブジェクト
+      for (let key in rels) {
+        if (rels[key].pair_id === node.id) {
+          this.$store.dispatch("delRelation", key);
+          break;
+        }
+      }
+    },
     closePopup() {
       this.isMakeCustomLink = this.isMakeRelation = false;
     },
@@ -239,6 +248,8 @@ export default {
     border: 1px solid #ccc;
     overflow: auto;
     &__item {
+      display: flex;
+      justify-content: center;
       box-sizing: border-box;
       width: 100%;
       height: 32px;
@@ -249,9 +260,23 @@ export default {
       &:hover {
         background: #ccc;
       }
-      .Icon {
-        margin: 0 auto;
-      }
+    }
+    &__title {
+      width: calc(100% - 24px);
+      @include ellipse;
+    }
+    &__icon {
+      width: 24px;
+      height: 24px;
+      @include button-hover;
+    }
+    &__not-found {
+      box-sizing: border-box;
+      width: 100%;
+      height: 32px;
+      line-height: 24px;
+      padding: 4px 8px;
+      @include ellipse;
     }
   }
   &__display {

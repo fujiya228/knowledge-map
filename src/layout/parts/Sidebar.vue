@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     logout() {
+      if (!confirm("ログアウトしますか？")) return;
       this.detailsMenu.node = null;
       this.$store.commit("reset_data");
       firebase.auth().signOut();
