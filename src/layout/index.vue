@@ -61,6 +61,11 @@ export default {
   created() {
     this.isLoading = true;
     window.addEventListener("resize", this.graphArea, false);
+    window.addEventListener("beforeunload", e => {
+      var confirmationMessage = "変更が保存されない可能性があります";
+      (e || window.event).returnValue = confirmationMessage;
+      return confirmationMessage;
+    });
     this.getData()
       .then(result => {
         console.log(result);
