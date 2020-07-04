@@ -114,6 +114,7 @@ export default {
     box-sizing: border-box;
     width: 100%;
     height: 32px;
+    line-height: 24px;
     padding: 4px 16px;
   }
   &__search {

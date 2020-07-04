@@ -1,6 +1,9 @@
 <template>
   <div class="Editor">
     <div id="toolbar">
+      <button class="custom-button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
+        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="14" :font="18" />
+      </button>
       <button class="custom-button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
         <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="14" :font="18" />
       </button>
@@ -51,7 +54,7 @@
       </select>
     </div>
     <div class="Editor__display" :class="editorClass">
-      <div class="Editor__link-list">
+      <div class="Editor__link-list" v-show="isRelationOpen">
         <div
           class="Editor__link"
           v-for="node in relationNodes"
@@ -123,6 +126,7 @@ export default {
     return {
       query: "",
       isPopupOpen: false,
+      isRelationOpen: true,
       isEditorOpen: true,
       isPreviewOpen: false,
       content: "",
@@ -187,6 +191,7 @@ export default {
     box-sizing: border-box;
     width: 100%;
     height: 32px;
+    line-height: 24px;
     padding: 4px 8px;
     @include ellipse;
     cursor: pointer;
@@ -203,6 +208,7 @@ export default {
     }
   }
   &__preview {
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     border: 1px solid #ccc;
