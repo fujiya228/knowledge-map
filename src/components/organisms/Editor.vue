@@ -57,14 +57,14 @@
       <div class="Editor__link-list" v-show="isRelationOpen">
         <div
           class="Editor__link"
-          v-for="node in relationNodes"
+          v-for="node in detailsMenu.relations"
           :key="node.id"
           v-tooltip.top="node.title"
           @click="goToNode(node)"
         >{{node.title}}</div>
         <div
           class="Editor__link"
-          v-if="relationNodes.length === 0"
+          v-if="detailsMenu.relations.length === 0"
           v-tooltip.top="notFoundText"
         >{{notFoundText}}</div>
       </div>
@@ -109,7 +109,7 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
-import { mapState, mapGetters } from "vuex";
+import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
   name: "Editor",
@@ -162,7 +162,6 @@ export default {
   },
   computed: {
     ...mapState(["nodes", "editorInfo", "detailsMenu"]),
-    ...mapGetters(["relationNodes"]),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);

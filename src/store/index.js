@@ -180,16 +180,6 @@ export default new Vuex.Store({
     },
     sidebar_width(state) {
       return state.sidebar.isOpen ? 256 : 0;
-    },
-    relationNodes(state) {
-      if (!state.detailsMenu.node) return []
-      let node = state.detailsMenu.node
-      return state.nodes.filter(item => {
-        for (let rel in node.relations) {
-          if (node.relations[rel].pair_id === item.id) return true;
-        }
-        return false;
-      });
     }
   },
   mutations: {
@@ -514,13 +504,7 @@ export default new Vuex.Store({
       commit("saveTag");
       state.detailsMenu.nodeId = node.id;
       state.detailsMenu.node = state.nodes.find((item) => item.id === node.id);
-      state.detailsMenu.relations = helpers
-        .searchRelationNodes(node)
-        .sort(function (a, b) {
-          if (a.level > b.level) return 1;
-          if (a.level < b.level) return -1;
-          return 0;
-        });
+      state.detailsMenu.relations = helpers.searchRelationNodes(node)
       state.detailsMenu.isOpen = true;
     },
   },
