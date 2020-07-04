@@ -482,6 +482,7 @@ export default new Vuex.Store({
       context.state.detailsMenu.node = null;
     },
     delRelation(context, relid) {
+      if (!confirm("本当に削除しますか？")) return;
       let rel = context.state.relations.find((rel) => rel.id === relid);
       let length;
       let base = context.state.nodes.find((node) => node.id === rel.base.id);
