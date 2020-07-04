@@ -40,7 +40,6 @@ export default {
   svg {
     display: block;
     margin: 0 auto;
-    transition: 0.3s ease-in-out;
   }
 }
 </style>

@@ -15,6 +15,7 @@
         class="Sidebar__node Sidebar__item"
         v-for="node in nodeFilter"
         :key="node.id"
+        :class="{selected: node == detailsMenu.node}"
         @click="goToNode(node)"
       >{{node.title}}</div>
     </div>
@@ -38,16 +39,18 @@ export default {
   },
   methods: {
     logout() {
+      this.detailsMenu.node = null;
+      this.$store.commit("reset_data");
       firebase.auth().signOut();
     },
     closeSidebar() {
       this.sidebar.isOpen = false;
     },
     goToNode(node) {
-      this.$store.dispatch("selectNode", node);
-      console.log(this.$route.name);
+      // console.log(this.$route.name);
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
+        this.$store.dispatch("selectNode", node);
         let FreeGraph = document.getElementById("FreeGraph");
         let area_width = this.width - this.$store.getters["sidebar_width"];
         FreeGraph.scrollLeft = node.x - area_width / 2;
@@ -61,7 +64,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["width", "height", "nodes", "sidebar"]),
+    ...mapState(["width", "height", "nodes", "detailsMenu", "sidebar"]),
     ...mapState({
       user: state => state.auth.user
     }),
@@ -137,6 +140,9 @@ export default {
     cursor: pointer;
     &:hover {
       background: #ccc;
+    }
+    &.selected {
+      background: $color-main-l;
     }
   }
 }

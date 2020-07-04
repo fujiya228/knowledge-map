@@ -14,8 +14,20 @@
       <!-- 上記以外 -->
       <template v-else>
         <div class="Auth__container">
-          <input class="Input" type="email" v-model="email" placeholder="email" />
-          <input class="Input" type="password" v-model="password" placeholder="password" />
+          <input
+            class="Input"
+            type="email"
+            v-model="email"
+            placeholder="email"
+            @keydown.enter="clickBtn()"
+          />
+          <input
+            class="Input"
+            type="password"
+            v-model="password"
+            placeholder="password"
+            @keydown.enter="clickBtn()"
+          />
           <Btn @click.native="clickBtn()">{{titleText}}</Btn>
         </div>
         <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
@@ -52,6 +64,16 @@ export default {
   },
   methods: {
     clickBtn() {
+      let error = {
+        email: "",
+        password: ""
+      };
+      if (this.email == "") error.email = " [email]";
+      if (this.password == "") error.password = " [password]";
+      if (error.email || error.password) {
+        alert("Please enter" + error.email + error.password);
+        return;
+      }
       this.isSignUpMode ? this.sign_up() : this.login();
     },
     sign_up() {

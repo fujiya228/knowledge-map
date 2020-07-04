@@ -47,40 +47,29 @@
       @addFunction="addNode()"
     />
     <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
-    <div class="Editor" v-if="detailsMenu.node && editorInfo.isOpen" @click.self="closeEditor()">
-      <div class="Editor__wrapper">
-        <h2 class="Editor__title">
-          <input class="Editor__input" type="text" v-model="detailsMenu.node.title" />
+    <div
+      class="Free__editor"
+      v-if="detailsMenu.node && editorInfo.isOpen"
+      @click.self="closeEditor()"
+    >
+      <div class="Free__editor__wrapper">
+        <h2 class="Free__editor__title">
+          <input class="Free__editor__input" type="text" v-model="detailsMenu.node.title" />
         </h2>
-        <editor-toolbar />
-        <quill-editor
-          ref="MyQuillEditor"
-          class="edit-area"
-          v-model="detailsMenu.node.detail"
-          :options="editorInfo.option"
-          @blur="onEditorBlur($event)"
-          @focus="onEditorFocus($event)"
-          @ready="onEditorReady($event)"
-        />
+        <editor editorClass="free-editor" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-
-import { quillEditor } from "vue-quill-editor";
-
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import helpers from "@/helpers/helpers";
-import EditorToolbar from "@/components/atoms/EditorToolbar";
 import Background from "@/components/atoms/Background";
 import Node from "@/components/molecules/Node";
 import AddNodeForm from "@/components/molecules/AddNodeForm";
 import ContextMenu from "@/components/molecules/ContextMenu";
+import Editor from "@/components/organisms/Editor";
 export default {
   name: "FreeGraph",
   components: {
@@ -88,8 +77,7 @@ export default {
     Node,
     ContextMenu,
     AddNodeForm,
-    quillEditor,
-    EditorToolbar
+    Editor
   },
   data() {
     return {};
@@ -240,19 +228,6 @@ export default {
       "makeRelation"
     ]),
     ...mapActions(["delRelation", "selectNode", "addNode"]),
-    onEditorBlur(quill) {
-      console.log("editor blur!", quill);
-    },
-    onEditorFocus(quill) {
-      console.log("editor focus!", quill);
-    },
-    onEditorReady(quill) {
-      console.log("editor ready!", quill);
-    },
-    onEditorChange({ quill, html, text }) {
-      console.log("editor change!", quill, html, text);
-      this.content = html;
-    },
     closeEditor() {
       console.log("closeEditor");
       this.editorInfo.isOpen = false;
@@ -372,7 +347,7 @@ export default {
     stroke: $color-main;
   }
 }
-.Editor {
+.Free__editor {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -402,12 +377,7 @@ export default {
     font-size: 24px;
   }
 }
-.quill-editor,
-.ql-editor,
-.content {
-  background-color: white;
-}
-.edit-area {
+.free-editor {
   height: 500px;
 }
 </style>
