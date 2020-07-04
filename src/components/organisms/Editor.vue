@@ -92,8 +92,25 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+import Quill from "quill";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+
+var Link = Quill.import("formats/link");
+const regex = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+
+class MyLink extends Link {
+  static create(value) {
+    let node = super.create(value);
+    if (value.match(regex)) node.removeAttribute("target");
+    value = this.sanitize(value);
+    node.setAttribute("href", value);
+    return node;
+  }
+}
+
+Quill.register(MyLink);
+
 export default {
   name: "Editor",
   props: {
@@ -110,7 +127,7 @@ export default {
       query: "",
       isPopupOpen: false,
       isEditorOpen: true,
-      isPreviewOpen: false,
+      isPreviewOpen: true,
       content: ""
     };
   },
