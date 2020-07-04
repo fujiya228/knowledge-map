@@ -12,7 +12,7 @@
 <script>
 import * as firebase from "firebase/app";
 import "firebase/functions";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
@@ -55,10 +55,12 @@ export default {
       this.$store.state.tags = data.tags;
       this.detailsMenu.node = null;
       console.log("init fin");
-    }
+    },
+    ...mapMutations(["graphArea"])
   },
   created() {
     this.isLoading = true;
+    window.addEventListener("resize", this.graphArea, false);
     this.getData()
       .then(result => {
         console.log(result);
@@ -74,6 +76,10 @@ export default {
       .then(() => {
         this.isLoading = false;
       });
+  },
+  destroyed() {
+    console.log("destroyed");
+    window.removeEventListener("resize", this.graphArea);
   }
 };
 </script>
