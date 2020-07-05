@@ -196,7 +196,10 @@ export default {
       let rels = this.detailsMenu.node.relations; // relsはオブジェクト
       for (let key in rels) {
         if (rels[key].pair_id === node.id) {
-          this.$store.dispatch("delRelation", key);
+          this.$store.dispatch("delRelation", {
+            relId: key,
+            force: false
+          });
           break;
         }
       }

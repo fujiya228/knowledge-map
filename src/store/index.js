@@ -167,7 +167,7 @@ export default new Vuex.Store({
       }
     },
     sidebar: {
-      isOpen: false
+      isOpen: true
     },
   },
   getters: {
@@ -464,10 +464,13 @@ export default new Vuex.Store({
     delNode(context, node) {
       // TODO 本当に消すか？を無視する設定？
       // TODO 消すのは聞かずに消したあとに操作を戻す機能？
-      if (!confirm("要素の削除：本当に削除しますか？")) return;
+      if (!confirm("要素と関連付けの削除：本当に削除しますか？")) return;
       for (let rel in node.relations) {
         // このrelationsはObject
-        context.dispatch("delRelation", rel);
+        context.dispatch("delRelation", {
+          relId: rel,
+          force: true
+        });
       }
       // 配列からidをもとにindexを取ってくる関数を作れるな TODO findでよくね
       let length = context.state.nodes.length;
@@ -481,9 +484,16 @@ export default new Vuex.Store({
       context.commit("closeAddNodeForm");
       context.state.detailsMenu.node = null;
     },
-    delRelation(context, relid) {
-      if (!confirm("関連付け削除：本当に削除しますか？")) return;
-      let rel = context.state.relations.find((rel) => rel.id === relid);
+    delRelation(context, payload) {
+      /**
+       * 使われている場所
+       *  GraphFree
+       *  Editor
+       * 
+       * delNode
+       */
+      if (!payload.force && !confirm("関連付け削除：本当に削除しますか？")) return;
+      let rel = context.state.relations.find((rel) => rel.id === payload.relId);
       let length;
       let base = context.state.nodes.find((node) => node.id === rel.base.id);
       let target = context.state.nodes.find(
