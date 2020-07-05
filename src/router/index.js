@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/pages/Home.vue'
 import About from '@/pages/About.vue'
+import Admin from '@/pages/Admin.vue'
 import Auth from '@/pages/Auth.vue'
 import GraphFree from "@/components/organisms/GraphFree";
 import Edit from "@/components/organisms/Edit";
@@ -62,6 +63,14 @@ const routes = [
     redirect: '/',
   }
 ]
+
+if (process.env.NODE_ENV === 'development') {
+  routes.unshift({
+    name: 'admin',
+    path: '/admin',
+    component: Admin,
+  })
+}
 
 const router = new VueRouter({
   mode: 'history',
