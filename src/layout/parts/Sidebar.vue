@@ -2,6 +2,7 @@
   <div class="Sidebar" v-show="sidebar.isOpen">
     <div class="Sidebar__header">
       <div class="Sidebar__button" @click="logout()">ログアウト</div>
+      <Help />
       <div class="Sidebar__close" @click="closeSidebar()">
         <Icon icon="angle-double-left" :size="32" :font="20" />
       </div>
@@ -28,10 +29,12 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+import Help from "@/components/atoms/Help";
 export default {
   name: "Sidebar",
   components: {
-    Icon
+    Icon,
+    Help
   },
   data() {
     return {
