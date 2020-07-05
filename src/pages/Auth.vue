@@ -31,6 +31,7 @@
           <Btn @click.native="clickBtn()">{{titleText}}</Btn>
         </div>
         <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
+        <div class="Auth__switch" @click="login('sample@fujiya228.com', 'password')">お試しはこちら</div>
       </template>
     </template>
     <div class="Auth__icon" v-else>
@@ -59,7 +60,8 @@ export default {
       password: "",
       isSignUpMode: false,
       isEmailVerifyMode: false,
-      isLoading: false
+      isLoading: false,
+      isSmapleUser: false
     };
   },
   methods: {
@@ -95,11 +97,11 @@ export default {
           this.isLoading = false;
         });
     },
-    login() {
+    login(email = this.email, password = this.password) {
       this.isLoading = true;
       firebase
         .auth()
-        .signInWithEmailAndPassword(this.email, this.password)
+        .signInWithEmailAndPassword(email, password)
         .catch(err => {
           console.log(err.message);
           alert(err.message);
@@ -118,8 +120,12 @@ export default {
   watch: {
     user() {
       if (this.user) {
+        if (this.user.email === "sample@fujiya228.com") {
+          const next = this.$route.query.next || "/";
+          this.$router.push(next);
+        }
         // メールアドレス確認
-        if (this.user.emailVerified) {
+        else if (this.user.emailVerified) {
           // メールアドレス確認済み
           this.email = this.password = "";
           const next = this.$route.query.next || "/";

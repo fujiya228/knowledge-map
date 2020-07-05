@@ -79,8 +79,9 @@ export default {
         .updateProfile({
           emailVerified: true
         })
-        .then(function() {
+        .then(function(res) {
           alert("更新成功");
+          console.log(res);
         })
         .catch(function(error) {
           console.log("error", error);
