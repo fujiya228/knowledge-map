@@ -21,7 +21,7 @@
         v-for="line in relationFilter()"
         :key="line.id"
         :d="graphPath(line)"
-        @click.stop="delRelation(line.id)"
+        @click.stop="delRelation({relId:line.id,force:false})"
       />
     </svg>
     <Node
