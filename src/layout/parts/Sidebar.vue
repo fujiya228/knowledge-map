@@ -18,6 +18,7 @@
         :class="{selected: node == detailsMenu.node}"
         @click="goToNode(node)"
       >{{node.title}}</div>
+      <div class="Sidebar__item" v-if="!nodeFilter.length">対象の要素はありません</div>
     </div>
   </div>
 </template>

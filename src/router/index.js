@@ -63,6 +63,14 @@ const routes = [
   }
 ]
 
+if (process.env.NODE_ENV === 'development') {
+  routes.unshift({
+    name: 'admin',
+    path: '/admin',
+    component: () => import('@/pages/Admin'),
+  })
+}
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
