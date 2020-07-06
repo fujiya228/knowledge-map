@@ -1,5 +1,5 @@
 <template>
-  <div class="Editor">
+  <div class="Editor" @touchmove.stop @pointermove.stop>
     <div id="toolbar">
       <button class="custom-button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
         <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="14" :font="18" />
