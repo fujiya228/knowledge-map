@@ -7,7 +7,7 @@
     }"
     :id="node.id"
     :data-relation-id="node.id"
-    :style="{ backgroundColor: statusColor(node.status) }"
+    :style="nodeStyle"
     v-tooltip="node.title"
     @click.exact="selectNode(node)"
   >{{ node.title }}</div>
@@ -29,7 +29,21 @@ export default {
     ...mapActions(["selectNode"])
   },
   computed: {
-    ...mapState(["statuses", "moveNodeInfo", "detailsMenu"])
+    ...mapState(["statuses", "moveNodeInfo", "detailsMenu"]),
+    nodeStyle() {
+      return {
+        minWidth: 32 + "px",
+        height: 64 + "px",
+        paddingLeft: 16 + "px",
+        paddingRight: 16 + "px",
+        borderRadius: 32 + "px",
+        fontSize: 30 + "px",
+        lineHeight: 64 + "px",
+        left: this.node.x - this.node.width_2 + "px",
+        top: this.node.y - 32 + "px",
+        backgroundColor: this.statusColor(this.node.status)
+      };
+    }
   }
 };
 </script>
@@ -38,13 +52,7 @@ export default {
 @import "@/assets/variable.scss";
 .Node {
   position: absolute;
-  min-width: 32px;
-  height: 64px;
-  padding: 0 16px;
-  border-radius: 32px;
   text-align: center;
-  line-height: 64px;
-  font-size: 30px;
   font-weight: bold;
   user-select: none;
   transition: 0.25s ease-in-out;
@@ -55,7 +63,7 @@ export default {
     transition: 0s;
   }
   &.relation-target {
-    background: #666 !important;
+    background: #666 !important; // 背景をDOMに直接やっているから仕方なく。この部分さクラスで背景変えるようにしておこうぜ TODO
     cursor: pointer;
     &:hover {
       background: #999 !important;

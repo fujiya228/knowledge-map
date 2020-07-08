@@ -9,7 +9,13 @@
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
   >
-    <svg class="Free__area" :class="{moving: isGraphMove}" @click="openAddNodeForm($event)">
+    <svg
+      class="Free__area"
+      :class="{moving: isGraphMove}"
+      @click="openAddNodeForm($event)"
+      :width="3000"
+      :height="3000"
+    >
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
       <path
@@ -29,10 +35,6 @@
       v-for="node in nodeFilter()"
       :key="node.id"
       :node="node"
-      :style="{
-        left: node.x - node.width_2 + 'px',
-        top: node.y - 32 + 'px',
-      }"
       @touchstart.native="onGhost(node)"
       @touchend.native="endGhost()"
       @pointerdown.left.native="onGhost(node)"
@@ -344,8 +346,9 @@ export default {
   // いや、それやと動的に出しづらいから負にするべきかも
   // いや、最大サイズが変わった時点ですべての座標を再計算でいける
   // TODO
-  width: 3000px;
-  height: 3000px;
+  // いや、普通にスクロールをJSで与えておいたら問題ない
+  // width: 3000px;
+  // height: 3000px;
   // background: $color-main-l;
   cursor: pointer;
   &.moving {
