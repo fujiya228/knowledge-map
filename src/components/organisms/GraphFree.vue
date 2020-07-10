@@ -2,10 +2,8 @@
   <div
     id="FreeGraph"
     :class="{open: isDetailsOpen && !editorInfo.isOpen}"
-    @touchstart="onGraphMove($event)"
-    @touchend="endGraphMove()"
     @pointerdown.left="onGraphMove($event)"
-    @mouseup="endGraphMove()"
+    @pointerup="endGraphMove()"
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
   >
@@ -35,10 +33,8 @@
       v-for="node in nodeFilter()"
       :key="node.id"
       :node="node"
-      @touchstart.native="onGhost(node)"
-      @touchend.native="endGhost()"
       @pointerdown.left.native="onGhost(node)"
-      @mouseup.native="endGhost()"
+      @pointerup.left.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
       @click.shift.exact.stop.native="selectRelaitonNode(node)"
       @dblclick.stop.native="editorInfo.isOpen = true"
