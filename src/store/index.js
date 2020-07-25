@@ -8,6 +8,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    scale: 1,
     width: 0,
     height: 0,
     maxR: 0,
@@ -183,6 +184,7 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    set_scale: (state, val) => (state.scale = val),
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
     reset_data: (state) => {
@@ -367,7 +369,6 @@ export default new Vuex.Store({
     graphArea(state) {
       // console.log('graphArea')
       var area = document.getElementById("app");
-      // this.$ref使えるくね？ TODO
       state.width = area.clientWidth;
       state.height = area.clientHeight;
       state.maxR =

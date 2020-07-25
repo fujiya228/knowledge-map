@@ -34,11 +34,11 @@ export default {
   name: "Sidebar",
   components: {
     Icon,
-    Help
+    Help,
   },
   data() {
     return {
-      query: ""
+      query: "",
     };
   },
   methods: {
@@ -59,25 +59,25 @@ export default {
         let FreeGraph = document.getElementById("FreeGraph");
         let area_width = this.width - this.$store.getters["sidebar_width"];
         FreeGraph.scrollLeft = node.x - area_width / 2;
-        FreeGraph.scrollTop = node.y - this.height / 2;
+        FreeGraph.scrollTop = node.y - this.height / 2 + 48;
       }
-    }
+    },
   },
   watch: {
     user() {
       if (!this.user) this.$router.push("/auth");
-    }
+    },
   },
   computed: {
     ...mapState(["width", "height", "nodes", "detailsMenu", "sidebar"]),
     ...mapState({
-      user: state => state.auth.user
+      user: (state) => state.auth.user,
     }),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
-      return this.nodes.filter(item => item.title.indexOf(this.query) !== -1);
-    }
-  }
+      return this.nodes.filter((item) => item.title.indexOf(this.query) !== -1);
+    },
+  },
 };
 </script>
 

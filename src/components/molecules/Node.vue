@@ -10,7 +10,10 @@
     :style="nodeStyle"
     v-tooltip="node.title"
     @click.exact="selectNode(node)"
-  >{{ node.title }}</div>
+  >
+    {{ node.title }}
+    <div class="Node__flame"></div>
+  </div>
 </template>
 
 <script>
@@ -21,30 +24,30 @@ export default {
   props: {
     node: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     statusColor: helpers.statusColor,
-    ...mapActions(["selectNode"])
+    ...mapActions(["selectNode"]),
   },
   computed: {
-    ...mapState(["statuses", "moveNodeInfo", "detailsMenu"]),
+    ...mapState(["scale", "statuses", "moveNodeInfo", "detailsMenu"]),
     nodeStyle() {
       return {
-        minWidth: 32 + "px",
-        height: 64 + "px",
-        paddingLeft: 16 + "px",
-        paddingRight: 16 + "px",
-        borderRadius: 32 + "px",
-        fontSize: 30 + "px",
-        lineHeight: 64 + "px",
+        minWidth: 32 * this.scale + "px",
+        height: 64 * this.scale + "px",
+        paddingLeft: 16 * this.scale + "px",
+        paddingRight: 16 * this.scale + "px",
+        borderRadius: 32 * this.scale + "px",
+        fontSize: 30 * this.scale + "px",
+        lineHeight: 64 * this.scale + "px",
         left: this.node.x - this.node.width_2 + "px",
-        top: this.node.y - 32 + "px",
-        backgroundColor: this.statusColor(this.node.status)
+        top: this.node.y - 32 * this.scale + "px",
+        backgroundColor: this.statusColor(this.node.status),
       };
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -55,7 +58,7 @@ export default {
   text-align: center;
   font-weight: bold;
   user-select: none;
-  transition: 0.25s ease-in-out;
+  // transition: 0.25s ease-in-out;
   white-space: nowrap;
   cursor: move;
   &.drag,
@@ -69,16 +72,10 @@ export default {
       background: #999 !important;
     }
   }
-  &.selected::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 32px;
-    border: solid 3px #67b7b3;
-    box-sizing: border-box;
+  &.selected {
+    .Node__flame {
+      display: block;
+    }
   }
   &.selected,
   &:hover {
@@ -104,5 +101,16 @@ export default {
       color: black;
     }
   }
+}
+.Node__flame {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50vh;
+  width: 100%;
+  height: 100%;
+  border: solid 3px #67b7b3;
+  box-sizing: border-box;
 }
 </style>

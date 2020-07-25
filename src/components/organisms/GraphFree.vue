@@ -11,8 +11,8 @@
       class="Free__area"
       :class="{moving: isGraphMove}"
       @click="openAddNodeForm($event)"
-      :width="3000"
-      :height="3000"
+      :width="3000*scale"
+      :height="3000*scale"
     >
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
@@ -37,7 +37,7 @@
       @pointerup.left.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
       @click.shift.exact.stop.native="selectRelaitonNode(node)"
-      @dblclick.stop.native="editorInfo.isOpen = true"
+      @dblclick.native="editorInfo.isOpen = true"
     />
     <AddNodeForm
       class="Add-node-form"
@@ -53,6 +53,8 @@
       class="Free__editor"
       v-if="detailsMenu.node && editorInfo.isOpen"
       @click.self="closeEditor()"
+      @touchmove.stop
+      @pointermove.stop
     >
       <div class="Free__editor__wrapper">
         <h2 class="Free__editor__title">
@@ -80,14 +82,14 @@ export default {
     Node,
     ContextMenu,
     AddNodeForm,
-    Editor
+    Editor,
   },
   data() {
     return {
       isGraphMove: false,
       canOpenAddNodeForm: true,
       pointerX: 0,
-      pointerY: 0
+      pointerY: 0,
     };
   },
   methods: {
@@ -101,7 +103,7 @@ export default {
       let id = null;
       let DOMnodes = document.getElementsByClassName("Node-in-Free");
       // console.log(DOMnodes)
-      await this.awaitForClick(base, DOMnodes).then(res => {
+      await this.awaitForClick(base, DOMnodes).then((res) => {
         id = res.target.getAttribute("data-relation-id");
         // console.log(res)
         // console.log(id);
@@ -116,13 +118,13 @@ export default {
       // console.log((v_base.id + '_' + v_target.id) in v_base.relations)
       this.makeRelation({
         base: v_base,
-        target: v_target
+        target: v_target,
       });
       this.selectNode(v_target);
     },
     awaitForClick(base, DOMnodes) {
       // baseもDOMnodesもDOM
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const listener = resolve;
         // resolveがCBされることで同期完了？
         document.body.addEventListener("click", listener, { once: true });
@@ -154,8 +156,10 @@ export default {
       if (x > this.width - 100 && X < 3000) FreeGraph.scrollLeft += 10;
       if (y < 100) FreeGraph.scrollTop -= 10;
       if (y > this.height - 100 && Y < 3000) FreeGraph.scrollTop += 10;
-      node.x = node.free.x = Math.floor(X);
-      node.y = node.free.y = Math.floor(Y - 48);
+      node.x = Math.floor(X);
+      node.free.x = Math.floor(node.x / this.scale);
+      node.y = Math.floor(Y - 48);
+      node.free.y = Math.floor(node.y / this.scale);
     },
     onGhost(node) {
       this.closeContextMenu();
@@ -206,13 +210,13 @@ export default {
       );
     },
     nodeFilter() {
-      return this.nodes.filter(item => {
+      return this.nodes.filter((item) => {
         return item.free.isActive && !item.archive;
       });
     },
     relationFilter() {
       return this.relations.filter(
-        rel =>
+        (rel) =>
           // 片方でもアーカイブならアウト
           !(rel.base.node.archive || rel.target.node.archive) &&
           rel.base.node.free.isActive &&
@@ -221,7 +225,7 @@ export default {
     },
     searchRelations(id) {
       return this.relations.filter(
-        rel => rel.base.id === id || rel.target.id === id
+        (rel) => rel.base.id === id || rel.target.id === id
       );
     },
     openAddNodeForm(event) {
@@ -252,7 +256,7 @@ export default {
       this.$router.push(this.detailsMenu.node.id);
     },
     initFreeNode() {
-      this.nodes.forEach(node => {
+      this.nodes.forEach((node) => {
         node.x = node.free.x;
         node.y = node.free.y;
       });
@@ -261,16 +265,17 @@ export default {
       "graphArea",
       "closeContextMenu",
       "closeAddNodeForm",
-      "makeRelation"
+      "makeRelation",
     ]),
     ...mapActions(["delRelation", "selectNode", "addNode"]),
     closeEditor() {
       console.log("closeEditor");
       this.editorInfo.isOpen = false;
-    }
+    },
   },
   computed: {
     ...mapState([
+      "scale",
       "width",
       "height",
       "nodes",
@@ -280,7 +285,7 @@ export default {
       "contextMenu",
       "detailsMenu",
       "editorInfo",
-      "sidebar"
+      "sidebar",
     ]),
     ...mapGetters(["isDetailsOpen"]),
     sidebar_width() {
@@ -292,13 +297,13 @@ export default {
       },
       set(val) {
         this.$store.commit("set_isMakingRelation", val);
-      }
+      },
     },
     editor() {
       return this.detailsMenu.node && this.editorInfo.isOpen
         ? this.$refs.MyQuillEditor.quill
         : "not selected";
-    }
+    },
   },
   watch: {
     "detailsMenu.node.title"() {
@@ -308,7 +313,7 @@ export default {
           node.width_2 = document.getElementById(node.id).clientWidth / 2;
         });
       }
-    }
+    },
   },
   mounted() {
     // console.log('mounted')
@@ -322,7 +327,7 @@ export default {
     this.initFreeNode();
     this.editorInfo.isEditPage = false;
   },
-  destroyed() {}
+  destroyed() {},
 };
 </script>
 
@@ -376,7 +381,7 @@ export default {
   fill: none;
   stroke-width: 3px;
   stroke: black;
-  transition: 0.25s ease-in-out;
+  // transition: 0.25s ease-in-out;
   // 何故かlineにはtransitionが効かなかった pathで代用
   // 後日、いらんくね？
   // 次の日、レベル増減時にこいつだけ先に動くのは気持ちわるいので復活

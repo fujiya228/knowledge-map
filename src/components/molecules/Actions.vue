@@ -14,6 +14,13 @@
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存 (Ctrl + S)'">
       <Icon icon="save" />
     </div>
+    <div class="Actions__info">{{Math.round(100*scale)}}%</div>
+    <div class="Actions__button" @click="resizeGraph(1)" v-tooltip="'拡大'">
+      <Icon icon="plus" />
+    </div>
+    <div class="Actions__button" @click="resizeGraph(-1)" v-tooltip="'縮小'">
+      <Icon icon="minus" />
+    </div>
     <template v-if="detailsMenu.node">
       <div
         class="Actions__button"
@@ -44,7 +51,7 @@ import helpers from "@/helpers/helpers.js";
 export default {
   name: "Actions",
   components: {
-    Icon
+    Icon,
   },
   data() {
     return {
@@ -54,9 +61,9 @@ export default {
       pages: [
         {
           name: "free graph",
-          path: "/graph-free"
-        }
-      ]
+          path: "/graph-free",
+        },
+      ],
     };
   },
   methods: {
@@ -71,18 +78,18 @@ export default {
         relations: helpers.deep(this.relations),
         statuses: this.statuses,
         tags: this.tags,
-        updated_at: Date(Date.now())
+        updated_at: Date(Date.now()),
       };
-      data.nodes.forEach(item => {
+      data.nodes.forEach((item) => {
         delete item.x;
         delete item.y;
         delete item.byTheDeadline;
       });
-      data.relations.forEach(item => {
+      data.relations.forEach((item) => {
         delete item.base.node;
         delete item.target.node;
       });
-      this.setData(data).then(response => {
+      this.setData(data).then((response) => {
         console.log(response.data);
         if (response.data.response) {
           this.savingText = "保存しました";
@@ -94,7 +101,38 @@ export default {
         }, 3000);
       });
     },
-    ...mapActions(["delNode"])
+    resizeGraph(abs) {
+      let type = "free";
+      let before_scale = this.scale * 1;
+      let min = 0.1;
+      this.scale += 0.1 * abs;
+      // this.scale = Math.round((this.scale + 0.1 * abs) * 100) / 100;
+      if (this.scale < min) {
+        this.scale = min;
+        return;
+      }
+      // scroll量の再計算
+      let FreeGraph = document.getElementById("FreeGraph");
+      FreeGraph.scrollLeft *= this.scale / before_scale;
+      FreeGraph.scrollTop *= this.scale / before_scale;
+      // reLocation
+      let len = this.nodes.length;
+      for (let i = 0; i < len; i++) {
+        this.nodes[i].x = this.nodes[i][type].x * this.scale;
+        this.nodes[i].y = this.nodes[i][type].y * this.scale;
+        // Nodeのleftだけscale使っていないので更新かからない
+        // このあとにnextTickでwidth_2の更新入れてNodeのleftも更新する
+      }
+      // width_2の更新
+      this.$nextTick(() => {
+        let len = this.nodes.length;
+        for (let i = 0; i < len; i++) {
+          this.nodes[i].width_2 =
+            document.getElementById(this.nodes[i].id).clientWidth / 2;
+        }
+      });
+    },
+    ...mapActions(["delNode"]),
   },
   watch: {},
   computed: {
@@ -105,14 +143,14 @@ export default {
       "statuses",
       "tags",
       "detailsMenu",
-      "editorInfo"
+      "editorInfo",
     ]),
     curtPageName() {
-      let page = this.pages.find(item => item.path === this.$route.path);
+      let page = this.pages.find((item) => item.path === this.$route.path);
       return page ? page.name : "editor";
     },
     pagesFilter() {
-      return this.pages.filter(item => item.path !== this.$route.path);
+      return this.pages.filter((item) => item.path !== this.$route.path);
     },
     isEditLinkActive() {
       // 選択済みで編集ページのidと被っていなかったら
@@ -120,16 +158,24 @@ export default {
         this.detailsMenu.node &&
         "/" + this.detailsMenu.node.id !== this.$route.path
       );
-    }
+    },
+    scale: {
+      get() {
+        return this.$store.state.scale;
+      },
+      set(val) {
+        this.$store.commit("set_scale", val);
+      },
+    },
   },
   created() {
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
         this.saveData();
       }
     });
-  }
+  },
 };
 </script>
 
