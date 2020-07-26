@@ -68,6 +68,7 @@ export default {
   },
   methods: {
     saveData() {
+      if (this.isSaving) return;
       this.savingText = "保存中...";
       this.isSaving = true;
       let data = {
@@ -104,7 +105,7 @@ export default {
     resizeGraph(abs) {
       let type = "free";
       let before_scale = this.scale * 1;
-      let min = 0.1;
+      let min = 0.5;
       this.scale += 0.1 * abs;
       // this.scale = Math.round((this.scale + 0.1 * abs) * 100) / 100;
       if (this.scale < min) {
