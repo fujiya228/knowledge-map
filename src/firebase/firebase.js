@@ -1,7 +1,8 @@
+import store from "../store"
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/functions"
-import store from "../store"
+import "firebase/analytics"
 
 const state = store.state
 
@@ -25,6 +26,7 @@ const init = function () {
   // 認証状態の維持 LOCALを指定することでブラウザを閉じても続く
   // routerより実行されるタイミングが遅いので注意
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  firebase.analytics();
   setOnAuth()
   console.log('setOnAuth')
 }

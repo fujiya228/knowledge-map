@@ -25,26 +25,26 @@ export default {
     Navigation,
     Sidebar,
     AppMain,
-    Overlay
+    Overlay,
   },
   data() {
     return {
       getData: firebase.functions().httpsCallable("getData"),
-      isLoading: false
+      isLoading: false,
     };
   },
   computed: {
-    ...mapState(["sidebar", "dataInfo", "detailsMenu"])
+    ...mapState(["sidebar", "dataInfo", "detailsMenu"]),
   },
   methods: {
     initData(data) {
-      data.nodes.forEach(item => {
+      data.nodes.forEach((item) => {
         item.x = item.free.x;
         item.y = item.free.y;
       });
-      data.relations.forEach(item => {
-        item.base.node = data.nodes.find(x => x.id === item.base.id);
-        item.target.node = data.nodes.find(x => x.id === item.target.id);
+      data.relations.forEach((item) => {
+        item.base.node = data.nodes.find((x) => x.id === item.base.id);
+        item.target.node = data.nodes.find((x) => x.id === item.target.id);
       });
       this.dataInfo.nodeNum = data.nodeNum;
       this.dataInfo.statusNum = data.statusNum;
@@ -56,18 +56,18 @@ export default {
       this.detailsMenu.node = null;
       console.log("init fin");
     },
-    ...mapMutations(["graphArea"])
+    ...mapMutations(["graphArea"]),
   },
   created() {
     this.isLoading = true;
     window.addEventListener("resize", this.graphArea, false);
-    window.addEventListener("beforeunload", e => {
+    window.addEventListener("beforeunload", (e) => {
       var confirmationMessage = "変更が保存されない可能性があります";
       (e || window.event).returnValue = confirmationMessage;
       return confirmationMessage;
     });
     this.getData()
-      .then(result => {
+      .then((result) => {
         console.log(result);
         this.initData(result.data);
         if (this.$route.params.node_id) {
@@ -85,7 +85,7 @@ export default {
   destroyed() {
     // console.log("destroyed");
     window.removeEventListener("resize", this.graphArea);
-  }
+  },
 };
 </script>
 

@@ -257,8 +257,8 @@ export default {
     },
     initFreeNode() {
       this.nodes.forEach((node) => {
-        node.x = node.free.x;
-        node.y = node.free.y;
+        node.x = node.free.x * this.scale;
+        node.y = node.free.y * this.scale;
       });
     },
     ...mapMutations([
