@@ -376,6 +376,13 @@ export default new Vuex.Store({
       // Objectに対してkeyでアクセスするほうが早いんやろか？
       state.isGraphActive = true; // svgのpathが正しく描画されるように
     },
+    updateNodeWidth_2(state) {
+      let len = state.nodes.length;
+      for (let i = 0; i < len; i++) {
+        state.nodes[i].width_2 =
+          document.getElementById(state.nodes[i].id).clientWidth / 2;
+      }
+    },
     saveTag(state) {
       // 編集中だった場合のみ保存作業
       if (!state.detailsMenu.isTagForm || !state.detailsMenu.node) return;

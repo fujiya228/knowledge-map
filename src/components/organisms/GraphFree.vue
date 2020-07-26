@@ -316,7 +316,7 @@ export default {
     },
   },
   mounted() {
-    // console.log('mounted')
+    // console.log("mounted");
     this.graphArea();
     this.$nextTick(() => {
       console.log("this is current quill instance object", this.editor);

@@ -34,7 +34,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["sidebar", "dataInfo", "detailsMenu"]),
+    ...mapState(["nodes", "sidebar", "dataInfo", "detailsMenu"]),
   },
   methods: {
     initData(data) {
@@ -80,6 +80,10 @@ export default {
       })
       .then(() => {
         this.isLoading = false;
+        // width_2の更新
+        this.$nextTick(() => {
+          this.$store.commit("updateNodeWidth_2");
+        });
       });
   },
   destroyed() {

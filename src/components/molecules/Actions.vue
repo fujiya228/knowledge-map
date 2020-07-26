@@ -14,13 +14,15 @@
     <div class="Actions__button" @click="saveData()" v-tooltip="'保存 (Ctrl + S)'">
       <Icon icon="save" />
     </div>
-    <div class="Actions__info">{{Math.round(100*scale)}}%</div>
-    <div class="Actions__button" @click="resizeGraph(1)" v-tooltip="'拡大'">
-      <Icon icon="plus" />
-    </div>
-    <div class="Actions__button" @click="resizeGraph(-1)" v-tooltip="'縮小'">
-      <Icon icon="minus" />
-    </div>
+    <template v-if="isGraphFree">
+      <div class="Actions__info">{{Math.round(100*scale)}}%</div>
+      <div class="Actions__button" @click="resizeGraph(1)" v-tooltip="'拡大'">
+        <Icon icon="plus" />
+      </div>
+      <div class="Actions__button" @click="resizeGraph(-1)" v-tooltip="'縮小'">
+        <Icon icon="minus" />
+      </div>
+    </template>
     <template v-if="detailsMenu.node">
       <div
         class="Actions__button"
@@ -103,6 +105,7 @@ export default {
       });
     },
     resizeGraph(abs) {
+      if (!this.isGraphFree) return;
       let type = "free";
       let before_scale = this.scale * 1;
       let min = 0.5;
@@ -126,11 +129,7 @@ export default {
       }
       // width_2の更新
       this.$nextTick(() => {
-        let len = this.nodes.length;
-        for (let i = 0; i < len; i++) {
-          this.nodes[i].width_2 =
-            document.getElementById(this.nodes[i].id).clientWidth / 2;
-        }
+        this.$store.commit("updateNodeWidth_2");
       });
     },
     ...mapActions(["delNode"]),
@@ -152,6 +151,9 @@ export default {
     },
     pagesFilter() {
       return this.pages.filter((item) => item.path !== this.$route.path);
+    },
+    isGraphFree() {
+      return this.$route.path === "/graph-free";
     },
     isEditLinkActive() {
       // 選択済みで編集ページのidと被っていなかったら
