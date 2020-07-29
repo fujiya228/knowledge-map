@@ -39,7 +39,7 @@
       <input type="text" v-model="query" />
     </div>
     <div class="Sidebar__item">
-      <IconButton icon="plus" @click.native="isAddMode = !isAddMode" />
+      <IconButton icon="plus" :class="{active: isAddMode}" @click.native="isAddMode = !isAddMode" />
     </div>
     <div class="Sidebar__form Sidebar__item" v-if="isAddMode">
       <input
@@ -130,11 +130,15 @@ export default {
       }
     },
     sidebarAddNode() {
-      let FreeGraph = document.getElementById("FreeGraph");
-      this.addNodeForm.x =
-        (this.width - this.$store.getters["sidebar_width"]) / 2 +
-        FreeGraph.scrollLeft;
-      this.addNodeForm.y = (this.height - 48) / 2 + FreeGraph.scrollTop;
+      if (this.$route.path === "/graph-free") {
+        let FreeGraph = document.getElementById("FreeGraph");
+        this.addNodeForm.x =
+          (this.width - this.$store.getters["sidebar_width"]) / 2 +
+          FreeGraph.scrollLeft;
+        this.addNodeForm.y = (this.height - 48) / 2 + FreeGraph.scrollTop;
+      } else {
+        this.addNodeForm.x = this.addNodeForm.y = 100;
+      }
       this.addNode();
     },
     ...mapActions(["delNode", "addNode"]),
