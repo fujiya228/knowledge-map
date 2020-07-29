@@ -211,16 +211,12 @@ export default {
     },
     nodeFilter() {
       return this.nodes.filter((item) => {
-        return item.free.isActive && !item.archive;
+        return !item.archive;
       });
     },
     relationFilter() {
       return this.relations.filter(
-        (rel) =>
-          // 片方でもアーカイブならアウト
-          !(rel.base.node.archive || rel.target.node.archive) &&
-          rel.base.node.free.isActive &&
-          rel.target.node.free.isActive
+        (rel) => !(rel.base.node.archive || rel.target.node.archive)
       );
     },
     searchRelations(id) {
@@ -320,6 +316,8 @@ export default {
     this.graphArea();
     this.$nextTick(() => {
       console.log("this is current quill instance object", this.editor);
+      // width_2の更新
+      this.$store.commit("updateNodeWidth_2");
     });
   },
   created() {
@@ -414,7 +412,7 @@ export default {
     background: white;
     margin: 0;
     padding: 16px;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
     box-sizing: border-box;
   }
   &__input {

@@ -3,6 +3,7 @@ const auth = {
   namespaced: true,
   state: {
     user: null,
+    userData: null,
     isLoggedIn: false,
     isAuthStateChanged: false,
     unsubscribe: null
@@ -17,6 +18,9 @@ const auth = {
     },
     SET_USER(state, payload) {
       state.user = payload.user
+    },
+    SET_USER_DATA(state, payload) {
+      state.userData = payload.userData
     },
     SET_IS_AUTH_STATE_CHANGED(state, payload) {
       state.isAuthStateChanged = payload.isAuthStateChanged

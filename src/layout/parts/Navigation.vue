@@ -4,6 +4,7 @@
       <Icon icon="angle-double-left" :size="32" :font="20" />
     </div>
     <Actions />
+    <Help />
   </div>
 </template>
 
@@ -11,11 +12,13 @@
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import Actions from "@/components/molecules/Actions";
+import Help from "@/components/atoms/Help";
 export default {
   name: "Navigation",
   components: {
     Icon,
-    Actions
+    Actions,
+    Help,
   },
   data() {
     return {};
@@ -23,11 +26,11 @@ export default {
   methods: {
     openSidebar() {
       this.sidebar.isOpen = true;
-    }
+    },
   },
   computed: {
-    ...mapState(["sidebar"])
-  }
+    ...mapState(["sidebar"]),
+  },
 };
 </script>
 
@@ -35,6 +38,7 @@ export default {
 @import "@/assets/variable.scss";
 .Navigation {
   @include header;
+  justify-content: space-between;
   background: #fff;
   &__open {
     width: 32px;

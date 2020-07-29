@@ -76,6 +76,7 @@
           v-tooltip.top="notFoundText"
         >{{notFoundText}}</div>
       </div>
+      <div class="Editor__divider" v-show="isRelationOpen"></div>
       <quill-editor
         v-show="isEditorOpen"
         ref="MyQuillEditor"
@@ -86,6 +87,7 @@
         @ready="onEditorReady($event)"
         @change="onEditorChange($event)"
       />
+      <div class="Editor__divider" v-show="isEditorOpen && isPreviewOpen"></div>
       <div class="Editor__preview ql-editor" v-html="content" v-show="isPreviewOpen"></div>
       <div class="Editor__not-open" v-if="!isDisplayOpen">
         <h2>何も開かれていません</h2>
@@ -132,12 +134,12 @@ export default {
   name: "Editor",
   props: {
     editorClass: {
-      type: String
-    }
+      type: String,
+    },
   },
   components: {
     quillEditor,
-    Icon
+    Icon,
   },
   data() {
     return {
@@ -148,7 +150,7 @@ export default {
       isEditorOpen: true,
       isPreviewOpen: false,
       content: "",
-      notFoundText: "関連リンクはありませんでした"
+      notFoundText: "関連リンクはありませんでした",
     };
   },
   methods: {
@@ -186,7 +188,7 @@ export default {
       // 関連付けするかどうかのボタンも用意しておく
       this.$store.commit("makeRelation", {
         base: this.detailsMenu.node,
-        target: node
+        target: node,
       });
       // detailsMenuに反映=>これはmakeRelationがわでやるべき？TODO
       this.$store.dispatch("selectNode", this.detailsMenu.node);
@@ -198,7 +200,7 @@ export default {
         if (rels[key].pair_id === node.id) {
           this.$store.dispatch("delRelation", {
             relId: key,
-            force: false
+            force: false,
           });
           break;
         }
@@ -220,7 +222,7 @@ export default {
     onEditorChange({ html }) {
       // console.log("editor change!", html);
       this.content = html;
-    }
+    },
   },
   computed: {
     ...mapState(["width", "height", "nodes", "editorInfo", "detailsMenu"]),
@@ -230,24 +232,24 @@ export default {
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(
-        item =>
+        (item) =>
           item.title.indexOf(this.query) !== -1 &&
           item.id !== this.detailsMenu.nodeId
       );
     },
     unrelatedFilter() {
       return this.detailsMenu.unrelated.filter(
-        item => item.title.indexOf(this.query) !== -1
+        (item) => item.title.indexOf(this.query) !== -1
       );
     },
     isDisplayOpen() {
       return this.isEditorOpen || this.isPreviewOpen;
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "@/assets/variable.scss";
 .Editor {
   display: flex;
@@ -257,7 +259,6 @@ export default {
     box-sizing: border-box;
     width: 20%;
     min-width: 150px;
-    border: 1px solid #ccc;
     overflow: auto;
     &__item {
       display: flex;
@@ -295,7 +296,7 @@ export default {
     display: flex;
     width: 100%;
     background: white;
-    .ql-container {
+    .ql-container.ql-snow {
       border: none;
     }
   }
@@ -303,7 +304,6 @@ export default {
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    border: 1px solid #ccc;
   }
   &__not-open {
     box-sizing: border-box;
@@ -312,7 +312,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid #ccc;
   }
   &__popup {
     display: flex;
@@ -372,6 +371,10 @@ export default {
       }
     }
   }
+  &__divider {
+    width: 2px;
+    background: #ccc;
+  }
 }
 .custom-button {
   transition: 0s;
@@ -380,12 +383,19 @@ export default {
   color: $color-main;
 }
 #toolbar {
+  width: 100%;
   background: white;
+  padding: 12px 8px;
+  border: none;
+  border-bottom: solid 1px #ccc;
 }
 .quill-editor,
 .ql-editor {
   background-color: white;
   width: 100%;
   height: 100%;
+  * {
+    border: none;
+  }
 }
 </style>

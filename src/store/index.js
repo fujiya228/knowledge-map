@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
+
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 
 Vue.use(Vuex)
@@ -125,9 +128,21 @@ export default new Vuex.Store({
       y: 0,
     },
     dataInfo: {
+      isSave: false,
+      isLoad: false,
+      isAuth: false,
+      isMapSaving: false,
+      isUserSaving: false,
+      isCreating: false,
+      isLoading: false,
+      runningText: "保存中...",
+      uuid: undefined,
+      title: "untitled",
       nodeNum: 0,
       statusNum: 4,
       tagNum: 9,
+      created_at: undefined,
+      updated_at: undefined,
     },
     addNodeForm: {
       isFree: false,
@@ -154,6 +169,7 @@ export default new Vuex.Store({
       nodeId: null,
       node: null,
       relations: [],
+      unrelated: []
     },
     editorInfo: {
       isOpen: false,
@@ -188,6 +204,8 @@ export default new Vuex.Store({
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
     reset_data: (state) => {
+      console.log('reset_data')
+      state.scale = 1
       state.width = 0
       state.height = 0
       state.maxR = 0
@@ -304,9 +322,20 @@ export default new Vuex.Store({
         y: 0,
       }
       state.dataInfo = {
+        isSave: false,
+        isLoad: false,
+        isAuth: false,
+        isMapSaving: false,
+        isUserSaving: false,
+        isCreating: false,
+        isLoading: false,
+        uuid: undefined,
+        title: "untitled",
         nodeNum: 0,
         statusNum: 4,
         tagNum: 9,
+        created_at: undefined,
+        updated_at: undefined,
       }
       state.addNodeForm = {
         isFree: false,
@@ -529,6 +558,127 @@ export default new Vuex.Store({
       state.detailsMenu.relations = helpers.searchRelationNodes(node)
       state.detailsMenu.unrelated = helpers.searchRelationNodes(node, false)
       state.detailsMenu.isOpen = true;
+    },
+    saveData({ state }, flag) {
+      if (state.dataInfo.isMapSaving || state.dataInfo.isUserSaving) return;
+      if (state.dataInfo.title === "") {
+        alert("タイトルを入力してください");
+        return;
+      }
+      if (flag === 'firebase' && !state.auth.isLoggedIn) {
+        alert('ログインしてください')
+        return;
+      }
+      // 更新日時を設定
+      state.dataInfo.updated_at = Date(Date.now())
+      if (state.dataInfo.created_at === undefined) state.dataInfo.created_at = state.dataInfo.updated_at
+      // firebaseのときにはuuidを必要とする
+      console.log('uuid', state.dataInfo.uuid)
+      if (flag === "firebase" && state.dataInfo.uuid === undefined) {
+        state.dataInfo.uuid = uuidv4();
+        state.auth.userData.latest = state.dataInfo.uuid
+        state.auth.userData.items.push({
+          uuid: state.dataInfo.uuid,
+          title: state.dataInfo.title,
+          updated_at: state.dataInfo.updated_at
+        })
+      }
+      else if (flag === 'firebase') {
+        let item = state.auth.userData.items.find(item => item.uuid === state.dataInfo.uuid)
+        item.title = state.dataInfo.title
+        item.updated_at = state.dataInfo.updated_at
+        state.auth.userData.latest = state.dataInfo.uuid
+        state.auth.userData.updated_at = state.dataInfo.updated_at
+      }
+      // dataの加工
+      let data = {
+        uid: state.auth.userData.uid,
+        uuid: state.dataInfo.uuid,
+        title: state.dataInfo.title,
+        nodeNum: state.dataInfo.nodeNum,
+        statusNum: state.dataInfo.statusNum,
+        tagNum: state.dataInfo.tagNum,
+        created_at: state.dataInfo.created_at,
+        updated_at: state.dataInfo.updated_at,
+        nodes: helpers.deep(state.nodes),
+        relations: helpers.deep(state.relations),
+        statuses: state.statuses,
+        tags: state.tags,
+      };
+      data.nodes.forEach((item) => {
+        delete item.x;
+        delete item.y;
+        delete item.byTheDeadline;
+        delete item.width_2
+      });
+      data.relations.forEach((item) => {
+        delete item.base.node;
+        delete item.target.node;
+      });
+      var obj = JSON.stringify(data);
+      // 各種保存
+      return new Promise((resolve, reject) => {
+        if (flag === 'local') {
+          // LocalStorageの場合
+          localStorage.setItem("data", obj);
+          resolve()
+          // console.log('save localStorage')
+        }
+        if (flag === 'file') {
+          // fileの場合
+          let fileName = "TM_" + state.dataInfo.title + Date.now() + ".json";
+          let link = document.createElement("a");
+          link.href = "data:text/json," + encodeURIComponent(obj);
+          link.download = fileName;
+          link.click();
+          link.remove();
+          // console.log("save file");
+          resolve()
+        }
+        if (flag === 'firebase') {
+          let mapsRef = firebase.firestore().collection("maps");
+          let usersRef = firebase.firestore().collection("users");
+          // firestoreに保存
+          state.dataInfo.isMapSaving = true
+          state.dataInfo.isUserSaving = true
+          mapsRef
+            .doc(state.dataInfo.uuid)
+            .set(data, { merge: true })
+            .then(() => {
+              console.log("Success update to maps collection", state.dataInfo.uuid);
+              usersRef
+                .doc(state.auth.userData.uid)
+                .set(state.auth.userData, { merge: true })
+                .then(() => {
+                  console.log("Success update to users collection", state.auth.userData.uid);
+                })
+                .catch((error) => {
+                  console.log("Error update to users collection:", error);
+                  state.dataInfo.runningText = "保存に失敗しました"
+                  reject()
+                })
+                .then(() => {
+                  console.log('isUserSaving')
+                  resolve()
+                  state.dataInfo.runningText = "保存しました"
+                  setTimeout(() => {
+                    state.dataInfo.isUserSaving = false
+                    state.dataInfo.runningText = "保存中..."
+                  }, 3000)
+                })
+            })
+            .catch((error) => {
+              console.log("Error update to maps collection:", error);
+              state.dataInfo.runningText = "保存に失敗しました"
+              reject()
+            })
+            .then(() => {
+              console.log('isMapSaving')
+              state.dataInfo.isMapSaving = false
+            })
+        }
+        state.dataInfo.isSave = false;
+      })
     },
   },
   modules: {

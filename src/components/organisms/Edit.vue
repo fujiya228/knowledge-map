@@ -17,13 +17,13 @@ import Editor from "@/components/organisms/Editor";
 export default {
   name: "Edit",
   components: {
-    Editor
+    Editor,
   },
   data() {
     return {};
   },
   computed: {
-    ...mapState(["nodes", "detailsMenu", "editorInfo", "sidebar"])
+    ...mapState(["nodes", "detailsMenu", "editorInfo", "sidebar"]),
   },
   methods: {},
   created() {
@@ -39,7 +39,7 @@ export default {
       if (node) this.$store.dispatch("selectNode", node);
       else this.$router.push("/404");
     }
-  }
+  },
 };
 </script>
 
