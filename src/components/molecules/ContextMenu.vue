@@ -1,5 +1,10 @@
 <template>
-  <div class="Context-menu" @click.stop="closeContextMenu" v-show="contextMenu.isOpen">
+  <div
+    class="Context-menu"
+    @pointermove.stop
+    @click.stop="closeContextMenu"
+    v-show="contextMenu.isOpen"
+  >
     <div
       class="Context-menu__form"
       v-show="contextMenu.isOpen"
@@ -29,11 +34,11 @@ export default {
       this.closeContextMenu();
     },
     ...mapMutations(["closeContextMenu"]),
-    ...mapActions(["delNode"])
+    ...mapActions(["delNode"]),
   },
   computed: {
-    ...mapState(["contextMenu"])
-  }
+    ...mapState(["contextMenu"]),
+  },
 };
 </script>
 

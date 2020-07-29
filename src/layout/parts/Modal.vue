@@ -7,7 +7,7 @@
       <input class="Input" type="text" v-model="dataInfo.title" placeholder="タイトル" />
       <Btn class="full" @click.stop.native="saveData('local')">ブラウザに保存</Btn>
       <Btn class="full" @click.stop.native="saveData('file')">ファイルとして保存</Btn>
-      <Btn class="full" @click.stop.native="saveData('firebase')">Firebaseに保存</Btn>
+      <Btn class="full" @click.stop.native="saveData('firebase')">データベースに保存</Btn>
       <Btn class="full cancel" @click.stop.native="dataInfo.isSave = false">キャンセル</Btn>
     </div>
     <div class="Modal__form" v-if="dataInfo.isLoad">
