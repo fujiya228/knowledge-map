@@ -67,7 +67,7 @@ export default {
       this.dataInfo.isAuth = false;
     },
     deleteMap(map) {
-      if (!confirm(map.name + "：本当に削除しますか？")) return;
+      if (!confirm(map.title + "：本当に削除しますか？")) return;
       let mapsRef = firebase.firestore().collection("maps");
       mapsRef
         .doc(map.uuid)
