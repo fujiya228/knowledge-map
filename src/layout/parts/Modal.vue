@@ -21,17 +21,17 @@
           <input type="file" @change="loadData(false)" />
         </label>
       </Btn>
-      <TitleGroup text="データベース"></TitleGroup>
       <template v-if="isLoggedIn">
+        <TitleGroup text="データベース"></TitleGroup>
         <div class="Modal__item" v-for="item in userData.items" :key="item.uuid">
           <Btn class="full" @click.stop.native="getAnotherData(item.uuid)">{{item.title}}</Btn>
           <div class="Modal__delete" @click="deleteMap(item)">
             <IconButton icon="trash-alt" :size="32" />
           </div>
         </div>
-      </template>
-      <template v-if="!userData.items.length">
-        <div class="Modal__not-found">データはありませんでした</div>
+        <template v-if="!userData.items.length">
+          <div class="Modal__not-found">データはありませんでした</div>
+        </template>
       </template>
       <Btn class="full cancel" @click.stop.native="dataInfo.isLoad = false">キャンセル</Btn>
     </div>

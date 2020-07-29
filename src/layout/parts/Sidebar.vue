@@ -15,9 +15,10 @@
       </transition>
     </div>
     <template v-if="isUserInfoOpen">
-      <div class="Sidebar__item Sidebar__button" @click="dataInfo.isAuth=true">
+      <div class="Sidebar__item Sidebar__button" @click="openAuth()">
         <Icon icon="user-alt" />
-        <div class="Sidebar__button__text">{{user.email}}</div>
+        <div class="Sidebar__button__text" v-if="user">{{user.email}}</div>
+        <div class="Sidebar__button__text" v-else>ログイン</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSave=true">
         <Icon icon="save" />
@@ -66,8 +67,6 @@
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/auth";
 import { mapState, mapActions } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
@@ -87,26 +86,34 @@ export default {
     };
   },
   methods: {
+    openAuth() {
+      if (this.user) this.dataInfo.isAuth = true;
+      else this.$router.push("/auth");
+    },
     createNewMap() {
       this.dataInfo.isCreating = true;
       // 現在のデータを保存後データをリセット
-      this.$store
-        .dispatch("saveData", "firebase")
-        .then(() => {
-          this.$store.commit("reset_data");
-        })
-        .catch(() => {
-          console.log("保存失敗");
-        })
-        .then(() => {
-          this.dataInfo.isCreating = false;
-        });
-    },
-    logout() {
-      if (!confirm("ログアウトしますか？")) return;
-      this.detailsMenu.node = null;
-      this.$store.commit("reset_data");
-      firebase.auth().signOut();
+      if (this.user) {
+        this.$store
+          .dispatch("saveData", "firebase")
+          .then(() => {
+            this.$store.commit("reset_data");
+          })
+          .catch(() => {
+            console.log("保存失敗");
+          })
+          .then(() => {
+            this.dataInfo.isCreating = false;
+          });
+      } else {
+        if (
+          !confirm(
+            "現在編集中のマップは自動的には保存されません。よろしいですか？"
+          )
+        )
+          return;
+        this.$store.commit("reset_data");
+      }
     },
     closeSidebar() {
       this.sidebar.isOpen = false;
@@ -131,11 +138,6 @@ export default {
       this.addNode();
     },
     ...mapActions(["delNode", "addNode"]),
-  },
-  watch: {
-    user() {
-      if (!this.user) this.$router.push("/auth");
-    },
   },
   computed: {
     ...mapState([
@@ -168,11 +170,6 @@ export default {
   display: flex;
   flex-direction: column;
   letter-spacing: 0;
-  &:hover {
-    .Sidebar__close {
-      opacity: 1;
-    }
-  }
   &__header {
     @include header;
     justify-content: space-between;
@@ -209,7 +206,6 @@ export default {
     border-radius: 3px;
     cursor: pointer;
     @include button-hover;
-    opacity: 0;
   }
   &__group {
     position: relative;

@@ -10,7 +10,7 @@ const auth = {
   },
   getters: {
     isLoggedIn: state => state.isLoggedIn,
-    user: state => state.user
+    user: state => state.user,
   },
   mutations: {
     SET_IS_LOGGED_IN(state, payload) {
