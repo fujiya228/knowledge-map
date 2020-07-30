@@ -241,8 +241,10 @@ export default {
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       let x = e.pageX;
       let y = e.pageY;
-      this.contextMenu.x = x < this.width / 2 ? x : x - 120;
-      this.contextMenu.y = y < this.height / 2 ? y + 56 : y - 168;
+      console.log(x, y);
+      this.contextMenu.x =
+        x < (this.width + this.sidebar_width) / 2 ? x : x - 120;
+      this.contextMenu.y = y < (this.height + 48) / 2 ? y : y - 168;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);

@@ -8,7 +8,6 @@
     :id="node.id"
     :data-relation-id="node.id"
     :style="nodeStyle"
-    v-tooltip="node.title"
     @click.exact="selectNode(node)"
   >
     {{ node.title }}
@@ -77,7 +76,6 @@ export default {
       display: block;
     }
   }
-  &.selected,
   &:hover {
     z-index: 100;
   }

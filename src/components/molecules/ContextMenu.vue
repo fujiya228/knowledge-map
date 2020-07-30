@@ -11,6 +11,9 @@
       :class="{ open: contextMenu.isOpen }"
       :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
     >
+      <div class="Context-menu__title" v-if="contextMenu.node" @click.stop>
+        <input type="text" v-model="contextMenu.node.title" />
+      </div>
       <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
       <div class="Context-menu__item" @click.stop="makeRelation()">結ぶ</div>
       <div class="Context-menu__item" @click.stop="goEditPage()">編集ページ</div>
@@ -54,15 +57,33 @@ export default {
   width: 100%;
   height: 100%;
   background: rgba(27, 31, 35, 0.5);
-  z-index: 50;
+  z-index: 100;
   &__form {
-    width: 120px;
-    height: 112px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     position: absolute;
+    :not(:last-child) {
+      margin-bottom: 8px;
+    }
+  }
+  &__title {
+    box-sizing: border-box;
+    padding: 0 8px;
+    font-size: 14px;
+    background: white;
+    border-radius: 3px;
+    input {
+      @include ellipse;
+      width: 100%;
+      height: 32px;
+      line-height: 32px;
+    }
   }
   &__item {
-    width: 100%;
+    width: 200px;
     height: 32px;
+    margin: auto;
     line-height: 32px;
     font-size: 14px;
     text-align: center;
@@ -72,9 +93,6 @@ export default {
     opacity: 0.8;
     margin: bottom;
     cursor: pointer;
-    &:not(:last-child) {
-      margin-bottom: 8px;
-    }
     &:hover {
       opacity: 1;
     }
