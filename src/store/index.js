@@ -144,6 +144,12 @@ export default new Vuex.Store({
       created_at: undefined,
       updated_at: undefined,
     },
+    statusInfo: {
+      isAdd: false,
+      isEdit: false,
+      title: '',
+      color: "#000000"
+    },
     addNodeForm: {
       isFree: false,
       isCircle: false,
@@ -159,6 +165,9 @@ export default new Vuex.Store({
     },
     contextMenu: {
       isOpen: false,
+      flag_x: false,
+      flag_y: false,
+      isStatus: false,
       x: 0,
       y: 0,
       node: null,
@@ -203,6 +212,7 @@ export default new Vuex.Store({
     set_scale: (state, val) => (state.scale = val),
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
+    set_statuses: (state, val) => (state.statuses = val),
     reset_data: (state) => {
       console.log('reset_data')
       state.scale = 1
@@ -380,6 +390,7 @@ export default new Vuex.Store({
     },
     closeContextMenu(state) {
       state.contextMenu.isOpen = false;
+      state.contextMenu.isStatus = false;
       state.contextMenu.node = null;
     },
     closeAddNodeForm(state) {
@@ -389,7 +400,7 @@ export default new Vuex.Store({
       state.addNodeForm.isCard = false;
       state.addNodeForm.isRelation = false;
       state.addNodeForm.level = 0;
-      state.addNodeForm.status = 0;
+      state.addNodeForm.status = state.statuses[0].id;
       state.addNodeForm.title = "";
       state.addNodeForm.pie = 0;
       state.addNodeForm.x = 0;
@@ -520,6 +531,44 @@ export default new Vuex.Store({
       context.commit("closeContextMenu");
       context.commit("closeAddNodeForm");
       context.state.detailsMenu.node = null;
+    },
+    addStatus({ state }) {
+      if (state.statuses.length >= 10) {
+        alert('10個以上は作成できません。')
+        return;
+      }
+      state.statuses.push({
+        id: uuidv4(),
+        title: state.statusInfo.title,
+        color: state.statusInfo.color,
+      });
+      state.dataInfo.statusNum = state.statuses.length
+      state.statusInfo.title = "";
+      state.statusInfo.color = "#000000";
+    },
+    delStatus({ state }, id) {
+      // TODO 消すのは聞かずに消したあとに操作を戻す機能？
+      if (state.statuses.length <= 1) {
+        alert('すべてのステータスを削除することはできません。')
+        return;
+      }
+      let len = state.nodes.length
+      let text = "本当に削除しますか？"
+      for (let i = 0; i < len; i++) {
+        if (state.nodes[i].status === id) {
+          text = "対象のステータスをもつ要素があります。削除しますか？"
+          break
+        }
+      }
+      if (!confirm("ステータスの削除:" + text)) return;
+      // 配列からidをもとにindexを取ってくる関数を作れるな TODO findでよくね
+      let length = state.statuses.length;
+      for (let i = 0; i < length; i++) {
+        if (state.statuses[i].id === id) {
+          state.statuses.splice(i, 1);
+          break;
+        }
+      }
     },
     delRelation(context, payload) {
       /**

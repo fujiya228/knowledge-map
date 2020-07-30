@@ -20,6 +20,10 @@
         <div class="Sidebar__button__text" v-if="user">{{user.email}}</div>
         <div class="Sidebar__button__text" v-else>ログイン</div>
       </div>
+      <div class="Sidebar__item Sidebar__button" @click="statusInfo.isEdit=true">
+        <Icon icon="flag" />
+        <div class="Sidebar__button__text">ステータス</div>
+      </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSave=true">
         <Icon icon="save" />
         <div class="Sidebar__button__text">保存</div>
@@ -138,6 +142,7 @@ export default {
           (this.width - this.$store.getters["sidebar_width"]) / 2 +
           MapFree.scrollLeft;
         this.addNodeForm.y = (this.height - 48) / 2 + MapFree.scrollTop;
+        this.addNodeForm.status = this.statuses[0].id;
       } else {
         this.addNodeForm.x = this.addNodeForm.y = 100;
       }
@@ -150,9 +155,11 @@ export default {
       "width",
       "height",
       "nodes",
+      "statuses",
       "detailsMenu",
       "sidebar",
       "dataInfo",
+      "statusInfo",
       "addNodeForm",
     ]),
     ...mapState({

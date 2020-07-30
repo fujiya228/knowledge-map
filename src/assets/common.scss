@@ -39,20 +39,16 @@
   width: 100%;
   height: 32px;
   padding: 4px 8px;
-  // margin-bottom: 8px;
   box-sizing: border-box;
   border: solid 1px #ccc;
   border-radius: 3px;
   background: white;
   &.status {
-    width: 70%;
+    width: calc(80% - 64px);
   }
   &.color {
-    width: 20%;
+    width: 15%;
     cursor: pointer;
-  }
-  &:not(:last-child){
-    margin-bottom: 8px;
   }
 }
 // v-tooltip

@@ -235,15 +235,17 @@ export default {
       this.addNodeForm.isFree = true;
       this.addNodeForm.x = X;
       this.addNodeForm.y = Y;
+      this.addNodeForm.status = this.statuses[0].id;
       // this.$nextTick(() => document.querySelector("textarea.Textarea").focus());
     },
     openContextMenu(event, node = null) {
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       let x = e.pageX;
       let y = e.pageY;
-      this.contextMenu.x =
-        x < (this.width + this.sidebar_width) / 2 ? x : x - 120;
-      this.contextMenu.y = y < (this.height + 48) / 2 ? y : y - 168;
+      this.contextMenu.flag_x = x < (this.width + this.sidebar_width) / 2;
+      this.contextMenu.flag_y = y < (this.height + 48) / 2;
+      this.contextMenu.x = this.contextMenu.flag_x ? x : x - 120;
+      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 208;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
@@ -276,6 +278,7 @@ export default {
       "width",
       "height",
       "nodes",
+      "statuses",
       "relations",
       "moveNodeInfo",
       "addNodeForm",

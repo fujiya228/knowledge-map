@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "FormCard"
+  name: "FormCard",
 };
 </script>
 
@@ -23,6 +23,12 @@ export default {
   background: #cfcfcf;
   &:not(:last-child) {
     margin-bottom: 8px;
+  }
+  > :not(:last-child) {
+    margin-bottom: 8px;
+  }
+  &.inline > :not(:last-child) {
+    margin-bottom: 0;
   }
 }
 .Add-node-form {

@@ -84,6 +84,7 @@ const statusColor = function (status) {
   for (let i = 0; i < length; i++) {
     if (state.statuses[i].id === status) return state.statuses[i].color
   }
+  return "#bfe4e2"
   // return state.statuses.find(item => item.id === status).color
 };
 

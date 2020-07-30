@@ -41,6 +41,36 @@
       </TitleGroup>
       <Btn class="full" @click.stop.native="logout()">ログアウト</Btn>
     </div>
+    <div class="Modal__form" v-if="statusInfo.isEdit" @click.stop>
+      <TitleGroup text="ステータス編集">
+        <IconButton @click.native="closeModal()" />
+      </TitleGroup>
+      <FormCard v-if="statusInfo.isAdd">
+        <input
+          class="Input status"
+          type="text"
+          v-model="statusInfo.title"
+          placeholder="タイトル"
+          @keypress.ctrl.enter="addStatus()"
+        />
+        <input class="Input color" type="color" v-model="statusInfo.color" />
+        <div class="Button-container">
+          <Btn class="cancel" @click.native="statusInfo.isAdd = false">キャンセル</Btn>
+          <Btn @click.native="addStatus()">追加</Btn>
+        </div>
+      </FormCard>
+      <Btn class="full" v-else @click.native="statusInfo.isAdd = true">ステータスを追加</Btn>
+      <draggable v-model="statuses" handle=".Modal__status__handle">
+        <FormCard class="inline" v-for="status in statuses" :key="status.id">
+          <input class="Input status" type="text" v-model="status.title" placeholder="タイトル" />
+          <input class="Input color" type="color" v-model="status.color" />
+          <IconButton icon="trash-alt" :size="32" @click.native="delStatus(status.id)" />
+          <div class="Modal__status__handle">
+            <Icon icon="grip-lines" :size="32" />
+          </div>
+        </FormCard>
+      </draggable>
+    </div>
   </div>
 </template>
 
@@ -48,23 +78,30 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import helpers from "@/helpers/helpers";
+import draggable from "vuedraggable";
 
 import { mapState, mapActions, mapMutations } from "vuex";
+import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
 import Btn from "@/components/atoms/Btn";
 import TitleGroup from "@/components/atoms/TitleGroup";
+import FormCard from "@/components/atoms/FormCard";
 export default {
   name: "Modal",
   components: {
+    draggable,
+    Icon,
     IconButton,
     Btn,
     TitleGroup,
+    FormCard,
   },
   methods: {
     closeModal() {
       this.dataInfo.isSave = false;
       this.dataInfo.isLoad = false;
       this.dataInfo.isAuth = false;
+      this.statusInfo.isEdit = false;
     },
     deleteMap(map) {
       if (!confirm(map.title + "：本当に削除しますか？")) return;
@@ -75,7 +112,11 @@ export default {
         .then(() => {
           console.log("Success delete maps collection", map.uuid);
           console.log(this.userData.latest, map.uuid);
-          if (this.userData.latest === map.uuid) this.reset_data(); // deleteItemでlatest消されるのでこちらが先でないと困る
+          if (
+            this.userData.latest === map.uuid &&
+            this.dataInfo.uuid === map.uuid
+          )
+            this.reset_data(); // deleteItemでlatest消されるのでこちらが先でないと困る
           this.deleteItem(map.uuid);
         })
         .catch((error) => {
@@ -213,13 +254,16 @@ export default {
       firebase.auth().signOut();
       this.reset_data();
     },
-    ...mapActions(["saveData"]),
+    ...mapActions(["saveData", "addStatus", "delStatus"]),
     ...mapMutations(["reset_data"]),
   },
   computed: {
     isModalOpen() {
       return (
-        this.dataInfo.isSave || this.dataInfo.isLoad || this.dataInfo.isAuth
+        this.dataInfo.isSave ||
+        this.dataInfo.isLoad ||
+        this.dataInfo.isAuth ||
+        this.statusInfo.isEdit
       );
     },
     statuses: {
@@ -238,7 +282,7 @@ export default {
       "tags",
       "detailsMenu",
       "dataInfo",
-      "statusForm",
+      "statusInfo",
       "addNodeForm",
     ]),
   },
@@ -293,6 +337,9 @@ export default {
   &__not-found {
     text-align: center;
     margin-bottom: 8px;
+  }
+  &__status__handle {
+    cursor: move;
   }
 }
 </style>
