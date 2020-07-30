@@ -339,6 +339,7 @@ export default new Vuex.Store({
         isUserSaving: false,
         isCreating: false,
         isLoading: false,
+        runningText: "保存中...",
         uuid: undefined,
         title: "untitled",
         nodeNum: 0,
@@ -347,21 +348,30 @@ export default new Vuex.Store({
         created_at: undefined,
         updated_at: undefined,
       }
-      state.addNodeForm = {
-        isFree: false,
-        isCircle: false,
-        isTree: false,
-        isCard: false,
-        isRelation: false,
-        status: 0,
-        x: 0,
-        y: 0,
-        title: "",
-        level: 0,
-        pie: 0,
-      }
+      state.statusInfo = {
+        isAdd: false,
+        isEdit: false,
+        title: '',
+        color: "#000000"
+      },
+        state.addNodeForm = {
+          isFree: false,
+          isCircle: false,
+          isTree: false,
+          isCard: false,
+          isRelation: false,
+          status: 0,
+          x: 0,
+          y: 0,
+          title: "",
+          level: 0,
+          pie: 0,
+        }
       state.contextMenu = {
         isOpen: false,
+        flag_x: false,
+        flag_y: false,
+        isStatus: false,
         x: 0,
         y: 0,
         node: null,
@@ -372,10 +382,12 @@ export default new Vuex.Store({
         nodeId: null,
         node: null,
         relations: [],
+        unrelated: []
       }
       state.editorInfo = {
         isOpen: false,
         isEditPage: false,
+        ref: null,
         option: {
           theme: "snow",
           placeholder: "入力する",
