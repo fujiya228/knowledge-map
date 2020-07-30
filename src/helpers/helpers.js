@@ -79,12 +79,12 @@ const searchNode = function (id) {
    */
 };
 
-const statusColor = function (status) {
+const statusColor = function (status, defaultFlag = true) {
   let length = state.statuses.length
   for (let i = 0; i < length; i++) {
     if (state.statuses[i].id === status) return state.statuses[i].color
   }
-  return "#bfe4e2"
+  if (defaultFlag) return "#bfe4e2"
   // return state.statuses.find(item => item.id === status).color
 };
 
@@ -93,7 +93,6 @@ const statusTitle = function (status) {
   for (let i = 0; i < length; i++) {
     if (state.statuses[i].id === status) return state.statuses[i].title
   }
-  return "#bfe4e2"
   // return state.statuses.find(item => item.id === status).color
 };
 

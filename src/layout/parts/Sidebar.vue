@@ -20,10 +20,6 @@
         <div class="Sidebar__button__text" v-if="user">{{user.email}}</div>
         <div class="Sidebar__button__text" v-else>ログイン</div>
       </div>
-      <div class="Sidebar__item Sidebar__button" @click="statusInfo.isEdit=true">
-        <Icon icon="flag" />
-        <div class="Sidebar__button__text">ステータス</div>
-      </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSave=true">
         <Icon icon="save" />
         <div class="Sidebar__button__text">保存</div>
@@ -36,6 +32,10 @@
         <Icon icon="plus" />
         <div class="Sidebar__button__text">新規作成</div>
       </div>
+      <div class="Sidebar__item Sidebar__button" @click="statusInfo.isEdit=true">
+        <Icon icon="flag" />
+        <div class="Sidebar__button__text">ステータス</div>
+      </div>
     </template>
     <div class="Sidebar__divider" :class="{on:isUserInfoOpen}"></div>
     <div class="Sidebar__search">
@@ -44,6 +44,12 @@
     </div>
     <div class="Sidebar__item">
       <IconButton icon="plus" :class="{active: isAddMode}" @click.native="isAddMode = !isAddMode" />
+      <IconButton
+        icon="flag"
+        :class="{active: isStatusFilter}"
+        :style="{background:statusColor(status_query, defaultFlag = false)}"
+        @click.native="isStatusFilter = !isStatusFilter"
+      />
     </div>
     <div class="Sidebar__form Sidebar__item" v-if="isAddMode">
       <input
@@ -53,6 +59,15 @@
         placeholder="title"
       />
       <Btn @click.native="sidebarAddNode()">追加する</Btn>
+    </div>
+    <div class="Sidebar__form Sidebar__item" v-if="isStatusFilter">
+      <div class="Sidebar__divider"></div>
+      <Btn
+        v-for="status in statuses"
+        :key="status.id"
+        :style="{background:statusColor(status.id)}"
+        @click.native="setStatusQuery(status.id)"
+      >{{status.title}}</Btn>
     </div>
     <div class="Sidebar__list">
       <div
@@ -71,6 +86,7 @@
 </template>
 
 <script>
+import helpers from "@/helpers/helpers";
 import { mapState, mapActions } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
@@ -85,8 +101,10 @@ export default {
   data() {
     return {
       query: "",
-      isUserInfoOpen: true,
+      status_query: true,
+      isUserInfoOpen: false,
       isAddMode: false,
+      isStatusFilter: false,
     };
   },
   methods: {
@@ -148,6 +166,11 @@ export default {
       }
       this.addNode();
     },
+    setStatusQuery(status) {
+      if (this.status_query === status) this.status_query = true;
+      else this.status_query = status;
+    },
+    statusColor: helpers.statusColor,
     ...mapActions(["delNode", "addNode"]),
   },
   computed: {
@@ -167,7 +190,12 @@ export default {
     }),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
-      return this.nodes.filter((item) => item.title.indexOf(this.query) !== -1);
+      return this.nodes.filter((item) => {
+        return (
+          item.title.indexOf(this.query) !== -1 &&
+          (this.status_query === true || item.status === this.status_query)
+        );
+      });
     },
   },
 };
@@ -289,6 +317,7 @@ export default {
   &__form {
     height: auto;
     flex-direction: column;
+    margin-bottom: 8px;
     :not(:last-child) {
       margin-bottom: 8px;
     }
