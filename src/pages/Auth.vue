@@ -150,6 +150,9 @@ export default {
   &__container {
     max-width: 300px;
     width: 80%;
+    :not(:last-child) {
+      margin-bottom: 8px;
+    }
   }
   &__switch {
     margin: 16px;

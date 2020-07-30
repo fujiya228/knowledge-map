@@ -284,6 +284,7 @@ export default {
       "dataInfo",
       "statusInfo",
       "addNodeForm",
+      "sidebar",
     ]),
   },
   watch: {
@@ -296,6 +297,15 @@ export default {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
         this.saveData("firebase");
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "/") {
+        e.preventDefault();
+        this.sidebar.isOpen = true;
+        this.$nextTick(() => {
+          document.querySelector(".Sidebar__search input").focus();
+        });
       }
     });
   },
