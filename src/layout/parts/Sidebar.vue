@@ -104,6 +104,7 @@ export default {
           })
           .then(() => {
             this.dataInfo.isCreating = false;
+            this.$router.push("/");
           });
       } else {
         if (
