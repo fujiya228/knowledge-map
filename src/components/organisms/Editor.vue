@@ -76,7 +76,6 @@
           v-tooltip.top="notFoundText"
         >{{notFoundText}}</div>
       </div>
-      <div class="Editor__divider" v-show="isRelationOpen"></div>
       <quill-editor
         v-show="isEditorOpen"
         ref="MyQuillEditor"
@@ -87,8 +86,12 @@
         @ready="onEditorReady($event)"
         @change="onEditorChange($event)"
       />
-      <div class="Editor__divider" v-show="isEditorOpen && isPreviewOpen"></div>
-      <div class="Editor__preview ql-editor" v-html="content" v-show="isPreviewOpen"></div>
+      <div
+        class="Editor__preview ql-editor"
+        v-html="content"
+        v-show="isPreviewOpen"
+        :class="{divider:isEditorOpen && isPreviewOpen}"
+      ></div>
       <div class="Editor__not-open" v-if="!isDisplayOpen">
         <h2>何も開かれていません</h2>
       </div>
@@ -256,10 +259,10 @@ export default {
   flex-direction: column;
   height: 100%;
   &__link {
-    box-sizing: border-box;
     width: 20%;
     min-width: 150px;
     overflow: auto;
+    border-right: solid 1px #ccc;
     &__item {
       display: flex;
       justify-content: center;
@@ -294,16 +297,16 @@ export default {
   }
   &__display {
     display: flex;
-    width: 100%;
     background: white;
     .ql-container.ql-snow {
       border: none;
     }
   }
   &__preview {
-    box-sizing: border-box;
-    width: 100%;
     height: 100%;
+    &.divider {
+      border-left: solid 1px #ccc;
+    }
   }
   &__not-open {
     box-sizing: border-box;
@@ -370,10 +373,6 @@ export default {
         background: $color-main-l;
       }
     }
-  }
-  &__divider {
-    width: 2px;
-    background: #ccc;
   }
 }
 .custom-button {
