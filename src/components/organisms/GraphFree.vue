@@ -391,6 +391,9 @@ export default {
   &.select {
     stroke: $color-main;
   }
+  &:hover {
+    stroke-width: 6px;
+  }
 }
 .Free__editor {
   display: flex;

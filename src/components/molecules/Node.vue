@@ -34,15 +34,15 @@ export default {
     ...mapState(["scale", "statuses", "moveNodeInfo", "detailsMenu"]),
     nodeStyle() {
       return {
-        minWidth: 32 * this.scale + "px",
-        height: 64 * this.scale + "px",
-        paddingLeft: 16 * this.scale + "px",
-        paddingRight: 16 * this.scale + "px",
-        borderRadius: 32 * this.scale + "px",
-        fontSize: 30 * this.scale + "px",
-        lineHeight: 64 * this.scale + "px",
+        minWidth: 24 * this.scale + "px",
+        height: 48 * this.scale + "px",
+        paddingLeft: 12 * this.scale + "px",
+        paddingRight: 12 * this.scale + "px",
+        borderRadius: 24 * this.scale + "px",
+        fontSize: 24 * this.scale + "px",
+        lineHeight: 48 * this.scale + "px",
         left: this.node.x - this.node.width_2 + "px",
-        top: this.node.y - 32 * this.scale + "px",
+        top: this.node.y - 24 * this.scale + "px",
         backgroundColor: this.statusColor(this.node.status),
       };
     },
