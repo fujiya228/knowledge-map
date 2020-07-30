@@ -687,7 +687,7 @@ export default new Vuex.Store({
         }
         if (flag === 'file') {
           // fileの場合
-          let fileName = "TM_" + state.dataInfo.title + Date.now() + ".json";
+          let fileName = state.dataInfo.title + "_" + Date.now() + ".knowledge-map";
           let link = document.createElement("a");
           link.href = "data:text/json," + encodeURIComponent(obj);
           link.download = fileName;
