@@ -104,8 +104,8 @@ export default {
           })
           .then(() => {
             this.dataInfo.isCreating = false;
-            if (this.$route.path !== "/graph-free")
-              this.$router.push("/graph-free");
+            if (this.$route.path !== "/map-free")
+              this.$router.push("/map-free");
           });
       } else {
         if (
@@ -125,19 +125,19 @@ export default {
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
         this.$store.dispatch("selectNode", node);
-        let FreeGraph = document.getElementById("FreeGraph");
+        let MapFree = document.getElementById("MapFree");
         let area_width = this.width - this.$store.getters["sidebar_width"];
-        FreeGraph.scrollLeft = node.x - area_width / 2;
-        FreeGraph.scrollTop = node.y - this.height / 2 + 48;
+        MapFree.scrollLeft = node.x - area_width / 2;
+        MapFree.scrollTop = node.y - this.height / 2 + 48;
       }
     },
     sidebarAddNode() {
-      if (this.$route.path === "/graph-free") {
-        let FreeGraph = document.getElementById("FreeGraph");
+      if (this.$route.path === "/map-free") {
+        let MapFree = document.getElementById("MapFree");
         this.addNodeForm.x =
           (this.width - this.$store.getters["sidebar_width"]) / 2 +
-          FreeGraph.scrollLeft;
-        this.addNodeForm.y = (this.height - 48) / 2 + FreeGraph.scrollTop;
+          MapFree.scrollLeft;
+        this.addNodeForm.y = (this.height - 48) / 2 + MapFree.scrollTop;
       } else {
         this.addNodeForm.x = this.addNodeForm.y = 100;
       }

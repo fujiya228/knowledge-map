@@ -1,6 +1,6 @@
 <template>
   <div
-    id="FreeGraph"
+    id="MapFree"
     :class="{open: isDetailsOpen && !editorInfo.isOpen}"
     @pointerdown.left="onGraphMove($event)"
     @pointerup="endGraphMove()"
@@ -76,7 +76,7 @@ import AddNodeForm from "@/components/molecules/AddNodeForm";
 import ContextMenu from "@/components/molecules/ContextMenu";
 import Editor from "@/components/organisms/Editor";
 export default {
-  name: "FreeGraph",
+  name: "MapFree",
   components: {
     Background,
     Node,
@@ -129,7 +129,7 @@ export default {
         // resolveがCBされることで同期完了？
         document.body.addEventListener("click", listener, { once: true });
         document
-          .getElementById("FreeGraph")
+          .getElementById("MapFree")
           .addEventListener("click", listener, { once: true });
         for (let target of DOMnodes) {
           target.addEventListener("click", listener, { once: true });
@@ -147,15 +147,15 @@ export default {
       let node = this.detailsMenu.node;
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       // console.log(event);
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = e.pageX;
       let y = e.pageY;
-      let X = x + FreeGraph.scrollLeft - this.sidebar_width; // 現在のポインタ位置
-      let Y = y + FreeGraph.scrollTop;
-      if (x < 100 + this.sidebar_width) FreeGraph.scrollLeft -= 10;
-      if (x > this.width - 100 && X < 3000) FreeGraph.scrollLeft += 10;
-      if (y < 100) FreeGraph.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 3000) FreeGraph.scrollTop += 10;
+      let X = x + MapFree.scrollLeft - this.sidebar_width; // 現在のポインタ位置
+      let Y = y + MapFree.scrollTop;
+      if (x < 100 + this.sidebar_width) MapFree.scrollLeft -= 10;
+      if (x > this.width - 100 && X < 3000) MapFree.scrollLeft += 10;
+      if (y < 100) MapFree.scrollTop -= 10;
+      if (y > this.height - 100 && Y < 3000) MapFree.scrollTop += 10;
       node.x = Math.floor(X);
       node.free.x = Math.floor(node.x / this.scale);
       node.y = Math.floor(Y - 48);
@@ -177,11 +177,11 @@ export default {
       if (!this.isGraphMove) return;
       this.canOpenAddNodeForm = false;
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = e.pageX;
       let y = e.pageY;
-      FreeGraph.scrollLeft += this.pointerX - x;
-      FreeGraph.scrollTop += this.pointerY - y;
+      MapFree.scrollLeft += this.pointerX - x;
+      MapFree.scrollTop += this.pointerY - y;
       this.pointerX = x;
       this.pointerY = y;
     },
@@ -227,11 +227,11 @@ export default {
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
       if (!this.canOpenAddNodeForm) return;
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = event.pageX - this.sidebar_width;
       let y = event.pageY - 48;
-      let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
-      let Y = y + FreeGraph.scrollTop;
+      let X = x + MapFree.scrollLeft; // 現在のポインタ位置
+      let Y = y + MapFree.scrollTop;
       this.addNodeForm.isFree = true;
       this.addNodeForm.x = X;
       this.addNodeForm.y = Y;
@@ -332,7 +332,7 @@ export default {
 
 <style lang="scss">
 @import "@/assets/variable.scss";
-#FreeGraph {
+#MapFree {
   position: relative;
   overflow: scroll;
   width: 100%;

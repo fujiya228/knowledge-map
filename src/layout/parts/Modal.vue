@@ -199,7 +199,7 @@ export default {
         this.dataInfo.isLoading = false;
       }
       // width_2の更新
-      if (this.$route.path === "/graph-free")
+      if (this.$route.path === "/map-free")
         this.$nextTick(() => {
           this.$store.commit("updateNodeWidth_2");
           this.dataInfo.isLoading = false;

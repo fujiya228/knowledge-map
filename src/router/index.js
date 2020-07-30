@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '@/pages/Home.vue'
 import About from '@/pages/About.vue'
 import Auth from '@/pages/Auth.vue'
-import GraphFree from "@/components/organisms/GraphFree";
+import MapFree from "@/components/organisms/MapFree";
 import Edit from "@/components/organisms/Edit";
 import Layout from "@/layout";
 
@@ -16,14 +16,13 @@ const routes = [
     component: Auth
   },
   {
-    path: '/',
+    path: '/map-free',
     component: Layout,
-    redirect: 'graph-free',
     children: [
       {
-        path: 'graph-free',
-        component: GraphFree,
-        name: 'GraphFree'
+        path: '/map-free',
+        component: MapFree,
+        name: 'MapFree'
       }
     ]
   },

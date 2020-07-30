@@ -161,10 +161,10 @@ export default {
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
         this.$store.dispatch("selectNode", node);
-        let FreeGraph = document.getElementById("FreeGraph");
+        let MapFree = document.getElementById("MapFree");
         let area_width = this.width - this.$store.getters["sidebar_width"];
-        FreeGraph.scrollLeft = node.x - area_width / 2;
-        FreeGraph.scrollTop = node.y - this.height / 2;
+        MapFree.scrollLeft = node.x - area_width / 2;
+        MapFree.scrollTop = node.y - this.height / 2;
       }
     },
     clickCustomLink() {

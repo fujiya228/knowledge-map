@@ -24,7 +24,7 @@
       </div>
       <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
       <div class="Auth__switch">
-        <router-link to="/">お試しはこちら</router-link>
+        <router-link to="/map-free">お試しはこちら</router-link>
       </div>
     </template>
     <div class="Auth__icon" v-else>
@@ -113,7 +113,7 @@ export default {
     user() {
       if (this.user) {
         this.email = this.password = "";
-        const next = this.$route.query.next || "/";
+        const next = this.$route.query.next || "/map-free";
         this.$router.push(next);
       }
     },

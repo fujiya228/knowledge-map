@@ -524,7 +524,7 @@ export default new Vuex.Store({
     delRelation(context, payload) {
       /**
        * 使われている場所
-       *  GraphFree
+       *  MapFree
        *  Editor
        * 
        * delNode

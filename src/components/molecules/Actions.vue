@@ -8,7 +8,7 @@
         <Icon icon="trash-alt" />
       </div>
     </template>
-    <template v-if="isGraphFree">
+    <template v-if="isMapFree">
       <div class="Actions__info">{{Math.round(100*scale)}}%</div>
       <div class="Actions__icon-button" @click="resizeGraph(1)" v-tooltip="'拡大'">
         <Icon icon="plus" />
@@ -47,18 +47,11 @@ export default {
     Icon,
   },
   data() {
-    return {
-      pages: [
-        {
-          name: "free graph",
-          path: "/graph-free",
-        },
-      ],
-    };
+    return {};
   },
   methods: {
     resizeGraph(abs) {
-      if (!this.isGraphFree) return;
+      if (!this.isMapFree) return;
       let type = "free";
       let before_scale = this.scale * 1;
       let min = 0.5;
@@ -69,9 +62,9 @@ export default {
         return;
       }
       // scroll量の再計算
-      let FreeGraph = document.getElementById("FreeGraph");
-      FreeGraph.scrollLeft *= this.scale / before_scale;
-      FreeGraph.scrollTop *= this.scale / before_scale;
+      let MapFree = document.getElementById("MapFree");
+      MapFree.scrollLeft *= this.scale / before_scale;
+      MapFree.scrollTop *= this.scale / before_scale;
       // reLocation
       let len = this.nodes.length;
       for (let i = 0; i < len; i++) {
@@ -86,7 +79,7 @@ export default {
       });
     },
     goToPage(target) {
-      if (target === "free") this.$router.push("/graph-free");
+      if (target === "free") this.$router.push("/map-free");
       if (target === "edit") this.$router.push(this.detailsMenu.node.id);
     },
     ...mapActions(["delNode"]),
@@ -102,8 +95,8 @@ export default {
       "detailsMenu",
       "editorInfo",
     ]),
-    isGraphFree() {
-      return this.$route.path === "/graph-free";
+    isMapFree() {
+      return this.$route.path === "/map-free";
     },
     scale: {
       get() {
