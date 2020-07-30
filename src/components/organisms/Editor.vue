@@ -1,18 +1,18 @@
 <template>
   <div class="Editor" @touchmove.stop @pointermove.stop>
     <div id="toolbar">
-      <button class="custom-button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
-        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
-        <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="isPreviewOpen = !isPreviewOpen" v-tooltip="'プレビュー'">
-        <Icon icon="eye" :class="{iconOn:isPreviewOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
-        <Icon icon="external-link-alt" :size="14" :font="18" />
-      </button>
+      <div class="custom__button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
+        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
+        <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="isPreviewOpen = !isPreviewOpen" v-tooltip="'プレビュー'">
+        <Icon icon="eye" :class="{iconOn:isPreviewOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
+        <Icon icon="external-link-alt" :size="24" :font="14" />
+      </div>
       <button class="ql-bold">Bold</button>
       <button class="ql-italic">Italic</button>
       <button class="ql-underline">Underline</button>
@@ -52,6 +52,22 @@
         <option value="serif"></option>
         <option value="monospace"></option>
       </select>
+      <div
+        class="custom__select"
+        :style="{borderColor:statusColor(detailsMenu.node.status)}"
+        @click="isSelectStatus = !isSelectStatus"
+      >
+        {{statusTitle(detailsMenu.node.status)}}
+        <div class="custom__select__container" v-show="isSelectStatus">
+          <div
+            class="custom__select__item"
+            :style="{background:statusColor(status.id)}"
+            @click="detailsMenu.node.status = status.id"
+            v-for="status in statuses"
+            :key="status.id"
+          >{{status.title}}</div>
+        </div>
+      </div>
     </div>
     <div class="Editor__display" :class="editorClass">
       <div class="Editor__link" v-show="isRelationOpen" v-tooltip.right-start="'関連リンク'">
@@ -131,6 +147,7 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+import helpers from "@/helpers/helpers";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
@@ -152,6 +169,7 @@ export default {
       isRelationOpen: true,
       isEditorOpen: true,
       isPreviewOpen: false,
+      isSelectStatus: false,
       content: "",
       notFoundText: "関連リンクはありませんでした",
     };
@@ -226,9 +244,18 @@ export default {
       // console.log("editor change!", html);
       this.content = html;
     },
+    statusColor: helpers.statusColor,
+    statusTitle: helpers.statusTitle,
   },
   computed: {
-    ...mapState(["width", "height", "nodes", "editorInfo", "detailsMenu"]),
+    ...mapState([
+      "width",
+      "height",
+      "nodes",
+      "statuses",
+      "editorInfo",
+      "detailsMenu",
+    ]),
     isPopupOpen() {
       return this.isMakeCustomLink || this.isMakeRelation;
     },
@@ -375,8 +402,46 @@ export default {
     }
   }
 }
-.custom-button {
-  transition: 0s;
+.custom {
+  &__button {
+    float: left;
+    width: 28px;
+    height: 24px;
+    padding: 0 2px;
+    transition: 0s;
+    cursor: pointer;
+  }
+  &__select {
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    height: 24px;
+    width: 100px;
+    line-height: 20px;
+    padding: 0 8px;
+    font-size: 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: solid 2px;
+    &__container {
+      width: 100%;
+      padding: 4px 0;
+      background: white;
+      position: absolute;
+      left: 0;
+      top: 24px;
+      z-index: 1;
+    }
+    &__item {
+      width: 100%;
+      font-size: 14px;
+      padding: 0 8px;
+      margin-bottom: 4px;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
 }
 .iconOn {
   color: $color-main;

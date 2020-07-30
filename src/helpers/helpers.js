@@ -88,6 +88,15 @@ const statusColor = function (status) {
   // return state.statuses.find(item => item.id === status).color
 };
 
+const statusTitle = function (status) {
+  let length = state.statuses.length
+  for (let i = 0; i < length; i++) {
+    if (state.statuses[i].id === status) return state.statuses[i].title
+  }
+  return "#bfe4e2"
+  // return state.statuses.find(item => item.id === status).color
+};
+
 const levelColor = function (level) {
   return 'rgb(' + 255 / 5 * level + ', 100, ' + 255 / 5 * (5 - level) + ')'
 };
@@ -122,6 +131,7 @@ const helpers = {
   getDeadlineClass: getDeadlineClass,
   searchNode: searchNode,
   statusColor: statusColor,
+  statusTitle: statusTitle,
   levelColor: levelColor,
   searchRelationNodes: searchRelationNodes,
   tagColor: tagColor,
