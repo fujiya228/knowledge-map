@@ -104,7 +104,8 @@ export default {
           })
           .then(() => {
             this.dataInfo.isCreating = false;
-            this.$router.push("/");
+            if (this.$route.path !== "/graph-free")
+              this.$router.push("/graph-free");
           });
       } else {
         if (
