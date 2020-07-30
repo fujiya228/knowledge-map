@@ -659,12 +659,12 @@ export default new Vuex.Store({
                 })
                 .then(() => {
                   console.log('isUserSaving')
-                  resolve()
                   state.dataInfo.runningText = "保存しました"
                   setTimeout(() => {
                     state.dataInfo.isUserSaving = false
                     state.dataInfo.runningText = "保存中..."
                   }, 3000)
+                  resolve()
                 })
             })
             .catch((error) => {

@@ -241,7 +241,6 @@ export default {
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       let x = e.pageX;
       let y = e.pageY;
-      console.log(x, y);
       this.contextMenu.x =
         x < (this.width + this.sidebar_width) / 2 ? x : x - 120;
       this.contextMenu.y = y < (this.height + 48) / 2 ? y : y - 168;

@@ -193,7 +193,10 @@ export default {
         let node = helpers.searchNode(this.$route.params.node_id);
         // console.log(node);
         if (node) this.$store.dispatch("selectNode", node);
-        else this.$router.push("/404");
+        else {
+          this.$router.push("/404");
+        }
+        this.dataInfo.isLoading = false;
       }
       // width_2の更新
       if (this.$route.path === "/graph-free")
