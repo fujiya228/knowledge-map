@@ -55,7 +55,7 @@ const routes = [
   {
     path: '*',
     name: 'Not Found',
-    redirect: '/',
+    redirect: '/map-free',
   }
 ]
 
