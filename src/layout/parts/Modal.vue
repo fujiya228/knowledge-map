@@ -71,6 +71,19 @@
         </FormCard>
       </draggable>
     </div>
+    <div class="Modal__form" v-if="contactInfo.isOpen" @click.stop>
+      <TitleGroup text="Contact">
+        <IconButton @click.native="closeModal()" />
+      </TitleGroup>
+      <div class>Email</div>
+      <input type="email" class="Input" v-model="contactInfo.email" required />
+      <div class>
+        Message
+        <span>*</span>
+      </div>
+      <textarea class="Input textarea" cols="30" rows="10" v-model="contactInfo.message" required></textarea>
+      <Btn class="full" @click.native="sendMessage()">送信</Btn>
+    </div>
   </div>
 </template>
 
@@ -102,6 +115,7 @@ export default {
       this.dataInfo.isLoad = false;
       this.dataInfo.isAuth = false;
       this.statusInfo.isEdit = false;
+      this.contactInfo.isOpen = false;
     },
     deleteMap(map) {
       if (!confirm(map.title + "：本当に削除しますか？")) return;
@@ -254,6 +268,36 @@ export default {
       firebase.auth().signOut();
       this.reset_data();
     },
+    sendMessage() {
+      if (this.contactInfo.message.length === 0) {
+        alert("メッセージは必須項目です");
+        return;
+      }
+      let contactRef = firebase.firestore().collection("contacts");
+      this.dataInfo.isLoading = true;
+      contactRef
+        .doc()
+        .set({
+          uid: this.userData ? this.userData.uid : "",
+          account_email: this.user ? this.user.email : "",
+          email: this.contactInfo.email,
+          message: this.contactInfo.message,
+          sent_at: Date.now(),
+        })
+        .then(() => {
+          console.log("Successful transmission");
+          alert("送信完了しました");
+          this.contactInfo.message = this.contactInfo.email = "";
+          this.closeModal();
+        })
+        .catch((error) => {
+          console.log("Transmission failure:", error);
+          alert("送信に失敗しました");
+        })
+        .then(() => {
+          this.dataInfo.isLoading = false;
+        });
+    },
     ...mapActions(["saveData", "addStatus", "delStatus"]),
     ...mapMutations(["reset_data"]),
   },
@@ -263,7 +307,8 @@ export default {
         this.dataInfo.isSave ||
         this.dataInfo.isLoad ||
         this.dataInfo.isAuth ||
-        this.statusInfo.isEdit
+        this.statusInfo.isEdit ||
+        this.contactInfo.isOpen
       );
     },
     statuses: {
@@ -284,6 +329,7 @@ export default {
       "dataInfo",
       "statusInfo",
       "addNodeForm",
+      "contactInfo",
       "sidebar",
     ]),
   },

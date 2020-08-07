@@ -4,7 +4,12 @@
       <Icon icon="angle-double-left" :size="32" :font="20" />
     </div>
     <Actions />
-    <Help />
+    <div class="Navigation__container">
+      <div class="Navigation__button" @click="contactInfo.isOpen = true" v-tooltip="'Contact'">
+        <Icon icon="paper-plane" :size="32" :font="16" />
+      </div>
+      <Help />
+    </div>
   </div>
 </template>
 
@@ -29,7 +34,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["sidebar"]),
+    ...mapState(["sidebar", "contactInfo"]),
   },
 };
 </script>
@@ -47,6 +52,16 @@ export default {
     cursor: pointer;
     @include button-hover;
     transform: rotate(180deg);
+  }
+  &__button {
+    width: 32px;
+    height: 32px;
+    border-radius: 3px;
+    cursor: pointer;
+    @include button-hover;
+  }
+  &__container {
+    display: flex;
   }
 }
 </style>

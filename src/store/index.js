@@ -192,6 +192,11 @@ export default new Vuex.Store({
         }
       }
     },
+    contactInfo: {
+      isOpen: false,
+      email: "",
+      message: "",
+    },
     sidebar: {
       isOpen: true
     },

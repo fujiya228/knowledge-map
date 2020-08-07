@@ -50,6 +50,10 @@
     width: 15%;
     cursor: pointer;
   }
+  &.textarea{
+    height: 120px;
+    resize: none;
+  }
 }
 // v-tooltip
 .tooltip{
