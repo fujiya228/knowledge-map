@@ -47,6 +47,8 @@
         left: addNodeForm.x - 125 + 'px',
       }"
       @addFunction="addNode()"
+      @touchmove.stop.native
+      @pointermove.stop.native
     />
     <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
     <div
