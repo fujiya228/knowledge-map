@@ -386,6 +386,9 @@ export default {
     &__list {
       display: flex;
       flex-wrap: wrap;
+      // 300 - 24*2 - 35 - 8 - 24 - 8
+      height: 177px;
+      overflow: auto;
     }
     &__item {
       max-width: 50%;
