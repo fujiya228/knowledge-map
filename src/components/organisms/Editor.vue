@@ -166,7 +166,7 @@ export default {
       query: "",
       isMakeCustomLink: false,
       isMakeRelation: false,
-      isRelationOpen: true,
+      isRelationOpen: false,
       isEditorOpen: true,
       isPreviewOpen: false,
       isSelectStatus: false,
