@@ -10,7 +10,7 @@
       <Btn class="full" @click.stop.native="saveData('firebase')">データベースに保存</Btn>
       <Btn class="full cancel" @click.stop.native="dataInfo.isSave = false">キャンセル</Btn>
     </div>
-    <div class="Modal__form" v-if="dataInfo.isLoad">
+    <div class="Modal__form" v-if="dataInfo.isLoad" @click.stop>
       <TitleGroup text="読み込む">
         <IconButton @click.native="closeModal()" />
       </TitleGroup>
