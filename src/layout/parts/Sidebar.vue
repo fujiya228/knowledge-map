@@ -8,13 +8,13 @@
         <Icon icon="angle-double-left" :size="32" :font="20" />
       </div>
     </div>
-    <div class="Sidebar__group" @click="isUserInfoOpen = !isUserInfoOpen">
+    <div class="Sidebar__group" @click="isMenuOpen = !isMenuOpen">
       <div class="Sidebar__group__title">Menu</div>
       <transition name="group">
-        <Icon icon="chevron-up" v-if="isUserInfoOpen" />
+        <Icon icon="chevron-up" v-if="isMenuOpen" />
       </transition>
     </div>
-    <template v-if="isUserInfoOpen">
+    <template v-if="isMenuOpen">
       <div class="Sidebar__item Sidebar__button" @click="openAuth()">
         <Icon icon="user-alt" />
         <div class="Sidebar__button__text" v-if="user">{{user.email}}</div>
@@ -37,7 +37,7 @@
         <div class="Sidebar__button__text">ステータス</div>
       </div>
     </template>
-    <div class="Sidebar__divider" :class="{on:isUserInfoOpen}"></div>
+    <div class="Sidebar__divider" :class="{on:isMenuOpen}"></div>
     <div class="Sidebar__search">
       <Icon icon="search" />
       <input type="text" v-model="query" />
@@ -102,7 +102,7 @@ export default {
     return {
       query: "",
       status_query: true,
-      isUserInfoOpen: false,
+      isMenuOpen: true,
       isAddMode: false,
       isStatusFilter: false,
     };
@@ -120,6 +120,7 @@ export default {
           .dispatch("saveData", "firebase")
           .then(() => {
             this.$store.commit("reset_data");
+            this.$store.commit("graphArea");
           })
           .catch(() => {
             console.log("保存失敗");
@@ -132,11 +133,15 @@ export default {
       } else {
         if (
           !confirm(
-            "現在編集中のマップは自動的には保存されません。よろしいですか？"
+            "ログインされていませんので、現在編集中のマップは自動的には保存されません。よろしいですか？"
           )
-        )
+        ) {
+          this.dataInfo.isCreating = false;
           return;
+        }
         this.$store.commit("reset_data");
+        this.$store.commit("graphArea");
+        this.dataInfo.isCreating = false;
       }
     },
     closeSidebar() {
