@@ -107,6 +107,19 @@ export default {
       },
     },
   },
+  created() {
+    this.$nextTick(() => {
+      document.getElementById("MapFree").addEventListener("wheel", (e) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          let abs;
+          if (e.deltaY > 0) abs = -1;
+          else abs = 1;
+          this.resizeGraph(abs);
+        }
+      });
+    });
+  },
 };
 </script>
 
