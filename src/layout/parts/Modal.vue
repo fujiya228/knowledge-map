@@ -21,6 +21,7 @@
           <input type="file" @change="loadData(false)" />
         </label>
       </Btn>
+      <Btn class="full" @click.stop.native="getData('207f0f6c-4ef4-4df4-88be-67a169f8109c')">サンプルマップ</Btn>
       <template v-if="isLoggedIn">
         <TitleGroup text="データベース"></TitleGroup>
         <div class="Modal__item" v-for="item in userData.items" :key="item.uuid">
@@ -237,6 +238,7 @@ export default {
       });
       this.dataInfo.uuid = data.uuid;
       this.dataInfo.title = data.title;
+      this.dataInfo.public = data.public;
       this.dataInfo.nodeNum = data.nodeNum;
       this.dataInfo.statusNum = data.statusNum;
       this.dataInfo.tagNum = data.tagNum;
@@ -266,6 +268,7 @@ export default {
     },
     updateData(data) {
       // 過去のバージョンで足りていないデータを追加
+      data.public = false;
       console.log("updateData", data);
     },
     logout() {

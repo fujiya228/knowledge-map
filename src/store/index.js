@@ -139,6 +139,7 @@ export default new Vuex.Store({
       runningText: "保存中...",
       uuid: undefined,
       title: "untitled",
+      public: false,
       nodeNum: 0,
       statusNum: 4,
       tagNum: 9,
@@ -649,6 +650,7 @@ export default new Vuex.Store({
       }
       else if (flag === 'firebase') {
         let item = state.auth.userData.items.find(item => item.uuid === state.dataInfo.uuid)
+        if (!item) return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
         item.title = state.dataInfo.title
         item.updated_at = state.dataInfo.updated_at
         state.auth.userData.latest = state.dataInfo.uuid
@@ -659,6 +661,7 @@ export default new Vuex.Store({
         uid: state.auth.userData.uid,
         uuid: state.dataInfo.uuid,
         title: state.dataInfo.title,
+        public: state.dataInfo.public,
         nodeNum: state.dataInfo.nodeNum,
         statusNum: state.dataInfo.statusNum,
         tagNum: state.dataInfo.tagNum,
