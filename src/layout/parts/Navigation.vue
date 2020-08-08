@@ -8,7 +8,9 @@
       <div class="Navigation__button" @click="contactInfo.isOpen = true" v-tooltip="'Contact'">
         <Icon icon="paper-plane" :size="32" :font="16" />
       </div>
-      <Help />
+      <div class="Navigation__button" @click="dataInfo.isHelp = true" v-tooltip="'Help'">
+        <Icon icon="question-circle" :size="32" :font="16" />
+      </div>
     </div>
   </div>
 </template>
@@ -17,13 +19,11 @@
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import Actions from "@/components/molecules/Actions";
-import Help from "@/components/atoms/Help";
 export default {
   name: "Navigation",
   components: {
     Icon,
     Actions,
-    Help,
   },
   data() {
     return {};
@@ -34,7 +34,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["sidebar", "contactInfo"]),
+    ...mapState(["sidebar", "contactInfo", "dataInfo"]),
   },
 };
 </script>

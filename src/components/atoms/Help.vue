@@ -1,18 +1,12 @@
 <template>
-  <div class="Help">
-    <div class="Help__button" @click="isOpen = true" v-tooltip="'Help'">
-      <Icon icon="question-circle" :size="32" :font="16" />
-    </div>
-    <div class="Help__overlay" v-if="isOpen" @click.self="isOpen = false">
-      <div class="Help__container">
-        <div class="Help__item" v-for="item in HelpContents" :key="item.title">
-          <h2 @click="select(item.title)" :class="{selected:isSelect === item.title}">{{item.title}}</h2>
-          <div class="Help__sub-container" v-if="isSelect === item.title">
-            <div class="Help__item" v-for="sub in item.sub" :key="sub.title">
-              <h3>{{sub.title}}</h3>
-              <section v-html="sub.content"></section>
-            </div>
-          </div>
+  <div class="Help__container">
+    <p>まだまだ、開発途中です。PCで使っていただくことをメインで作成しており、スマホでの表示崩れや操作がおかしい点などはご了承ください。</p>
+    <div class="Help__item" v-for="item in HelpContents" :key="item.title">
+      <h2 @click="select(item.title)" :class="{selected:isSelect === item.title}">{{item.title}}</h2>
+      <div class="Help__sub-container" v-if="isSelect === item.title">
+        <div class="Help__item" v-for="sub in item.sub" :key="sub.title">
+          <h3>{{sub.title}}</h3>
+          <section v-html="sub.content"></section>
         </div>
       </div>
     </div>
@@ -20,26 +14,23 @@
 </template>
 
 <script>
-import Icon from "@/components/atoms/Icon";
 import HelpContents from "@/assets/help-contents";
 export default {
   name: "Help",
-  components: {
-    Icon
-  },
+  components: {},
   data() {
     return {
       isOpen: false,
       HelpContents: HelpContents,
-      isSelect: ""
+      isSelect: "",
     };
   },
   methods: {
     select(title) {
       if (this.isSelect === title) this.isSelect = "";
       else this.isSelect = title;
-    }
-  }
+    },
+  },
 };
 </script>
 

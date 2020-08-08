@@ -84,6 +84,7 @@
       <textarea class="Input textarea" cols="30" rows="10" v-model="contactInfo.message" required></textarea>
       <Btn class="full" @click.native="sendMessage()">送信</Btn>
     </div>
+    <Help v-if="dataInfo.isHelp" @click.stop.native />
   </div>
 </template>
 
@@ -99,6 +100,7 @@ import IconButton from "@/components/atoms/IconButton";
 import Btn from "@/components/atoms/Btn";
 import TitleGroup from "@/components/atoms/TitleGroup";
 import FormCard from "@/components/atoms/FormCard";
+import Help from "@/components/atoms/Help";
 export default {
   name: "Modal",
   components: {
@@ -108,12 +110,14 @@ export default {
     Btn,
     TitleGroup,
     FormCard,
+    Help,
   },
   methods: {
     closeModal() {
       this.dataInfo.isSave = false;
       this.dataInfo.isLoad = false;
       this.dataInfo.isAuth = false;
+      this.dataInfo.isHelp = false;
       this.statusInfo.isEdit = false;
       this.contactInfo.isOpen = false;
     },
@@ -307,6 +311,7 @@ export default {
         this.dataInfo.isSave ||
         this.dataInfo.isLoad ||
         this.dataInfo.isAuth ||
+        this.dataInfo.isHelp ||
         this.statusInfo.isEdit ||
         this.contactInfo.isOpen
       );

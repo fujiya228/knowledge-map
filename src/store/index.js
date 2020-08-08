@@ -131,6 +131,7 @@ export default new Vuex.Store({
       isSave: false,
       isLoad: false,
       isAuth: false,
+      isHelp: false,
       isMapSaving: false,
       isUserSaving: false,
       isCreating: false,

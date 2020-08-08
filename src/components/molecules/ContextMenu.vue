@@ -34,7 +34,7 @@
         <input type="text" v-model="contextMenu.node.title" />
       </div>
       <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
-      <div class="Context-menu__item" @click.stop="makeRelation()">結ぶ</div>
+      <div class="Context-menu__item" @click.stop="makeRelation()">関連付ける</div>
       <div
         class="Context-menu__item"
         @click.stop="contextMenu.isStatus = !contextMenu.isStatus"
