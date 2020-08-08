@@ -170,6 +170,10 @@ export default {
         this.addNodeForm.x = this.addNodeForm.y = 100;
       }
       this.addNode();
+      // Editページで↑やるならRouterのエラーが出ないようにルーティング忘れない？
+      if (this.$route.name === "Edit") {
+        this.$router.push(this.detailsMenu.node.id);
+      }
     },
     setStatusQuery(status) {
       if (this.status_query === status) this.status_query = true;
