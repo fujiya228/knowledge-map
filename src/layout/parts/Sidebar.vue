@@ -36,6 +36,10 @@
         <Icon icon="flag" />
         <div class="Sidebar__button__text">ステータス</div>
       </div>
+      <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSettings=true">
+        <Icon icon="cog" />
+        <div class="Sidebar__button__text">マップ設定</div>
+      </div>
     </template>
     <div class="Sidebar__divider" :class="{on:isMenuOpen}"></div>
     <div class="Sidebar__search">

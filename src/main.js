@@ -12,14 +12,14 @@ import {
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
   faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
   faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch, faExternalLinkAlt, faEye, faListUl,
-  faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane
+  faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane, faCog
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
   faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
   faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch, faExternalLinkAlt, faEye, faListUl,
-  faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane
+  faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane, faCog
 )
 Vue.component('fa-icon', FontAwesomeIcon)
 Vue.use(VTooltip)

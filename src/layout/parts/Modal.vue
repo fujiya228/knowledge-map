@@ -85,6 +85,22 @@
       <textarea class="Input textarea" cols="30" rows="10" v-model="contactInfo.message" required></textarea>
       <Btn class="full" @click.native="sendMessage()">送信</Btn>
     </div>
+    <div class="Modal__form" v-if="dataInfo.isSettings" @click.stop>
+      <TitleGroup text="マップ設定">
+        <IconButton @click.native="closeModal()" />
+      </TitleGroup>
+      <div class="Modal__item">
+        <div class="Modal__item__title">公開設定（読み取りのみ）</div>
+        <ToggleButton
+          v-model="dataInfo.public"
+          :speed="200"
+          :height="24"
+          :width="48"
+          :sync="true"
+          color="#a5d6a7"
+        />
+      </div>
+    </div>
     <Help v-if="dataInfo.isHelp" @click.stop.native />
   </div>
 </template>
@@ -94,6 +110,7 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 import helpers from "@/helpers/helpers";
 import draggable from "vuedraggable";
+import { ToggleButton } from "vue-js-toggle-button";
 
 import { mapState, mapActions, mapMutations } from "vuex";
 import Icon from "@/components/atoms/Icon";
@@ -106,6 +123,7 @@ export default {
   name: "Modal",
   components: {
     draggable,
+    ToggleButton,
     Icon,
     IconButton,
     Btn,
@@ -119,6 +137,7 @@ export default {
       this.dataInfo.isLoad = false;
       this.dataInfo.isAuth = false;
       this.dataInfo.isHelp = false;
+      this.dataInfo.isSettings = false;
       this.statusInfo.isEdit = false;
       this.contactInfo.isOpen = false;
     },
@@ -268,7 +287,6 @@ export default {
     },
     updateData(data) {
       // 過去のバージョンで足りていないデータを追加
-      data.public = false;
       console.log("updateData", data);
     },
     logout() {
@@ -315,6 +333,7 @@ export default {
         this.dataInfo.isLoad ||
         this.dataInfo.isAuth ||
         this.dataInfo.isHelp ||
+        this.dataInfo.isSettings ||
         this.statusInfo.isEdit ||
         this.contactInfo.isOpen
       );
@@ -395,6 +414,9 @@ export default {
   }
   &__item {
     display: flex;
+    justify-content: space-between;
+    &__title {
+    }
   }
   &__not-found {
     text-align: center;
