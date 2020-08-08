@@ -331,6 +331,7 @@ export default {
   }
   &__preview {
     height: 100%;
+    width: 100%;
     &.divider {
       border-left: solid 1px #ccc;
     }
@@ -459,6 +460,8 @@ export default {
   width: 100%;
   height: 100%;
   font-size: 16px;
+  word-break: break-all;
+
   * {
     border: none;
   }
