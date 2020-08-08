@@ -283,6 +283,10 @@ export default {
     line-height: 24px;
     padding: 4px 16px;
     font-size: 14px;
+    user-select: none;
+    &:hover {
+      user-select: auto;
+    }
   }
   &__button {
     display: flex;
@@ -300,7 +304,6 @@ export default {
     height: 48px;
     line-height: 24px;
     padding: 12px 16px;
-    font-size: 14px;
     input {
       box-sizing: border-box;
       width: calc(100% - 24px);
@@ -309,6 +312,7 @@ export default {
       border-radius: 12px;
       background: white;
       border: solid 1px black;
+      font-size: 16px;
       &:focus {
         border-color: $color-main;
       }

@@ -1,5 +1,5 @@
 <template>
-  <FormCard>
+  <FormCard class="Add-node-form">
     <textarea
       class="Textarea"
       v-model="addNodeForm.title"
@@ -22,16 +22,24 @@ export default {
   name: "AddNodeForm",
   components: {
     Btn,
-    FormCard
+    FormCard,
   },
   methods: {
     addNode() {
       this.$emit("addFunction");
     },
-    ...mapMutations(["closeAddNodeForm"])
+    ...mapMutations(["closeAddNodeForm"]),
   },
   computed: {
-    ...mapState(["addNodeForm"])
-  }
+    ...mapState(["addNodeForm"]),
+  },
 };
 </script>
+
+<style lang="scss">
+.Add-node-form {
+  textarea {
+    font-size: 16px;
+  }
+}
+</style>
