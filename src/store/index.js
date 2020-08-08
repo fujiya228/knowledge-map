@@ -518,10 +518,6 @@ export default new Vuex.Store({
       // console.log('addNode')
       dispatch("selectNode", state.nodes[state.nodes.length - 1]);
       commit("closeAddNodeForm");
-      setTimeout(() => {
-        // console.log(document.getElementById(id).clientWidth)
-        state.nodes[state.nodes.length - 1].width_2 = document.getElementById(id).clientWidth / 2;
-      }, 100);
       // setTimeout(() => {
       //   document.querySelector(".Details__detail > .Textarea").focus();
       // }, 100);
