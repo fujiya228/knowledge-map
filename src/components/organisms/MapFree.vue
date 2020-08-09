@@ -322,8 +322,6 @@ export default {
     this.graphArea();
     this.$nextTick(() => {
       console.log("this is current quill instance object", this.editor);
-      // width_2の更新
-      this.$store.commit("updateNodeWidth_2");
     });
   },
   created() {

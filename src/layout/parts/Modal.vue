@@ -189,6 +189,7 @@ export default {
         .dispatch("saveData", "firebase")
         .then(() => {
           this.getData(uuid);
+          this.$router.push(uuid);
         })
         .catch(() => {
           console.log("保存失敗");
@@ -212,11 +213,17 @@ export default {
             else {
               alert(uuid + "のデータは存在しませんでした。");
               this.deleteItem(uuid);
-              this.dataInfo.isLoading = false;
             }
+            this.$nextTick(() => {
+              // width_2の更新
+              this.$store.commit("updateNodeWidth_2");
+            });
           })
           .catch((err) => {
             console.log("err", err);
+            this.dataInfo.isLoading = false;
+          })
+          .then(() => {
             this.dataInfo.isLoading = false;
           });
       }
@@ -346,7 +353,12 @@ export default {
         this.$store.commit("set_statuses", val);
       },
     },
-    ...mapState("auth", ["user", "userData", "isLoggedIn"]),
+    ...mapState("auth", [
+      "user",
+      "userData",
+      "isLoggedIn",
+      "isAuthStateChanged",
+    ]),
     ...mapState([
       "levels",
       "nodes",
@@ -362,7 +374,12 @@ export default {
   },
   watch: {
     userData() {
-      if (this.isLoggedIn) this.getData(this.userData.latest);
+      console.log(this.$route.params);
+      if (this.$route.params.map_id) this.getData(this.$route.params.map_id);
+      else if (this.isLoggedIn && this.userData.latest) {
+        this.$router.push(this.userData.latest);
+        this.getData(this.userData.latest);
+      }
     },
   },
   created() {

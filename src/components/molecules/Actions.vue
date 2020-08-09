@@ -27,7 +27,7 @@
       </div>
     </template>
     <template v-if="editorInfo.isEditPage">
-      <div class="Actions__icon-button" @click="goToPage('free')" v-tooltip="'マップページ'">
+      <div class="Actions__icon-button" @click="goToPage('map')" v-tooltip="'マップページ'">
         <Icon icon="project-diagram" />
       </div>
     </template>
@@ -79,7 +79,7 @@ export default {
       });
     },
     goToPage(target) {
-      if (target === "free") this.$router.push("/map-free");
+      if (target === "map") this.$router.push("/");
       if (target === "edit") this.$router.push(this.detailsMenu.node.id);
     },
     ...mapActions(["delNode"]),
@@ -96,7 +96,7 @@ export default {
       "editorInfo",
     ]),
     isMapFree() {
-      return this.$route.path === "/map-free";
+      return this.$route.name === "id_map" || this.$route.name === "non_id_map";
     },
     scale: {
       get() {
@@ -108,6 +108,7 @@ export default {
     },
   },
   created() {
+    // これはresizeGraphをMutationにいれて、以下の処理をMapのcreatedに入れなかなんな TODO
     this.$nextTick(() => {
       document.getElementById("MapFree").addEventListener("wheel", (e) => {
         if (e.ctrlKey) {

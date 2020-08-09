@@ -65,7 +65,7 @@ export default {
       this.$emit("makeRelation");
     },
     goEditPage() {
-      this.$router.push("/" + this.contextMenu.node.id);
+      this.$router.push(this.$route.path + "/" + this.contextMenu.node.id);
       this.closeContextMenu();
     },
     ...mapMutations(["closeContextMenu"]),

@@ -16,22 +16,32 @@ const routes = [
     component: Auth
   },
   {
-    path: '/map-free',
-    component: Layout,
-    children: [
-      {
-        path: '/map-free',
-        component: MapFree,
-        name: 'MapFree'
-      }
-    ]
-  },
-  {
-    path: '/:node_id([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})',
+    path: '/:map_id([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})',
     component: Layout,
     children: [
       {
         path: '',
+        component: MapFree,
+        name: 'id_map'
+      },
+      {
+        path: ':node_id([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})',
+        component: Edit,
+        name: 'Edit'
+      }
+    ]
+  },
+  {
+    path: '/non-id',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: MapFree,
+        name: 'non_id_map',
+      },
+      {
+        path: ':node_id([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})',
         component: Edit,
         name: 'Edit'
       }
@@ -55,7 +65,7 @@ const routes = [
   {
     path: '*',
     name: 'Not Found',
-    redirect: '/map-free',
+    redirect: '/non-id',
   }
 ]
 
