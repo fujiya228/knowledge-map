@@ -118,26 +118,31 @@ export default {
     },
     createNewMap() {
       this.dataInfo.isCreating = true;
-      // 現在のデータを保存後データをリセット
+      // 現在のデータを保存後デー タをリセット
       if (this.user) {
-        this.$store
-          .dispatch("saveData", "firebase")
-          .then(() => {
-            this.$store.commit("reset_data");
-            this.$store.commit("graphArea");
-          })
-          .catch(() => {
-            console.log("保存失敗");
-          })
-          .then(() => {
-            this.dataInfo.isCreating = false;
-            if (this.$route.path !== "/map-free")
-              this.$router.push("/map-free");
-          });
+        if (confirm("現在のマップを保存しますか？")) {
+          this.$store
+            .dispatch("saveData", "firebase")
+            .then(() => {
+              this.$store.commit("reset_data");
+              this.$store.commit("graphArea");
+            })
+            .catch(() => {
+              console.log("保存失敗");
+            })
+            .then(() => {
+              this.dataInfo.isCreating = false;
+              if (this.$route.path !== "/non-id") this.$router.push("/non-id");
+            });
+        } else {
+          this.$store.commit("reset_data");
+          this.dataInfo.isCreating = false;
+          if (this.$route.path !== "/non-id") this.$router.push("/non-id");
+        }
       } else {
         if (
           !confirm(
-            "ログインされていませんので、現在編集中のマップは自動的には保存されません。よろしいですか？"
+            "ログインされていませんので、現在編集中のマップは保存されません。よろしいですか？"
           )
         ) {
           this.dataInfo.isCreating = false;

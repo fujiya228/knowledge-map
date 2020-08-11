@@ -21,16 +21,19 @@
           <input type="file" @change="loadData(false)" />
         </label>
       </Btn>
-      <Btn class="full" @click.stop.native="getData('207f0f6c-4ef4-4df4-88be-67a169f8109c')">サンプルマップ</Btn>
+      <Btn
+        class="full"
+        @click.stop.native="getAnotherData('207f0f6c-4ef4-4df4-88be-67a169f8109c')"
+      >サンプルマップ</Btn>
       <template v-if="isLoggedIn">
         <TitleGroup text="データベース"></TitleGroup>
-        <div class="Modal__item" v-for="item in userData.items" :key="item.uuid">
+        <div class="Modal__item" v-for="item in userItems" :key="item.uuid">
           <Btn class="full" @click.stop.native="getAnotherData(item.uuid)">{{item.title}}</Btn>
           <div class="Modal__delete" @click="deleteMap(item)">
             <IconButton icon="trash-alt" :size="32" />
           </div>
         </div>
-        <template v-if="!userData.items.length">
+        <template v-if="!userItems.length">
           <div class="Modal__not-found">データはありませんでした</div>
         </template>
       </template>
@@ -189,18 +192,23 @@ export default {
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
       // 現在のデータを保存後データをリセット
-      this.$store
-        .dispatch("saveData", "firebase")
-        .then(() => {
-          this.getData(uuid);
-          this.$router.push(uuid);
-        })
-        .catch(() => {
-          console.log("保存失敗");
-        })
-        .then(() => {
-          this.dataInfo.isLoading = false;
-        });
+      if (confirm("現在のマップを保存しますか？")) {
+        this.$store
+          .dispatch("saveData", "firebase")
+          .then(() => {
+            this.getData(uuid);
+            this.$router.push(uuid);
+          })
+          .catch(() => {
+            console.log("保存失敗");
+          })
+          .then(() => {
+            this.dataInfo.isLoading = false;
+          });
+      } else {
+        this.getData(uuid);
+        this.$router.push(uuid);
+      }
     },
     async getData(uuid) {
       console.log("uuid in getData", uuid);
@@ -310,7 +318,7 @@ export default {
     logout() {
       firebase.auth().signOut();
       this.reset_data();
-      this.$router.push("/non-id");
+      if (this.$route.path !== "/non-id") this.$router.push("/non-id");
     },
     sendMessage() {
       if (this.contactInfo.message.length === 0) {
@@ -355,6 +363,11 @@ export default {
         this.dataInfo.isSettings ||
         this.statusInfo.isEdit ||
         this.contactInfo.isOpen
+      );
+    },
+    userItems() {
+      return this.userData.items.filter(
+        (item) => item.uuid !== this.dataInfo.uuid
       );
     },
     statuses: {
@@ -405,7 +418,11 @@ export default {
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
-        this.saveData("firebase");
+        this.saveData("firebase")
+          .then()
+          .catch(() => {
+            console.log("保存失敗");
+          });
       }
       if (e.key === "/") {
         e.preventDefault();

@@ -663,6 +663,13 @@ export default new Vuex.Store({
       if (state.dataInfo.created_at === undefined) state.dataInfo.created_at = state.dataInfo.updated_at
       // firebaseのときにはuuidを必要とする
       console.log('uuid', state.dataInfo.uuid)
+      if (flag === "firebase" && !state.auth.userData.paid) {
+        console.log(state.auth.userData)
+        if (state.auth.userData.items.length >= 3 && state.dataInfo.uuid === undefined) {
+          alert('３個以上のマップを保存するには会員登録が必要です。')
+          return;
+        }
+      }
       if (flag === "firebase" && state.dataInfo.uuid === undefined) {
         state.dataInfo.uuid = uuidv4();
         state.auth.userData.latest = state.dataInfo.uuid
@@ -761,6 +768,10 @@ export default new Vuex.Store({
             .catch((error) => {
               console.log("Error update to maps collection:", error);
               state.dataInfo.runningText = "保存に失敗しました"
+              setTimeout(() => {
+                state.dataInfo.isUserSaving = false
+                state.dataInfo.runningText = "保存中..."
+              }, 3000)
               reject()
             })
             .then(() => {
