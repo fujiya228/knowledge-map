@@ -304,6 +304,7 @@ export default {
     logout() {
       firebase.auth().signOut();
       this.reset_data();
+      this.$router.push("/non-id");
     },
     sendMessage() {
       if (this.contactInfo.message.length === 0) {
