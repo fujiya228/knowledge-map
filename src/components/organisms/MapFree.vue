@@ -267,6 +267,8 @@ export default {
       "closeContextMenu",
       "closeAddNodeForm",
       "makeRelation",
+      "updateNodeWidth_2",
+      "resizeGraph",
     ]),
     ...mapActions(["delRelation", "selectNode", "addNode"]),
     closeEditor() {
@@ -318,11 +320,23 @@ export default {
     },
   },
   mounted() {
-    // console.log("mounted");
+    console.log("MapFree mounted");
     this.graphArea();
     this.$nextTick(() => {
       console.log("this is current quill instance object", this.editor);
+      this.$store.commit("updateNodeWidth_2");
+      document.getElementById("MapFree").addEventListener("wheel", (e) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          let abs;
+          if (e.deltaY > 0) abs = -1;
+          else abs = 1;
+          this.resizeGraph(abs);
+        }
+      });
     });
+    // これはresizeGraphをMutationにいれて、以下の処理をMapのcreatedに入れなかなんな TODO
+    this.$nextTick(() => {});
   },
   created() {
     // console.log("created");

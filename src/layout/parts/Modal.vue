@@ -214,10 +214,15 @@ export default {
               alert(uuid + "のデータは存在しませんでした。");
               this.deleteItem(uuid);
             }
-            this.$nextTick(() => {
-              // width_2の更新
-              this.$store.commit("updateNodeWidth_2");
-            });
+            if (
+              this.$route.name === "id_map" ||
+              this.$route.name === "non_id_map"
+            ) {
+              this.$nextTick(() => {
+                // width_2の更新
+                this.$store.commit("updateNodeWidth_2");
+              });
+            }
           })
           .catch((err) => {
             console.log("err", err);
@@ -374,9 +379,10 @@ export default {
   },
   watch: {
     userData() {
-      console.log(this.$route.params);
+      console.log("params", this.$route.params);
       if (this.$route.params.map_id) this.getData(this.$route.params.map_id);
       else if (this.isLoggedIn && this.userData.latest) {
+        console.log("latest");
         this.$router.push(this.userData.latest);
         this.getData(this.userData.latest);
       }

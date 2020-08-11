@@ -439,6 +439,27 @@ export default new Vuex.Store({
       // Objectに対してkeyでアクセスするほうが早いんやろか？
       state.isGraphActive = true; // svgのpathが正しく描画されるように
     },
+    resizeGraph(state, abs) {
+      let type = "free";
+      let before_scale = state.scale * 1;
+      let min = 0.5;
+      abs === "reset" ? (state.scale = 1) : (state.scale += 0.1 * abs);
+      // state.scale = Math.round((state.scale + 0.1 * abs) * 100) / 100;
+      if (state.scale < min) {
+        state.scale = min;
+        return;
+      }
+      // scroll量の再計算
+      let MapFree = document.getElementById("MapFree");
+      MapFree.scrollLeft *= state.scale / before_scale;
+      MapFree.scrollTop *= state.scale / before_scale;
+      // reLocation
+      let len = state.nodes.length;
+      for (let i = 0; i < len; i++) {
+        state.nodes[i].x = state.nodes[i][type].x * state.scale;
+        state.nodes[i].y = state.nodes[i][type].y * state.scale;
+      }
+    },
     updateNodeWidth_2(state) {
       let len = state.nodes.length;
       for (let i = 0; i < len; i++) {
