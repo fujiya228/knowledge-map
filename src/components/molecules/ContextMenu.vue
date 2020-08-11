@@ -105,7 +105,7 @@ export default {
     border-radius: 3px;
     margin-bottom: 8px;
     input {
-      @include ellipse;
+      @include ellipsis;
       width: 100%;
       height: 32px;
       line-height: 32px;
@@ -174,7 +174,7 @@ export default {
       line-height: 30px;
       font-size: 14px;
       user-select: none;
-      @include ellipse;
+      @include ellipsis;
     }
   }
 }

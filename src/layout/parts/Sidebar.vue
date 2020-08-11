@@ -308,6 +308,7 @@ export default {
     &__text {
       padding: 0 4px;
       width: calc(100% - 24px);
+      @include ellipsis;
     }
   }
   &__search {
@@ -361,7 +362,7 @@ export default {
     cursor: pointer;
     &__title {
       width: calc(100% - 24px);
-      @include ellipse;
+      @include ellipsis;
     }
     &:hover {
       background: #ccc;

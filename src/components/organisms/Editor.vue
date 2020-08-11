@@ -301,7 +301,7 @@ export default {
       height: 32px;
       line-height: 24px;
       padding: 4px 8px;
-      @include ellipse;
+      @include ellipsis;
       cursor: pointer;
       &:hover {
         background: #ccc;
@@ -309,7 +309,7 @@ export default {
     }
     &__title {
       width: calc(100% - 24px);
-      @include ellipse;
+      @include ellipsis;
     }
     &__icon {
       width: 24px;
@@ -322,7 +322,7 @@ export default {
       height: 32px;
       line-height: 24px;
       padding: 4px 8px;
-      @include ellipse;
+      @include ellipsis;
     }
   }
   &__display {
@@ -403,7 +403,7 @@ export default {
       padding: 4px 8px;
       background: #eee;
       cursor: pointer;
-      @include ellipse;
+      @include ellipsis;
       &:hover {
         background: $color-main-l;
       }
