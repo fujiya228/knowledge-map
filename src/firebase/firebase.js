@@ -65,6 +65,7 @@ const getUserData = async function (user) {
       uid: uid,
       items: [],
       latest: "",
+      paid: null,
       created_at: date,
       updated_at: date,
     };
