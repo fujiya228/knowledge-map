@@ -63,6 +63,7 @@ const getUserData = async function (user) {
     let date = Date(Date.now());
     userData = {
       uid: uid,
+      email: user.email,
       items: [],
       latest: "",
       paid: null,
