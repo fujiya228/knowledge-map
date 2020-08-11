@@ -202,7 +202,10 @@ export default {
     },
     makeLink(node) {
       // 関連付けするかどうかのボタンも用意しておく
-      this.$refs.MyQuillEditor.quill.format("link", node.id);
+      this.$refs.MyQuillEditor.quill.format(
+        "link",
+        "/" + this.$store.state.dataInfo.uuid + "/" + node.id
+      );
       this.isMakeCustomLink = false;
     },
     makeRel(node) {
@@ -386,6 +389,7 @@ export default {
     &__list {
       display: flex;
       flex-wrap: wrap;
+      align-content: flex-start;
       // 300 - 24*2 - 35 - 8 - 24 - 8
       height: 177px;
       overflow: auto;

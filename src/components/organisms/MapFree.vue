@@ -254,7 +254,7 @@ export default {
       this.closeAddNodeForm();
     },
     goToEdit() {
-      this.$router.push(this.detailsMenu.node.id);
+      this.$router.push(this.$route.path + "/" + this.detailsMenu.node.id);
     },
     initFreeNode() {
       this.nodes.forEach((node) => {
@@ -303,11 +303,6 @@ export default {
         this.$store.commit("set_isMakingRelation", val);
       },
     },
-    editor() {
-      return this.detailsMenu.node && this.editorInfo.isOpen
-        ? this.$refs.MyQuillEditor.quill
-        : "not selected";
-    },
   },
   watch: {
     "detailsMenu.node.title"() {
@@ -323,7 +318,6 @@ export default {
     console.log("MapFree mounted");
     this.graphArea();
     this.$nextTick(() => {
-      console.log("this is current quill instance object", this.editor);
       this.$store.commit("updateNodeWidth_2");
       document.getElementById("MapFree").addEventListener("wheel", (e) => {
         if (e.ctrlKey) {
@@ -332,6 +326,7 @@ export default {
           if (e.deltaY > 0) abs = -1;
           else abs = 1;
           this.resizeGraph(abs);
+          this.$store.commit("updateNodeWidth_2");
         }
       });
     });

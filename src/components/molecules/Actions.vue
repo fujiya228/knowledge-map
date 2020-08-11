@@ -10,13 +10,13 @@
     </template>
     <template v-if="isMapFree">
       <div class="Actions__info">{{Math.round(100*scale)}}%</div>
-      <div class="Actions__icon-button" @click="resizeGraph(1)" v-tooltip="'拡大'">
+      <div class="Actions__icon-button" @click="actionsResizeGraph(1)" v-tooltip="'拡大'">
         <Icon icon="plus" />
       </div>
-      <div class="Actions__icon-button" @click="resizeGraph(-1)" v-tooltip="'縮小'">
+      <div class="Actions__icon-button" @click="actionsResizeGraph(-1)" v-tooltip="'縮小'">
         <Icon icon="minus" />
       </div>
-      <div class="Actions__text-button" @click="resizeGraph('reset')" v-tooltip="'リセット'">リセット</div>
+      <div class="Actions__text-button" @click="actionsResizeGraph('reset')" v-tooltip="'リセット'">リセット</div>
       <div
         class="Actions__icon-button"
         v-if="detailsMenu.node"
