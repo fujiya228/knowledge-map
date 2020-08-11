@@ -168,19 +168,23 @@ export default {
       for (let i = 0, len = this.userData.items.length; i < len; i++) {
         if (this.userData.items[i].uuid === uuid) {
           this.userData.items.splice(i, 1);
+          // 削除したなら更新
+          usersRef
+            .doc(this.userData.uid)
+            .set(this.userData, { merge: true })
+            .then(() => {
+              console.log(
+                "Success update to users collection",
+                this.userData.uid
+              );
+            })
+            .catch((error) => {
+              console.log("Error update to users collection:", error);
+            })
+            .then(() => {});
           break;
         }
       }
-      usersRef
-        .doc(this.userData.uid)
-        .set(this.userData, { merge: true })
-        .then(() => {
-          console.log("Success update to users collection", this.userData.uid);
-        })
-        .catch((error) => {
-          console.log("Error update to users collection:", error);
-        })
-        .then(() => {});
     },
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
@@ -213,6 +217,7 @@ export default {
             else {
               alert(uuid + "のデータは存在しませんでした。");
               this.deleteItem(uuid);
+              this.$router.push("non-id");
             }
             if (
               this.$route.name === "id_map" ||
@@ -226,7 +231,8 @@ export default {
           })
           .catch((err) => {
             console.log("err", err);
-            this.dataInfo.isLoading = false;
+            alert("マップへのアクセス権がありませんでした。");
+            this.$router.push("non-id");
           })
           .then(() => {
             this.dataInfo.isLoading = false;
@@ -379,10 +385,16 @@ export default {
     ]),
   },
   watch: {
-    userData() {
+    isAuthStateChanged() {
       console.log("params", this.$route.params);
       if (this.$route.params.map_id) this.getData(this.$route.params.map_id);
-      else if (this.isLoggedIn && this.userData.latest) {
+    },
+    userData() {
+      if (
+        !this.$route.params.map_id &&
+        this.isLoggedIn &&
+        this.userData.latest
+      ) {
         console.log("latest");
         this.$router.push(this.userData.latest);
         this.getData(this.userData.latest);
