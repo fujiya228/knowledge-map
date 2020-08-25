@@ -1,15 +1,19 @@
 <template>
   <div
-    id="FreeGraph"
+    id="MapFree"
     :class="{open: isDetailsOpen && !editorInfo.isOpen}"
-    @touchstart="onGraphMove($event)"
-    @touchend="endGraphMove()"
     @pointerdown.left="onGraphMove($event)"
-    @mouseup="endGraphMove()"
+    @pointerup="endGraphMove()"
     @touchmove.prevent="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
     @pointermove.stop="moveNodeInfo.isOn ? moveNode($event) : moveGraph($event)"
   >
-    <svg class="Free__area" :class="{moving: isGraphMove}" @click="openAddNodeForm($event)">
+    <svg
+      class="Free__area"
+      :class="{moving: isGraphMove}"
+      @click="openAddNodeForm($event)"
+      :width="3000*scale"
+      :height="3000*scale"
+    >
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
       <path
@@ -29,17 +33,11 @@
       v-for="node in nodeFilter()"
       :key="node.id"
       :node="node"
-      :style="{
-        left: node.x - node.width_2 + 'px',
-        top: node.y - 32 + 'px',
-      }"
-      @touchstart.native="onGhost(node)"
-      @touchend.native="endGhost()"
       @pointerdown.left.native="onGhost(node)"
-      @mouseup.native="endGhost()"
+      @pointerup.left.native="endGhost()"
       @click.right.prevent.stop.native="openContextMenu($event,node)"
       @click.shift.exact.stop.native="selectRelaitonNode(node)"
-      @dblclick.stop.native="editorInfo.isOpen = true"
+      @dblclick.native="editorInfo.isOpen = true"
     />
     <AddNodeForm
       class="Add-node-form"
@@ -49,12 +47,16 @@
         left: addNodeForm.x - 125 + 'px',
       }"
       @addFunction="addNode()"
+      @touchmove.stop.native
+      @pointermove.stop.native
     />
     <ContextMenu @makeRelation="selectRelaitonNode(contextMenu.node)" />
     <div
       class="Free__editor"
       v-if="detailsMenu.node && editorInfo.isOpen"
       @click.self="closeEditor()"
+      @touchmove.stop
+      @pointermove.stop
     >
       <div class="Free__editor__wrapper">
         <h2 class="Free__editor__title">
@@ -76,20 +78,20 @@ import AddNodeForm from "@/components/molecules/AddNodeForm";
 import ContextMenu from "@/components/molecules/ContextMenu";
 import Editor from "@/components/organisms/Editor";
 export default {
-  name: "FreeGraph",
+  name: "MapFree",
   components: {
     Background,
     Node,
     ContextMenu,
     AddNodeForm,
-    Editor
+    Editor,
   },
   data() {
     return {
       isGraphMove: false,
       canOpenAddNodeForm: true,
       pointerX: 0,
-      pointerY: 0
+      pointerY: 0,
     };
   },
   methods: {
@@ -103,7 +105,7 @@ export default {
       let id = null;
       let DOMnodes = document.getElementsByClassName("Node-in-Free");
       // console.log(DOMnodes)
-      await this.awaitForClick(base, DOMnodes).then(res => {
+      await this.awaitForClick(base, DOMnodes).then((res) => {
         id = res.target.getAttribute("data-relation-id");
         // console.log(res)
         // console.log(id);
@@ -118,18 +120,18 @@ export default {
       // console.log((v_base.id + '_' + v_target.id) in v_base.relations)
       this.makeRelation({
         base: v_base,
-        target: v_target
+        target: v_target,
       });
       this.selectNode(v_target);
     },
     awaitForClick(base, DOMnodes) {
       // baseもDOMnodesもDOM
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const listener = resolve;
         // resolveがCBされることで同期完了？
         document.body.addEventListener("click", listener, { once: true });
         document
-          .getElementById("FreeGraph")
+          .getElementById("MapFree")
           .addEventListener("click", listener, { once: true });
         for (let target of DOMnodes) {
           target.addEventListener("click", listener, { once: true });
@@ -147,17 +149,19 @@ export default {
       let node = this.detailsMenu.node;
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       // console.log(event);
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = e.pageX;
       let y = e.pageY;
-      let X = x + FreeGraph.scrollLeft - this.sidebar_width; // 現在のポインタ位置
-      let Y = y + FreeGraph.scrollTop;
-      if (x < 100 + this.sidebar_width) FreeGraph.scrollLeft -= 10;
-      if (x > this.width - 100 && X < 3000) FreeGraph.scrollLeft += 10;
-      if (y < 100) FreeGraph.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 3000) FreeGraph.scrollTop += 10;
-      node.x = node.free.x = Math.floor(X);
-      node.y = node.free.y = Math.floor(Y - 48);
+      let X = x + MapFree.scrollLeft - this.sidebar_width; // 現在のポインタ位置
+      let Y = y + MapFree.scrollTop;
+      if (x < 100 + this.sidebar_width) MapFree.scrollLeft -= 10;
+      if (x > this.width - 100 && X < 3000) MapFree.scrollLeft += 10;
+      if (y < 100) MapFree.scrollTop -= 10;
+      if (y > this.height - 100 && Y < 3000) MapFree.scrollTop += 10;
+      node.x = Math.floor(X);
+      node.free.x = Math.floor(node.x / this.scale);
+      node.y = Math.floor(Y - 48);
+      node.free.y = Math.floor(node.y / this.scale);
     },
     onGhost(node) {
       this.closeContextMenu();
@@ -175,11 +179,11 @@ export default {
       if (!this.isGraphMove) return;
       this.canOpenAddNodeForm = false;
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = e.pageX;
       let y = e.pageY;
-      FreeGraph.scrollLeft += this.pointerX - x;
-      FreeGraph.scrollTop += this.pointerY - y;
+      MapFree.scrollLeft += this.pointerX - x;
+      MapFree.scrollTop += this.pointerY - y;
       this.pointerX = x;
       this.pointerY = y;
     },
@@ -208,81 +212,84 @@ export default {
       );
     },
     nodeFilter() {
-      return this.nodes.filter(item => {
-        return item.free.isActive && !item.archive;
+      return this.nodes.filter((item) => {
+        return !item.archive;
       });
     },
     relationFilter() {
       return this.relations.filter(
-        rel =>
-          // 片方でもアーカイブならアウト
-          !(rel.base.node.archive || rel.target.node.archive) &&
-          rel.base.node.free.isActive &&
-          rel.target.node.free.isActive
+        (rel) => !(rel.base.node.archive || rel.target.node.archive)
       );
     },
     searchRelations(id) {
       return this.relations.filter(
-        rel => rel.base.id === id || rel.target.id === id
+        (rel) => rel.base.id === id || rel.target.id === id
       );
     },
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
       if (!this.canOpenAddNodeForm) return;
-      let FreeGraph = document.getElementById("FreeGraph");
+      let MapFree = document.getElementById("MapFree");
       let x = event.pageX - this.sidebar_width;
       let y = event.pageY - 48;
-      let X = x + FreeGraph.scrollLeft; // 現在のポインタ位置
-      let Y = y + FreeGraph.scrollTop;
+      let X = x + MapFree.scrollLeft; // 現在のポインタ位置
+      let Y = y + MapFree.scrollTop;
       this.addNodeForm.isFree = true;
       this.addNodeForm.x = X;
       this.addNodeForm.y = Y;
+      this.addNodeForm.status = this.statuses[0].id;
       // this.$nextTick(() => document.querySelector("textarea.Textarea").focus());
     },
     openContextMenu(event, node = null) {
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       let x = e.pageX;
       let y = e.pageY;
-      this.contextMenu.x = x < this.width / 2 ? x : x - 120;
-      this.contextMenu.y = y < this.height / 2 ? y + 56 : y - 168;
+      this.contextMenu.flag_x = x < (this.width + this.sidebar_width) / 2;
+      this.contextMenu.flag_y = y < (this.height + 48) / 2;
+      this.contextMenu.x = this.contextMenu.flag_x ? x : x - 120;
+      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 208;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
       this.closeAddNodeForm();
     },
     goToEdit() {
-      this.$router.push(this.detailsMenu.node.id);
+      this.$router.push(this.$route.path + "/" + this.detailsMenu.node.id);
     },
     initFreeNode() {
-      this.nodes.forEach(node => {
-        node.x = node.free.x;
-        node.y = node.free.y;
+      this.nodes.forEach((node) => {
+        node.x = node.free.x * this.scale;
+        node.y = node.free.y * this.scale;
       });
     },
     ...mapMutations([
       "graphArea",
       "closeContextMenu",
       "closeAddNodeForm",
-      "makeRelation"
+      "makeRelation",
+      "updateNodeWidth_2",
+      "resizeGraph",
     ]),
     ...mapActions(["delRelation", "selectNode", "addNode"]),
     closeEditor() {
       console.log("closeEditor");
       this.editorInfo.isOpen = false;
-    }
+    },
   },
   computed: {
     ...mapState([
+      "scale",
       "width",
       "height",
       "nodes",
+      "statuses",
       "relations",
       "moveNodeInfo",
       "addNodeForm",
       "contextMenu",
       "detailsMenu",
       "editorInfo",
-      "sidebar"
+      "sidebar",
     ]),
     ...mapGetters(["isDetailsOpen"]),
     sidebar_width() {
@@ -294,13 +301,8 @@ export default {
       },
       set(val) {
         this.$store.commit("set_isMakingRelation", val);
-      }
+      },
     },
-    editor() {
-      return this.detailsMenu.node && this.editorInfo.isOpen
-        ? this.$refs.MyQuillEditor.quill
-        : "not selected";
-    }
   },
   watch: {
     "detailsMenu.node.title"() {
@@ -310,27 +312,39 @@ export default {
           node.width_2 = document.getElementById(node.id).clientWidth / 2;
         });
       }
-    }
+    },
   },
   mounted() {
-    // console.log('mounted')
+    console.log("MapFree mounted");
     this.graphArea();
     this.$nextTick(() => {
-      console.log("this is current quill instance object", this.editor);
+      this.$store.commit("updateNodeWidth_2");
+      document.getElementById("MapFree").addEventListener("wheel", (e) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          let abs;
+          if (e.deltaY > 0) abs = -1;
+          else abs = 1;
+          this.resizeGraph(abs);
+          this.$store.commit("updateNodeWidth_2");
+        }
+      });
     });
+    // これはresizeGraphをMutationにいれて、以下の処理をMapのcreatedに入れなかなんな TODO
+    this.$nextTick(() => {});
   },
   created() {
     // console.log("created");
     this.initFreeNode();
     this.editorInfo.isEditPage = false;
   },
-  destroyed() {}
+  destroyed() {},
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/variable.scss";
-#FreeGraph {
+#MapFree {
   position: relative;
   overflow: scroll;
   width: 100%;
@@ -344,8 +358,9 @@ export default {
   // いや、それやと動的に出しづらいから負にするべきかも
   // いや、最大サイズが変わった時点ですべての座標を再計算でいける
   // TODO
-  width: 3000px;
-  height: 3000px;
+  // いや、普通にスクロールをJSで与えておいたら問題ない
+  // width: 3000px;
+  // height: 3000px;
   // background: $color-main-l;
   cursor: pointer;
   &.moving {
@@ -377,7 +392,7 @@ export default {
   fill: none;
   stroke-width: 3px;
   stroke: black;
-  transition: 0.25s ease-in-out;
+  // transition: 0.25s ease-in-out;
   // 何故かlineにはtransitionが効かなかった pathで代用
   // 後日、いらんくね？
   // 次の日、レベル増減時にこいつだけ先に動くのは気持ちわるいので復活
@@ -386,6 +401,9 @@ export default {
   }
   &.select {
     stroke: $color-main;
+  }
+  &:hover {
+    stroke-width: 6px;
   }
 }
 .Free__editor {
@@ -410,7 +428,7 @@ export default {
     background: white;
     margin: 0;
     padding: 16px;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
     box-sizing: border-box;
   }
   &__input {

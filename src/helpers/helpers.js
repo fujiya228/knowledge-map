@@ -79,10 +79,19 @@ const searchNode = function (id) {
    */
 };
 
-const statusColor = function (status) {
+const statusColor = function (status, defaultFlag = true) {
   let length = state.statuses.length
   for (let i = 0; i < length; i++) {
     if (state.statuses[i].id === status) return state.statuses[i].color
+  }
+  if (defaultFlag) return "#bfe4e2"
+  // return state.statuses.find(item => item.id === status).color
+};
+
+const statusTitle = function (status) {
+  let length = state.statuses.length
+  for (let i = 0; i < length; i++) {
+    if (state.statuses[i].id === status) return state.statuses[i].title
   }
   // return state.statuses.find(item => item.id === status).color
 };
@@ -121,6 +130,7 @@ const helpers = {
   getDeadlineClass: getDeadlineClass,
   searchNode: searchNode,
   statusColor: statusColor,
+  statusTitle: statusTitle,
   levelColor: levelColor,
   searchRelationNodes: searchRelationNodes,
   tagColor: tagColor,

@@ -7,10 +7,12 @@
     }"
     :id="node.id"
     :data-relation-id="node.id"
-    :style="{ backgroundColor: statusColor(node.status) }"
-    v-tooltip="node.title"
+    :style="nodeStyle"
     @click.exact="selectNode(node)"
-  >{{ node.title }}</div>
+  >
+    {{ node.title }}
+    <div class="Node__flame"></div>
+  </div>
 </template>
 
 <script>
@@ -21,16 +23,30 @@ export default {
   props: {
     node: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     statusColor: helpers.statusColor,
-    ...mapActions(["selectNode"])
+    ...mapActions(["selectNode"]),
   },
   computed: {
-    ...mapState(["statuses", "moveNodeInfo", "detailsMenu"])
-  }
+    ...mapState(["scale", "statuses", "moveNodeInfo", "detailsMenu"]),
+    nodeStyle() {
+      return {
+        minWidth: 24 * this.scale + "px",
+        height: 48 * this.scale + "px",
+        paddingLeft: 12 * this.scale + "px",
+        paddingRight: 12 * this.scale + "px",
+        borderRadius: 24 * this.scale + "px",
+        fontSize: 24 * this.scale + "px",
+        lineHeight: 48 * this.scale + "px",
+        left: this.node.x - this.node.width_2 + "px",
+        top: this.node.y - 24 * this.scale + "px",
+        backgroundColor: this.statusColor(this.node.status),
+      };
+    },
+  },
 };
 </script>
 
@@ -38,16 +54,10 @@ export default {
 @import "@/assets/variable.scss";
 .Node {
   position: absolute;
-  min-width: 32px;
-  height: 64px;
-  padding: 0 16px;
-  border-radius: 32px;
   text-align: center;
-  line-height: 64px;
-  font-size: 30px;
   font-weight: bold;
   user-select: none;
-  transition: 0.25s ease-in-out;
+  // transition: 0.25s ease-in-out;
   white-space: nowrap;
   cursor: move;
   &.drag,
@@ -55,24 +65,17 @@ export default {
     transition: 0s;
   }
   &.relation-target {
-    background: #666 !important;
+    background: #666 !important; // 背景をDOMに直接やっているから仕方なく。この部分さクラスで背景変えるようにしておこうぜ TODO
     cursor: pointer;
     &:hover {
       background: #999 !important;
     }
   }
-  &.selected::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 32px;
-    border: solid 3px #67b7b3;
-    box-sizing: border-box;
+  &.selected {
+    .Node__flame {
+      display: block;
+    }
   }
-  &.selected,
   &:hover {
     z-index: 100;
   }
@@ -96,5 +99,16 @@ export default {
       color: black;
     }
   }
+}
+.Node__flame {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50vh;
+  width: 100%;
+  height: 100%;
+  border: solid 3px #67b7b3;
+  box-sizing: border-box;
 }
 </style>

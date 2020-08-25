@@ -3,13 +3,14 @@ const auth = {
   namespaced: true,
   state: {
     user: null,
+    userData: null,
     isLoggedIn: false,
     isAuthStateChanged: false,
     unsubscribe: null
   },
   getters: {
     isLoggedIn: state => state.isLoggedIn,
-    user: state => state.user
+    user: state => state.user,
   },
   mutations: {
     SET_IS_LOGGED_IN(state, payload) {
@@ -17,6 +18,9 @@ const auth = {
     },
     SET_USER(state, payload) {
       state.user = payload.user
+    },
+    SET_USER_DATA(state, payload) {
+      state.userData = payload.userData
     },
     SET_IS_AUTH_STATE_CHANGED(state, payload) {
       state.isAuthStateChanged = payload.isAuthStateChanged

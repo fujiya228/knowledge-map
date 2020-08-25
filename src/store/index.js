@@ -2,12 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './modules/auth'
 import helpers from "../helpers/helpers.js";
+
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    scale: 1,
     width: 0,
     height: 0,
     maxR: 0,
@@ -124,9 +128,30 @@ export default new Vuex.Store({
       y: 0,
     },
     dataInfo: {
+      isSave: false,
+      isLoad: false,
+      isAuth: false,
+      isHelp: false,
+      isSettings: false,
+      isMapSaving: false,
+      isUserSaving: false,
+      isCreating: false,
+      isLoading: false,
+      runningText: "保存中...",
+      uuid: undefined,
+      title: "untitled",
+      public: false,
       nodeNum: 0,
       statusNum: 4,
       tagNum: 9,
+      created_at: undefined,
+      updated_at: undefined,
+    },
+    statusInfo: {
+      isAdd: false,
+      isEdit: false,
+      title: '',
+      color: "#000000"
     },
     addNodeForm: {
       isFree: false,
@@ -143,6 +168,9 @@ export default new Vuex.Store({
     },
     contextMenu: {
       isOpen: false,
+      flag_x: false,
+      flag_y: false,
+      isStatus: false,
       x: 0,
       y: 0,
       node: null,
@@ -153,6 +181,7 @@ export default new Vuex.Store({
       nodeId: null,
       node: null,
       relations: [],
+      unrelated: []
     },
     editorInfo: {
       isOpen: false,
@@ -165,6 +194,11 @@ export default new Vuex.Store({
           toolbar: "#toolbar"
         }
       }
+    },
+    contactInfo: {
+      isOpen: false,
+      email: "",
+      message: "",
     },
     sidebar: {
       isOpen: true
@@ -183,9 +217,13 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    set_scale: (state, val) => (state.scale = val),
     set_isMakingRelation: (state, val) => (state.isMakingRelation = val),
     set_detailsMenu: (state, val) => (state.detailsMenu = val),
+    set_statuses: (state, val) => (state.statuses = val),
     reset_data: (state) => {
+      console.log('reset_data')
+      state.scale = 1
       state.width = 0
       state.height = 0
       state.maxR = 0
@@ -302,25 +340,49 @@ export default new Vuex.Store({
         y: 0,
       }
       state.dataInfo = {
+        isSave: false,
+        isLoad: false,
+        isAuth: false,
+        isHelp: false,
+        isSettings: false,
+        isMapSaving: false,
+        isUserSaving: false,
+        isCreating: false,
+        isLoading: false,
+        runningText: "保存中...",
+        uuid: undefined,
+        title: "untitled",
+        public: false,
         nodeNum: 0,
         statusNum: 4,
         tagNum: 9,
+        created_at: undefined,
+        updated_at: undefined,
       }
-      state.addNodeForm = {
-        isFree: false,
-        isCircle: false,
-        isTree: false,
-        isCard: false,
-        isRelation: false,
-        status: 0,
-        x: 0,
-        y: 0,
-        title: "",
-        level: 0,
-        pie: 0,
-      }
+      state.statusInfo = {
+        isAdd: false,
+        isEdit: false,
+        title: '',
+        color: "#000000"
+      },
+        state.addNodeForm = {
+          isFree: false,
+          isCircle: false,
+          isTree: false,
+          isCard: false,
+          isRelation: false,
+          status: 0,
+          x: 0,
+          y: 0,
+          title: "",
+          level: 0,
+          pie: 0,
+        }
       state.contextMenu = {
         isOpen: false,
+        flag_x: false,
+        flag_y: false,
+        isStatus: false,
         x: 0,
         y: 0,
         node: null,
@@ -331,10 +393,12 @@ export default new Vuex.Store({
         nodeId: null,
         node: null,
         relations: [],
+        unrelated: []
       }
       state.editorInfo = {
         isOpen: false,
         isEditPage: false,
+        ref: null,
         option: {
           theme: "snow",
           placeholder: "入力する",
@@ -349,6 +413,7 @@ export default new Vuex.Store({
     },
     closeContextMenu(state) {
       state.contextMenu.isOpen = false;
+      state.contextMenu.isStatus = false;
       state.contextMenu.node = null;
     },
     closeAddNodeForm(state) {
@@ -358,7 +423,7 @@ export default new Vuex.Store({
       state.addNodeForm.isCard = false;
       state.addNodeForm.isRelation = false;
       state.addNodeForm.level = 0;
-      state.addNodeForm.status = 0;
+      state.addNodeForm.status = state.statuses[0].id;
       state.addNodeForm.title = "";
       state.addNodeForm.pie = 0;
       state.addNodeForm.x = 0;
@@ -367,13 +432,40 @@ export default new Vuex.Store({
     graphArea(state) {
       // console.log('graphArea')
       var area = document.getElementById("app");
-      // this.$ref使えるくね？ TODO
       state.width = area.clientWidth;
       state.height = area.clientHeight;
       state.maxR =
         state.width > state.height ? state.height / 2 : state.width / 2;
       // Objectに対してkeyでアクセスするほうが早いんやろか？
       state.isGraphActive = true; // svgのpathが正しく描画されるように
+    },
+    resizeGraph(state, abs) {
+      let type = "free";
+      let before_scale = state.scale * 1;
+      let min = 0.5;
+      abs === "reset" ? (state.scale = 1) : (state.scale += 0.1 * abs);
+      // state.scale = Math.round((state.scale + 0.1 * abs) * 100) / 100;
+      if (state.scale < min) {
+        state.scale = min;
+        return;
+      }
+      // scroll量の再計算
+      let MapFree = document.getElementById("MapFree");
+      MapFree.scrollLeft *= state.scale / before_scale;
+      MapFree.scrollTop *= state.scale / before_scale;
+      // reLocation
+      let len = state.nodes.length;
+      for (let i = 0; i < len; i++) {
+        state.nodes[i].x = state.nodes[i][type].x * state.scale;
+        state.nodes[i].y = state.nodes[i][type].y * state.scale;
+      }
+    },
+    updateNodeWidth_2(state) {
+      let len = state.nodes.length;
+      for (let i = 0; i < len; i++) {
+        state.nodes[i].width_2 =
+          document.getElementById(state.nodes[i].id).clientWidth / 2;
+      }
     },
     saveTag(state) {
       // 編集中だった場合のみ保存作業
@@ -451,10 +543,6 @@ export default new Vuex.Store({
       // console.log('addNode')
       dispatch("selectNode", state.nodes[state.nodes.length - 1]);
       commit("closeAddNodeForm");
-      setTimeout(() => {
-        // console.log(document.getElementById(id).clientWidth)
-        state.nodes[state.nodes.length - 1].width_2 = document.getElementById(id).clientWidth / 2;
-      }, 100);
       // setTimeout(() => {
       //   document.querySelector(".Details__detail > .Textarea").focus();
       // }, 100);
@@ -484,10 +572,48 @@ export default new Vuex.Store({
       context.commit("closeAddNodeForm");
       context.state.detailsMenu.node = null;
     },
+    addStatus({ state }) {
+      if (state.statuses.length >= 10) {
+        alert('10個以上は作成できません。')
+        return;
+      }
+      state.statuses.push({
+        id: uuidv4(),
+        title: state.statusInfo.title,
+        color: state.statusInfo.color,
+      });
+      state.dataInfo.statusNum = state.statuses.length
+      state.statusInfo.title = "";
+      state.statusInfo.color = "#000000";
+    },
+    delStatus({ state }, id) {
+      // TODO 消すのは聞かずに消したあとに操作を戻す機能？
+      if (state.statuses.length <= 1) {
+        alert('すべてのステータスを削除することはできません。')
+        return;
+      }
+      let len = state.nodes.length
+      let text = "本当に削除しますか？"
+      for (let i = 0; i < len; i++) {
+        if (state.nodes[i].status === id) {
+          text = "対象のステータスをもつ要素があります。削除しますか？"
+          break
+        }
+      }
+      if (!confirm("ステータスの削除:" + text)) return;
+      // 配列からidをもとにindexを取ってくる関数を作れるな TODO findでよくね
+      let length = state.statuses.length;
+      for (let i = 0; i < length; i++) {
+        if (state.statuses[i].id === id) {
+          state.statuses.splice(i, 1);
+          break;
+        }
+      }
+    },
     delRelation(context, payload) {
       /**
        * 使われている場所
-       *  GraphFree
+       *  MapFree
        *  Editor
        * 
        * delNode
@@ -521,6 +647,140 @@ export default new Vuex.Store({
       state.detailsMenu.relations = helpers.searchRelationNodes(node)
       state.detailsMenu.unrelated = helpers.searchRelationNodes(node, false)
       state.detailsMenu.isOpen = true;
+    },
+    saveData({ state }, flag) {
+      if (state.dataInfo.isMapSaving || state.dataInfo.isUserSaving) return;
+      if (state.dataInfo.title === "") {
+        alert("タイトルを入力してください");
+        return;
+      }
+      if (flag === 'firebase' && !state.auth.isLoggedIn) {
+        alert('ログインしてください')
+        return;
+      }
+      // 更新日時を設定
+      state.dataInfo.updated_at = Date(Date.now())
+      if (state.dataInfo.created_at === undefined) state.dataInfo.created_at = state.dataInfo.updated_at
+      // firebaseのときにはuuidを必要とする
+      console.log('uuid', state.dataInfo.uuid)
+      if (flag === "firebase" && !state.auth.userData.paid) {
+        console.log(state.auth.userData)
+        if (state.auth.userData.items.length >= 3 && state.dataInfo.uuid === undefined) {
+          alert('３個以上のマップを保存するには会員登録が必要です。')
+          return;
+        }
+      }
+      if (flag === "firebase" && state.dataInfo.uuid === undefined) {
+        state.dataInfo.uuid = uuidv4();
+        state.auth.userData.latest = state.dataInfo.uuid
+        state.auth.userData.items.push({
+          uuid: state.dataInfo.uuid,
+          title: state.dataInfo.title,
+          updated_at: state.dataInfo.updated_at
+        })
+      }
+      else if (flag === 'firebase') {
+        let item = state.auth.userData.items.find(item => item.uuid === state.dataInfo.uuid)
+        if (!item) return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
+        item.title = state.dataInfo.title
+        item.updated_at = state.dataInfo.updated_at
+        state.auth.userData.latest = state.dataInfo.uuid
+        state.auth.userData.updated_at = state.dataInfo.updated_at
+      }
+      // dataの加工
+      let data = {
+        uid: state.auth.userData.uid,
+        uuid: state.dataInfo.uuid,
+        title: state.dataInfo.title,
+        public: state.dataInfo.public,
+        nodeNum: state.dataInfo.nodeNum,
+        statusNum: state.dataInfo.statusNum,
+        tagNum: state.dataInfo.tagNum,
+        created_at: state.dataInfo.created_at,
+        updated_at: state.dataInfo.updated_at,
+        nodes: helpers.deep(state.nodes),
+        relations: helpers.deep(state.relations),
+        statuses: state.statuses,
+        tags: state.tags,
+      };
+      data.nodes.forEach((item) => {
+        delete item.x;
+        delete item.y;
+        delete item.byTheDeadline;
+        delete item.width_2
+      });
+      data.relations.forEach((item) => {
+        delete item.base.node;
+        delete item.target.node;
+      });
+      var obj = JSON.stringify(data);
+      // 各種保存
+      return new Promise((resolve, reject) => {
+        if (flag === 'local') {
+          // LocalStorageの場合
+          localStorage.setItem("data", obj);
+          resolve()
+          // console.log('save localStorage')
+        }
+        if (flag === 'file') {
+          // fileの場合
+          let fileName = state.dataInfo.title + "_" + Date.now() + ".knowledge-map";
+          let link = document.createElement("a");
+          link.href = "data:text/json," + encodeURIComponent(obj);
+          link.download = fileName;
+          link.click();
+          link.remove();
+          // console.log("save file");
+          resolve()
+        }
+        if (flag === 'firebase') {
+          let mapsRef = firebase.firestore().collection("maps");
+          let usersRef = firebase.firestore().collection("users");
+          // firestoreに保存
+          state.dataInfo.isMapSaving = true
+          state.dataInfo.isUserSaving = true
+          mapsRef
+            .doc(state.dataInfo.uuid)
+            .set(data, { merge: true })
+            .then(() => {
+              console.log("Success update to maps collection", state.dataInfo.uuid);
+              usersRef
+                .doc(state.auth.userData.uid)
+                .set(state.auth.userData, { merge: true })
+                .then(() => {
+                  console.log("Success update to users collection", state.auth.userData.uid);
+                })
+                .catch((error) => {
+                  console.log("Error update to users collection:", error);
+                  state.dataInfo.runningText = "保存に失敗しました"
+                  reject()
+                })
+                .then(() => {
+                  console.log('isUserSaving')
+                  state.dataInfo.runningText = "保存しました"
+                  setTimeout(() => {
+                    state.dataInfo.isUserSaving = false
+                    state.dataInfo.runningText = "保存中..."
+                  }, 3000)
+                  resolve()
+                })
+            })
+            .catch((error) => {
+              console.log("Error update to maps collection:", error);
+              state.dataInfo.runningText = "保存に失敗しました"
+              setTimeout(() => {
+                state.dataInfo.isUserSaving = false
+                state.dataInfo.runningText = "保存中..."
+              }, 3000)
+              reject()
+            })
+            .then(() => {
+              console.log('isMapSaving')
+              state.dataInfo.isMapSaving = false
+            })
+        }
+        state.dataInfo.isSave = false;
+      })
     },
   },
   modules: {

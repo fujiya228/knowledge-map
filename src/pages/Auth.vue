@@ -5,34 +5,27 @@
       <div class="Auth__icon" v-if="isLoading">
         <Icon icon="spinner" :size="32" :font="24" />
       </div>
-      <!-- アドレス未確認 -->
-      <div class="EmailVerify__container" v-if="isEmailVerifyMode">
-        <p>{{email}}</p>
-        <p>上記のアドレスに確認用メールを送信しました。</p>
-        <Btn @click.native="verifiedEmail()">アドレスを確認済</Btn>
+      <div class="Auth__container">
+        <input
+          class="Input"
+          type="email"
+          v-model="email"
+          placeholder="email"
+          @keydown.enter="clickBtn()"
+        />
+        <input
+          class="Input"
+          type="password"
+          v-model="password"
+          placeholder="password"
+          @keydown.enter="clickBtn()"
+        />
+        <Btn @click.native="clickBtn()">{{titleText}}</Btn>
       </div>
-      <!-- 上記以外 -->
-      <template v-else>
-        <div class="Auth__container">
-          <input
-            class="Input"
-            type="email"
-            v-model="email"
-            placeholder="email"
-            @keydown.enter="clickBtn()"
-          />
-          <input
-            class="Input"
-            type="password"
-            v-model="password"
-            placeholder="password"
-            @keydown.enter="clickBtn()"
-          />
-          <Btn @click.native="clickBtn()">{{titleText}}</Btn>
-        </div>
-        <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
-        <div class="Auth__switch" @click="login('sample@fujiya228.com', 'password')">お試しはこちら</div>
-      </template>
+      <div class="Auth__switch" @click="isSignUpMode = !isSignUpMode">{{switchText}}はこちら</div>
+      <div class="Auth__switch">
+        <router-link to="/map-free">お試しはこちら</router-link>
+      </div>
     </template>
     <div class="Auth__icon" v-else>
       <Icon icon="spinner" :size="32" :font="24" />
@@ -52,23 +45,22 @@ export default {
   name: "Auth",
   components: {
     Icon,
-    Btn
+    Btn,
   },
   data() {
     return {
       email: "",
       password: "",
       isSignUpMode: false,
-      isEmailVerifyMode: false,
       isLoading: false,
-      isSmapleUser: false
+      isSmapleUser: false,
     };
   },
   methods: {
     clickBtn() {
       let error = {
         email: "",
-        password: ""
+        password: "",
       };
       if (this.email == "") error.email = " [email]";
       if (this.password == "") error.password = " [password]";
@@ -87,7 +79,7 @@ export default {
           alert("sigin up ok");
           this.login();
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           error.code == "auth/weak-password"
             ? alert("The password is too weak.")
@@ -102,7 +94,7 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
           alert(err.message);
           this.isSignUpMode = true;
@@ -115,42 +107,29 @@ export default {
       firebase.auth().signOut();
       this.isSignUpMode = false;
       this.isEmailVerifyMode = false;
-    }
+    },
   },
   watch: {
     user() {
       if (this.user) {
-        if (this.user.email === "sample@fujiya228.com") {
-          const next = this.$route.query.next || "/";
-          this.$router.push(next);
-        }
-        // メールアドレス確認
-        else if (this.user.emailVerified) {
-          // メールアドレス確認済み
-          this.email = this.password = "";
-          const next = this.$route.query.next || "/";
-          this.$router.push(next);
-        } else {
-          // メールアドレス未確認
-          this.isEmailVerifyMode = true;
-          this.$store.dispatch("auth/sendEmail");
-        }
+        this.email = this.password = "";
+        const next = this.$route.query.next || "/map-free";
+        this.$router.push(next);
       }
-    }
+    },
   },
   computed: {
     titleText() {
-      if (this.isEmailVerifyMode) return "メールアドレス確認";
       return this.isSignUpMode ? "Sign Up" : "Log In";
     },
     switchText() {
       return this.isSignUpMode ? "ログイン" : "新規登録";
     },
     ...mapState({
-      user: state => state.auth.user,
-      isAuthStateChanged: state => state.auth.isAuthStateChanged
-    })
-  }
+      user: (state) => state.auth.user,
+      isAuthStateChanged: (state) => state.auth.isAuthStateChanged,
+    }),
+  },
 };
 </script>
 
@@ -171,12 +150,18 @@ export default {
   &__container {
     max-width: 300px;
     width: 80%;
+    :not(:last-child) {
+      margin-bottom: 8px;
+    }
   }
   &__switch {
     margin: 16px;
     font-size: 14px;
     text-decoration: underline;
     cursor: pointer;
+    a {
+      color: white;
+    }
   }
 }
 </style>

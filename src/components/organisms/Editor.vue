@@ -1,18 +1,18 @@
 <template>
   <div class="Editor" @touchmove.stop @pointermove.stop>
     <div id="toolbar">
-      <button class="custom-button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
-        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
-        <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="isPreviewOpen = !isPreviewOpen" v-tooltip="'プレビュー'">
-        <Icon icon="eye" :class="{iconOn:isPreviewOpen}" :size="14" :font="18" />
-      </button>
-      <button class="custom-button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
-        <Icon icon="external-link-alt" :size="14" :font="18" />
-      </button>
+      <div class="custom__button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
+        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
+        <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="isPreviewOpen = !isPreviewOpen" v-tooltip="'プレビュー'">
+        <Icon icon="eye" :class="{iconOn:isPreviewOpen}" :size="24" :font="14" />
+      </div>
+      <div class="custom__button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
+        <Icon icon="external-link-alt" :size="24" :font="14" />
+      </div>
       <button class="ql-bold">Bold</button>
       <button class="ql-italic">Italic</button>
       <button class="ql-underline">Underline</button>
@@ -52,6 +52,22 @@
         <option value="serif"></option>
         <option value="monospace"></option>
       </select>
+      <div
+        class="custom__select"
+        :style="{borderColor:statusColor(detailsMenu.node.status)}"
+        @click="isSelectStatus = !isSelectStatus"
+      >
+        {{statusTitle(detailsMenu.node.status)}}
+        <div class="custom__select__container" v-show="isSelectStatus">
+          <div
+            class="custom__select__item"
+            :style="{background:statusColor(status.id)}"
+            @click="detailsMenu.node.status = status.id"
+            v-for="status in statuses"
+            :key="status.id"
+          >{{status.title}}</div>
+        </div>
+      </div>
     </div>
     <div class="Editor__display" :class="editorClass">
       <div class="Editor__link" v-show="isRelationOpen" v-tooltip.right-start="'関連リンク'">
@@ -86,7 +102,12 @@
         @ready="onEditorReady($event)"
         @change="onEditorChange($event)"
       />
-      <div class="Editor__preview ql-editor" v-html="content" v-show="isPreviewOpen"></div>
+      <div
+        class="Editor__preview ql-editor"
+        v-html="content"
+        v-show="isPreviewOpen"
+        :class="{divider:isEditorOpen && isPreviewOpen}"
+      ></div>
       <div class="Editor__not-open" v-if="!isDisplayOpen">
         <h2>何も開かれていません</h2>
       </div>
@@ -126,29 +147,31 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+import helpers from "@/helpers/helpers";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
   name: "Editor",
   props: {
     editorClass: {
-      type: String
-    }
+      type: String,
+    },
   },
   components: {
     quillEditor,
-    Icon
+    Icon,
   },
   data() {
     return {
       query: "",
       isMakeCustomLink: false,
       isMakeRelation: false,
-      isRelationOpen: true,
+      isRelationOpen: false,
       isEditorOpen: true,
       isPreviewOpen: false,
+      isSelectStatus: false,
       content: "",
-      notFoundText: "関連リンクはありませんでした"
+      notFoundText: "関連リンクはありませんでした",
     };
   },
   methods: {
@@ -156,10 +179,10 @@ export default {
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
         this.$store.dispatch("selectNode", node);
-        let FreeGraph = document.getElementById("FreeGraph");
+        let MapFree = document.getElementById("MapFree");
         let area_width = this.width - this.$store.getters["sidebar_width"];
-        FreeGraph.scrollLeft = node.x - area_width / 2;
-        FreeGraph.scrollTop = node.y - this.height / 2;
+        MapFree.scrollLeft = node.x - area_width / 2;
+        MapFree.scrollTop = node.y - this.height / 2;
       }
     },
     clickCustomLink() {
@@ -179,14 +202,17 @@ export default {
     },
     makeLink(node) {
       // 関連付けするかどうかのボタンも用意しておく
-      this.$refs.MyQuillEditor.quill.format("link", node.id);
+      this.$refs.MyQuillEditor.quill.format(
+        "link",
+        "/" + this.$store.state.dataInfo.uuid + "/" + node.id
+      );
       this.isMakeCustomLink = false;
     },
     makeRel(node) {
       // 関連付けするかどうかのボタンも用意しておく
       this.$store.commit("makeRelation", {
         base: this.detailsMenu.node,
-        target: node
+        target: node,
       });
       // detailsMenuに反映=>これはmakeRelationがわでやるべき？TODO
       this.$store.dispatch("selectNode", this.detailsMenu.node);
@@ -198,7 +224,7 @@ export default {
         if (rels[key].pair_id === node.id) {
           this.$store.dispatch("delRelation", {
             relId: key,
-            force: false
+            force: false,
           });
           break;
         }
@@ -220,45 +246,53 @@ export default {
     onEditorChange({ html }) {
       // console.log("editor change!", html);
       this.content = html;
-    }
+    },
+    statusColor: helpers.statusColor,
+    statusTitle: helpers.statusTitle,
   },
   computed: {
-    ...mapState(["width", "height", "nodes", "editorInfo", "detailsMenu"]),
+    ...mapState([
+      "width",
+      "height",
+      "nodes",
+      "statuses",
+      "editorInfo",
+      "detailsMenu",
+    ]),
     isPopupOpen() {
       return this.isMakeCustomLink || this.isMakeRelation;
     },
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter(
-        item =>
+        (item) =>
           item.title.indexOf(this.query) !== -1 &&
           item.id !== this.detailsMenu.nodeId
       );
     },
     unrelatedFilter() {
       return this.detailsMenu.unrelated.filter(
-        item => item.title.indexOf(this.query) !== -1
+        (item) => item.title.indexOf(this.query) !== -1
       );
     },
     isDisplayOpen() {
       return this.isEditorOpen || this.isPreviewOpen;
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "@/assets/variable.scss";
 .Editor {
   display: flex;
   flex-direction: column;
   height: 100%;
   &__link {
-    box-sizing: border-box;
     width: 20%;
     min-width: 150px;
-    border: 1px solid #ccc;
     overflow: auto;
+    border-right: solid 1px #ccc;
     &__item {
       display: flex;
       justify-content: center;
@@ -267,7 +301,7 @@ export default {
       height: 32px;
       line-height: 24px;
       padding: 4px 8px;
-      @include ellipse;
+      @include ellipsis;
       cursor: pointer;
       &:hover {
         background: #ccc;
@@ -275,7 +309,7 @@ export default {
     }
     &__title {
       width: calc(100% - 24px);
-      @include ellipse;
+      @include ellipsis;
     }
     &__icon {
       width: 24px;
@@ -288,22 +322,22 @@ export default {
       height: 32px;
       line-height: 24px;
       padding: 4px 8px;
-      @include ellipse;
+      @include ellipsis;
     }
   }
   &__display {
     display: flex;
-    width: 100%;
     background: white;
-    .ql-container {
+    .ql-container.ql-snow {
       border: none;
     }
   }
   &__preview {
-    box-sizing: border-box;
-    width: 100%;
     height: 100%;
-    border: 1px solid #ccc;
+    width: 100%;
+    &.divider {
+      border-left: solid 1px #ccc;
+    }
   }
   &__not-open {
     box-sizing: border-box;
@@ -312,7 +346,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid #ccc;
   }
   &__popup {
     display: flex;
@@ -356,6 +389,10 @@ export default {
     &__list {
       display: flex;
       flex-wrap: wrap;
+      align-content: flex-start;
+      // 300 - 24*2 - 35 - 8 - 24 - 8
+      height: 177px;
+      overflow: auto;
     }
     &__item {
       max-width: 50%;
@@ -366,26 +403,74 @@ export default {
       padding: 4px 8px;
       background: #eee;
       cursor: pointer;
-      @include ellipse;
+      @include ellipsis;
       &:hover {
         background: $color-main-l;
       }
     }
   }
 }
-.custom-button {
-  transition: 0s;
+.custom {
+  &__button {
+    float: left;
+    width: 28px;
+    height: 24px;
+    padding: 0 2px;
+    transition: 0s;
+    cursor: pointer;
+  }
+  &__select {
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    height: 24px;
+    width: 100px;
+    line-height: 20px;
+    padding: 0 8px;
+    font-size: 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: solid 2px;
+    &__container {
+      width: 100%;
+      padding: 4px 0;
+      background: white;
+      position: absolute;
+      left: 0;
+      top: 24px;
+      z-index: 1;
+    }
+    &__item {
+      width: 100%;
+      font-size: 14px;
+      padding: 0 8px;
+      margin-bottom: 4px;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
 }
 .iconOn {
   color: $color-main;
 }
 #toolbar {
+  width: 100%;
   background: white;
+  padding: 12px 8px;
+  border: none;
+  border-bottom: solid 1px #ccc;
 }
 .quill-editor,
 .ql-editor {
   background-color: white;
   width: 100%;
   height: 100%;
+  font-size: 16px;
+  word-break: break-all;
+
+  * {
+    border: none;
+  }
 }
 </style>

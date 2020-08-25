@@ -5,87 +5,48 @@
       <Navigation />
       <AppMain />
     </div>
-    <Overlay v-if="isLoading" />
+    <Overlay v-if="dataInfo.isCreating || dataInfo.isLoading" />
+    <Modal />
   </div>
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/functions";
 import { mapState, mapMutations } from "vuex";
 import Navigation from "@/layout/parts/Navigation";
 import Sidebar from "@/layout/parts/Sidebar";
 import AppMain from "@/layout/parts/AppMain";
 import Overlay from "@/layout/parts/Overlay";
+import Modal from "@/layout/parts/Modal";
 
-import helpers from "@/helpers/helpers";
 export default {
   name: "Layout",
   components: {
     Navigation,
     Sidebar,
     AppMain,
-    Overlay
+    Overlay,
+    Modal,
   },
   data() {
-    return {
-      getData: firebase.functions().httpsCallable("getData"),
-      isLoading: false
-    };
+    return {};
   },
   computed: {
-    ...mapState(["sidebar", "dataInfo", "detailsMenu"])
+    ...mapState(["nodes", "sidebar", "dataInfo", "detailsMenu"]),
   },
   methods: {
-    initData(data) {
-      data.nodes.forEach(item => {
-        item.x = item.free.x;
-        item.y = item.free.y;
-      });
-      data.relations.forEach(item => {
-        item.base.node = data.nodes.find(x => x.id === item.base.id);
-        item.target.node = data.nodes.find(x => x.id === item.target.id);
-      });
-      this.dataInfo.nodeNum = data.nodeNum;
-      this.dataInfo.statusNum = data.statusNum;
-      this.dataInfo.tagNum = data.tagNum;
-      this.$store.state.nodes = data.nodes;
-      this.$store.state.relations = data.relations;
-      this.$store.state.statuses = data.statuses;
-      this.$store.state.tags = data.tags;
-      this.detailsMenu.node = null;
-      console.log("init fin");
-    },
-    ...mapMutations(["graphArea"])
+    ...mapMutations(["graphArea"]),
   },
   created() {
-    this.isLoading = true;
     window.addEventListener("resize", this.graphArea, false);
-    window.addEventListener("beforeunload", e => {
+    window.addEventListener("beforeunload", (e) => {
       var confirmationMessage = "変更が保存されない可能性があります";
       (e || window.event).returnValue = confirmationMessage;
       return confirmationMessage;
     });
-    this.getData()
-      .then(result => {
-        console.log(result);
-        this.initData(result.data);
-        if (this.$route.params.node_id) {
-          console.log("search now", this.$route.params.node_id);
-          let node = helpers.searchNode(this.$route.params.node_id);
-          // console.log(node);
-          if (node) this.$store.dispatch("selectNode", node);
-          else this.$router.push("/404");
-        }
-      })
-      .then(() => {
-        this.isLoading = false;
-      });
   },
   destroyed() {
-    // console.log("destroyed");
     window.removeEventListener("resize", this.graphArea);
-  }
+  },
 };
 </script>
 

@@ -3,14 +3,14 @@
     <header class="NotFound__header"></header>
     <div class="NotFound__container">
       <div class="NotFound__title">コンテンツが存在しませんでした。</div>
-      <router-link to="/graph-free" class="NotFound__link">Topへ戻る</router-link>
+      <router-link to="/map-free" class="NotFound__link">Topへ戻る</router-link>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "NotFound"
+  name: "NotFound",
 };
 </script>
 
