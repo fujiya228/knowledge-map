@@ -4,7 +4,7 @@ const helpContent = [
     sub: [
       {
         title: '要素の追加',
-        content: '<a href="/map-free" target="_blank">マップを表示</a>した状態で方眼のエリアをクリックします。表示されるフォームから作成できます。'
+        content: '<a href="/non-id" target="_blank">マップを表示</a>した状態で方眼のエリアをクリックします。表示されるフォームから作成できます。'
       },
       {
         title: '要素の削除',
