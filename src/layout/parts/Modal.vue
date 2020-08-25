@@ -236,15 +236,6 @@ export default {
               this.deleteItem(uuid);
               this.$router.push("non-id");
             }
-            if (
-              this.$route.name === "id_map" ||
-              this.$route.name === "non_id_map"
-            ) {
-              this.$nextTick(() => {
-                // width_2の更新
-                this.$store.commit("updateNodeWidth_2");
-              });
-            }
           })
           .catch((err) => {
             console.log("err", err);
@@ -314,12 +305,12 @@ export default {
         this.dataInfo.isLoading = false;
       }
       // width_2の更新
-      if (this.$route.path === "/map-free")
+      if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
         this.$nextTick(() => {
-          console.log("initData", this.$route.name);
+          // width_2の更新
           this.$store.commit("updateNodeWidth_2");
-          this.dataInfo.isLoading = false;
         });
+      }
     },
     updateData(data) {
       // 過去のバージョンで足りていないデータを追加
