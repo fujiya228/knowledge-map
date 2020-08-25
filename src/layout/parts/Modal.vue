@@ -5,9 +5,9 @@
         <IconButton @click.native="closeModal()" />
       </TitleGroup>
       <input class="Input" type="text" v-model="dataInfo.title" placeholder="タイトル" />
-      <Btn class="full" @click.stop.native="saveData('local')">ブラウザに保存</Btn>
-      <Btn class="full" @click.stop.native="saveData('file')">ファイルとして保存</Btn>
-      <Btn class="full" @click.stop.native="saveData('firebase')">データベースに保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('local')">ブラウザに保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('file')">ファイルとして保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('firebase')">データベースに保存</Btn>
       <Btn class="full cancel" @click.stop.native="dataInfo.isSave = false">キャンセル</Btn>
     </div>
     <div class="Modal__form" v-if="dataInfo.isLoad" @click.stop>
@@ -189,12 +189,21 @@ export default {
         }
       }
     },
+    modalSaveData(flag) {
+      this.saveData(flag)
+        .then(() => {
+          if (flag === "firebase" && this.$route.path === "/non-id")
+            this.$router.replace(this.dataInfo.uuid);
+        })
+        .catch(() => {
+          console.log("保存失敗");
+        });
+    },
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
       // 現在のデータを保存後データをリセット
       if (confirm("現在のマップを保存しますか？")) {
-        this.$store
-          .dispatch("saveData", "firebase")
+        this.saveData("firebase")
           .then(() => {
             this.getData(uuid);
             this.$router.push(uuid);
@@ -307,6 +316,7 @@ export default {
       // width_2の更新
       if (this.$route.path === "/map-free")
         this.$nextTick(() => {
+          console.log("initData", this.$route.name);
           this.$store.commit("updateNodeWidth_2");
           this.dataInfo.isLoading = false;
         });
@@ -418,11 +428,7 @@ export default {
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
-        this.saveData("firebase")
-          .then()
-          .catch(() => {
-            console.log("保存失敗");
-          });
+        this.modalSaveData("firebase");
       }
       if (e.key === "/") {
         e.preventDefault();
