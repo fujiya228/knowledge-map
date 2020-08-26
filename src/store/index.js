@@ -535,8 +535,8 @@ export default new Vuex.Store({
         x: state.addNodeForm.x,
         y: state.addNodeForm.y,
         free: {
-          x: state.addNodeForm.x,
-          y: state.addNodeForm.y,
+          x: state.addNodeForm.x / state.scale,
+          y: state.addNodeForm.y / state.scale,
           isActive: state.addNodeForm.isFree,
         },
       });
