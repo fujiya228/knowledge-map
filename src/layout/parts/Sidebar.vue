@@ -25,8 +25,8 @@
         <div class="Sidebar__button__text">保存</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isLoad=true">
-        <Icon icon="file-import" />
-        <div class="Sidebar__button__text">読み込み</div>
+        <Icon icon="file" />
+        <div class="Sidebar__button__text">マップ</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="createNewMap()">
         <Icon icon="plus" />
