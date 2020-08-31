@@ -83,7 +83,7 @@
     </div>
     <div class="Editor__display" :class="editorClass">
       <div class="Editor__link" v-show="editorInfo.isRelationOpen" v-tooltip.right-start="'関連リンク'">
-        <div class="Editor__link__item" v-tooltip="'新規作成'" @click="isMakeRelation = true">
+        <div class="Editor__link__item" v-tooltip="'新規リンク作成'" @click="isMakeRelation = true">
           <Icon icon="plus" />
         </div>
         <div
@@ -159,9 +159,14 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+import Quill from "quill";
+import MarkdownShortcuts from "quill-markdown-shortcuts";
+
 import helpers from "@/helpers/helpers";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+
+Quill.register("modules/markdownShortcuts", MarkdownShortcuts);
 export default {
   name: "Editor",
   props: {

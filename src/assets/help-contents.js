@@ -181,6 +181,25 @@ const helpContent = [
         title: 'ステータス編集',
         content: 'ステータスを編集することができます。'
       },
+      {
+        title: 'マークダウン',
+        content: "マークダウンのショートカットが利用できます<br/>\
+          # Headers<br/>\
+          ** Bold text**<br/>\
+          * Italic *<br/>\
+          *** Bold italic ***<br/>\
+          ~~Strikethrou<br/>\
+          - Bullet poin<br/>\
+          1. Numbered lists<br/>\
+          [] Checkboxes<br/>\
+          []() Links<br/>\
+          > Blockquote<br/>\
+          `Inline code block`<br/>\
+          ```<br/>\
+          Fenced Code block<br/>\
+          ```<br/>\
+          --- Horizontal Rule"
+      }
     ]
   },
 ]

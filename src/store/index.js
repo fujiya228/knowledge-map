@@ -194,7 +194,8 @@ export default new Vuex.Store({
         theme: "snow",
         placeholder: "入力する",
         modules: {
-          toolbar: "#toolbar"
+          toolbar: "#toolbar",
+          markdownShortcuts: {}
         }
       }
     },
