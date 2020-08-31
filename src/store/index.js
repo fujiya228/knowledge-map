@@ -186,6 +186,9 @@ export default new Vuex.Store({
     editorInfo: {
       isOpen: false,
       isEditPage: false,
+      isRelationOpen: false,
+      isEditorOpen: true,
+      isPreviewOpen: false,
       ref: null,
       option: {
         theme: "snow",
