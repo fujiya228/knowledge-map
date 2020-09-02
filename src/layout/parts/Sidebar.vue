@@ -168,7 +168,7 @@ export default {
       }
     },
     sidebarAddNode() {
-      if (this.$route.path === "/map-free") {
+      if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
         let MapFree = document.getElementById("MapFree");
         this.addNodeForm.x =
           (this.width - this.$store.getters["sidebar_width"]) / 2 +

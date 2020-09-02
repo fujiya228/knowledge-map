@@ -274,8 +274,8 @@ export default {
       this.updateData(data);
       data.nodes.forEach((item) => {
         item.width_2 = 0;
-        item.x = item.free.x;
-        item.y = item.free.y;
+        item.x = item.free.x * this.scale;
+        item.y = item.free.y * this.scale;
       });
       data.relations.forEach((item) => {
         item.base.node = data.nodes.find((x) => x.id === item.base.id);
@@ -306,6 +306,7 @@ export default {
       }
       // width_2の更新
       if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
+        console.log("initData");
         this.$nextTick(() => {
           // width_2の更新
           this.$store.commit("updateNodeWidth_2");
@@ -386,6 +387,7 @@ export default {
       "isAuthStateChanged",
     ]),
     ...mapState([
+      "scale",
       "levels",
       "nodes",
       "relations",
