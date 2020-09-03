@@ -685,7 +685,10 @@ export default new Vuex.Store({
       }
       else if (flag === 'firebase') {
         let item = state.auth.userData.items.find(item => item.uuid === state.dataInfo.uuid)
-        if (!item) return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
+        if (!item) {
+          console.log('listにありませんでした')
+          return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
+        }
         item.title = state.dataInfo.title
         item.updated_at = state.dataInfo.updated_at
         state.auth.userData.latest = state.dataInfo.uuid
@@ -738,6 +741,7 @@ export default new Vuex.Store({
           resolve()
         }
         if (flag === 'firebase') {
+          console.log('saveData firebase')
           let mapsRef = firebase.firestore().collection("maps");
           let usersRef = firebase.firestore().collection("users");
           // firestoreに保存

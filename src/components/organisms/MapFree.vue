@@ -54,7 +54,7 @@
     <div
       class="Free__editor"
       v-if="detailsMenu.node && editorInfo.isOpen"
-      @click.self="closeEditor()"
+      @pointerdown.self="closeEditor()"
       @touchmove.stop
       @pointermove.stop
     >

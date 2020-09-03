@@ -1,5 +1,5 @@
 <template>
-  <div class="Modal" v-show="isModalOpen" @click.stop="closeModal()">
+  <div class="Modal" v-show="isModalOpen" @pointerdown.stop.self="closeModal()">
     <div class="Modal__form" v-if="dataInfo.isSave" @click.stop>
       <TitleGroup text="保存">
         <IconButton @click.native="closeModal()" />
@@ -258,6 +258,7 @@ export default {
           this.dataInfo.isLoad = false;
           return;
         }
+        data.uid = null;
         this.initData(data);
       } else {
         var result = event.target.files[0];
@@ -265,6 +266,7 @@ export default {
         reader.readAsText(result);
         reader.addEventListener("load", () => {
           data = JSON.parse(reader.result);
+          data.uid = null;
           this.initData(data);
         });
       }
@@ -398,6 +400,7 @@ export default {
       "addNodeForm",
       "contactInfo",
       "sidebar",
+      "editorInfo",
     ]),
   },
   watch: {
@@ -423,12 +426,16 @@ export default {
         e.preventDefault();
         this.modalSaveData("firebase");
       }
-      if (e.key === "/") {
+      if (e.ctrlKey && e.key === "/") {
         e.preventDefault();
         this.sidebar.isOpen = true;
         this.$nextTick(() => {
           document.querySelector(".Sidebar__search input").focus();
         });
+      }
+      if (e.ctrlKey && e.key === " " && this.detailsMenu.node) {
+        e.preventDefault();
+        this.editorInfo.isOpen = !this.editorInfo.isOpen;
       }
     });
   },
