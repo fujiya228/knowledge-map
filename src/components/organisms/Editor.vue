@@ -482,9 +482,11 @@ export default {
   height: 100%;
   font-size: 16px;
   word-break: break-all;
-
   * {
     border: none;
   }
+}
+.ql-editor {
+  padding-bottom: 200px;
 }
 </style>
