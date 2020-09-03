@@ -195,6 +195,9 @@ export default new Vuex.Store({
         placeholder: "入力する",
         modules: {
           toolbar: "#toolbar",
+          clipboard: {
+            matchVisual: false
+          },
           markdownShortcuts: {}
         }
       }

@@ -254,7 +254,7 @@ export default {
       console.log("editor focus!");
     },
     onEditorReady() {
-      console.log("editor ready!");
+      console.log("editor ready!", Quill.version);
       this.content = this.detailsMenu.node.detail;
     },
     onEditorChange({ html }) {
