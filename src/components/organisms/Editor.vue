@@ -489,4 +489,8 @@ export default {
 .ql-editor {
   padding-bottom: 200px;
 }
+.ql-editor ul[data-checked="true"] > li {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
 </style>
