@@ -25,8 +25,8 @@
         class="full"
         @click.stop.native="getAnotherData('207f0f6c-4ef4-4df4-88be-67a169f8109c')"
       >サンプルマップ</Btn>
-      <template v-if="isLoggedIn">
-        <TitleGroup text="データベース"></TitleGroup>
+      <TitleGroup v-if="isLoggedIn" text="データベース"></TitleGroup>
+      <div class="Modal__list" v-if="isLoggedIn">
         <div class="Modal__item" v-for="item in userItems" :key="item.uuid">
           <Btn class="full" @click.stop.native="getAnotherData(item.uuid)">{{item.title}}</Btn>
           <div class="Modal__delete" @click="deleteMap(item)">
@@ -36,7 +36,7 @@
         <template v-if="!userItems.length">
           <div class="Modal__not-found">データはありませんでした</div>
         </template>
-      </template>
+      </div>
       <Btn class="full cancel" @click.stop.native="dataInfo.isLoad = false">キャンセル</Btn>
     </div>
     <div class="Modal__form" v-if="dataInfo.isAuth" @click.stop>
@@ -471,9 +471,14 @@ export default {
       margin-bottom: 8px;
     }
   }
+  &__list {
+    max-height: calc(100% - 224px); //データベース以外を引いてる
+    overflow: auto;
+  }
   &__item {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 8px;
     &__title {
     }
   }
