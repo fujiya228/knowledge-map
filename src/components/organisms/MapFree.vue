@@ -11,8 +11,8 @@
       class="Free__area"
       :class="{moving: isGraphMove}"
       @click="openAddNodeForm($event)"
-      :width="3000*scale"
-      :height="3000*scale"
+      :width="mapWidth*scale"
+      :height="mapHeight*scale"
     >
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
@@ -92,6 +92,8 @@ export default {
       canOpenAddNodeForm: true,
       pointerX: 0,
       pointerY: 0,
+      mapWidth: 5000,
+      mapHeight: 5000,
     };
   },
   methods: {
@@ -155,9 +157,9 @@ export default {
       let X = x + MapFree.scrollLeft - this.sidebar_width; // 現在のポインタ位置
       let Y = y + MapFree.scrollTop;
       if (x < 100 + this.sidebar_width) MapFree.scrollLeft -= 10;
-      if (x > this.width - 100 && X < 3000) MapFree.scrollLeft += 10;
+      if (x > this.width - 100 && X < this.mapWidth) MapFree.scrollLeft += 10;
       if (y < 100) MapFree.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 3000) MapFree.scrollTop += 10;
+      if (y > this.height - 100 && Y < this.mapHeight) MapFree.scrollTop += 10;
       node.x = Math.floor(X);
       node.free.x = Math.floor(node.x / this.scale);
       node.y = Math.floor(Y - 48);
