@@ -684,7 +684,7 @@ export default new Vuex.Store({
       if (flag === "firebase" && !state.auth.userData.paid) {
         console.log(state.auth.userData)
         if (state.auth.userData.items.length >= 3 && state.dataInfo.uuid === undefined) {
-          alert('３個以上のマップを保存するには会員登録が必要です。')
+          alert('現状、マップの保存を３個に制限しています。今後、上限を増やしたり、条件を設けて開放する予定です。ご了承ください。')
           return;
         }
       }

@@ -395,9 +395,6 @@ export default {
   stroke-width: 3px;
   stroke: black;
   // transition: 0.25s ease-in-out;
-  // 何故かlineにはtransitionが効かなかった pathで代用
-  // 後日、いらんくね？
-  // 次の日、レベル増減時にこいつだけ先に動くのは気持ちわるいので復活
   &.drag {
     transition: 0s;
   }
