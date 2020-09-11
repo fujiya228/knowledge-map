@@ -1,7 +1,7 @@
 <template>
   <div class="Admin">
     <h1>Admin</h1>
-    <div class="Auth__icon" v-if="isLoading">
+    <div class="Admin__icon" v-if="isLoading">
       <Icon icon="spinner" :size="32" :font="24" />
     </div>
     <div class="Admin__container">
@@ -21,6 +21,14 @@
         placeholder="password"
         @keydown.enter="login()"
       />
+      <input
+        class="Input"
+        type="password"
+        v-model="newPassword"
+        placeholder="new password"
+        @keydown.enter="updatePassword()"
+      />
+      <Btn @click.native="updatePassword()">パスワード更新</Btn>
       <Btn @click.native="login()">ログイン</Btn>
       <Btn @click.native="logout()">ログアウト</Btn>
       <Btn @click.native="verifyEmail()">アドレスを確認済にする</Btn>
@@ -41,22 +49,41 @@ export default {
   name: "Auth",
   components: {
     Icon,
-    Btn
+    Btn,
   },
   data() {
     return {
       email: "",
       password: "",
-      isLoading: false
+      newPassword: "",
+      isLoading: false,
     };
   },
   methods: {
+    updatePassword() {
+      this.isLoading = true;
+      this.user
+        .updatePassword(this.newPassword)
+        .then(function (res) {
+          alert("password更新成功");
+          console.log(res);
+          this.password = this.newPassword;
+          this.newPassword = "";
+        })
+        .catch(function (error) {
+          console.log("error", error);
+          alert("更新失敗", error.message);
+        })
+        .then(async () => {
+          this.isLoading = false;
+        });
+    },
     login() {
       this.isLoading = true;
       firebase
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
           alert(err.message);
         })
@@ -77,26 +104,26 @@ export default {
       this.isLoading = true;
       this.user
         .updateProfile({
-          emailVerified: true
+          emailVerified: true,
         })
-        .then(function(res) {
+        .then(function (res) {
           alert("更新成功");
           console.log(res);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log("error", error);
           alert("更新失敗");
         })
         .then(async () => {
           this.isLoading = false;
         });
-    }
+    },
   },
   computed: {
     ...mapState({
-      user: state => state.auth.user
-    })
-  }
+      user: (state) => state.auth.user,
+    }),
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -117,6 +144,7 @@ export default {
     max-width: 300px;
     width: 80%;
   }
+  .Input,
   .Button {
     margin-bottom: 8px;
   }
