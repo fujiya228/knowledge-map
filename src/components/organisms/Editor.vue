@@ -1,14 +1,26 @@
 <template>
   <div class="Editor" @touchmove.stop @pointermove.stop>
     <div id="toolbar">
-      <div class="custom__button" @click="isRelationOpen = !isRelationOpen" v-tooltip="'関連リンク'">
-        <Icon icon="list-ul" :class="{iconOn:isRelationOpen}" :size="24" :font="14" />
+      <div
+        class="custom__button"
+        @click="editorInfo.isRelationOpen = !editorInfo.isRelationOpen"
+        v-tooltip="'関連リンク'"
+      >
+        <Icon icon="list-ul" :class="{iconOn:editorInfo.isRelationOpen}" :size="24" :font="14" />
       </div>
-      <div class="custom__button" @click="isEditorOpen = !isEditorOpen" v-tooltip="'エディター'">
-        <Icon icon="edit" :class="{iconOn:isEditorOpen}" :size="24" :font="14" />
+      <div
+        class="custom__button"
+        @click="editorInfo.isEditorOpen = !editorInfo.isEditorOpen"
+        v-tooltip="'エディター'"
+      >
+        <Icon icon="edit" :class="{iconOn:editorInfo.isEditorOpen}" :size="24" :font="14" />
       </div>
-      <div class="custom__button" @click="isPreviewOpen = !isPreviewOpen" v-tooltip="'プレビュー'">
-        <Icon icon="eye" :class="{iconOn:isPreviewOpen}" :size="24" :font="14" />
+      <div
+        class="custom__button"
+        @click="editorInfo.isPreviewOpen = !editorInfo.isPreviewOpen"
+        v-tooltip="'プレビュー'"
+      >
+        <Icon icon="eye" :class="{iconOn:editorInfo.isPreviewOpen}" :size="24" :font="14" />
       </div>
       <div class="custom__button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
         <Icon icon="external-link-alt" :size="24" :font="14" />
@@ -70,8 +82,8 @@
       </div>
     </div>
     <div class="Editor__display" :class="editorClass">
-      <div class="Editor__link" v-show="isRelationOpen" v-tooltip.right-start="'関連リンク'">
-        <div class="Editor__link__item" v-tooltip="'新規作成'" @click="isMakeRelation = true">
+      <div class="Editor__link" v-show="editorInfo.isRelationOpen" v-tooltip.right-start="'関連リンク'">
+        <div class="Editor__link__item" v-tooltip="'新規リンク作成'" @click="isMakeRelation = true">
           <Icon icon="plus" />
         </div>
         <div
@@ -93,7 +105,7 @@
         >{{notFoundText}}</div>
       </div>
       <quill-editor
-        v-show="isEditorOpen"
+        v-show="editorInfo.isEditorOpen"
         ref="MyQuillEditor"
         v-model="detailsMenu.node.detail"
         :options="editorInfo.option"
@@ -105,8 +117,8 @@
       <div
         class="Editor__preview ql-editor"
         v-html="content"
-        v-show="isPreviewOpen"
-        :class="{divider:isEditorOpen && isPreviewOpen}"
+        v-show="editorInfo.isPreviewOpen"
+        :class="{divider:editorInfo.isEditorOpen && editorInfo.isPreviewOpen}"
       ></div>
       <div class="Editor__not-open" v-if="!isDisplayOpen">
         <h2>何も開かれていません</h2>
@@ -147,9 +159,14 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+import Quill from "quill";
+import MarkdownShortcuts from "quill-markdown-shortcuts";
+
 import helpers from "@/helpers/helpers";
 import { mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
+
+Quill.register("modules/markdownShortcuts", MarkdownShortcuts);
 export default {
   name: "Editor",
   props: {
@@ -166,9 +183,6 @@ export default {
       query: "",
       isMakeCustomLink: false,
       isMakeRelation: false,
-      isRelationOpen: false,
-      isEditorOpen: true,
-      isPreviewOpen: false,
       isSelectStatus: false,
       content: "",
       notFoundText: "関連リンクはありませんでした",
@@ -190,7 +204,7 @@ export default {
       let quill = this.$refs.MyQuillEditor.quill;
       quill.focus();
       let length = quill.getSelection().length;
-      if (!this.isEditorOpen) {
+      if (!this.editorInfo.isEditorOpen) {
         alert("エディターを開いてください");
         return;
       }
@@ -240,7 +254,7 @@ export default {
       console.log("editor focus!");
     },
     onEditorReady() {
-      console.log("editor ready!");
+      console.log("editor ready!", Quill.version);
       this.content = this.detailsMenu.node.detail;
     },
     onEditorChange({ html }) {
@@ -276,7 +290,7 @@ export default {
       );
     },
     isDisplayOpen() {
-      return this.isEditorOpen || this.isPreviewOpen;
+      return this.editorInfo.isEditorOpen || this.editorInfo.isPreviewOpen;
     },
   },
 };
@@ -468,9 +482,15 @@ export default {
   height: 100%;
   font-size: 16px;
   word-break: break-all;
-
   * {
     border: none;
   }
+}
+.ql-editor {
+  padding-bottom: 200px;
+}
+.ql-editor ul[data-checked="true"] > li {
+  text-decoration: line-through;
+  opacity: 0.5;
 }
 </style>

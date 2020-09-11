@@ -1,13 +1,13 @@
 <template>
-  <div class="Modal" v-show="isModalOpen" @click.stop="closeModal()">
+  <div class="Modal" v-show="isModalOpen" @pointerdown.stop.self="closeModal()">
     <div class="Modal__form" v-if="dataInfo.isSave" @click.stop>
       <TitleGroup text="保存">
         <IconButton @click.native="closeModal()" />
       </TitleGroup>
       <input class="Input" type="text" v-model="dataInfo.title" placeholder="タイトル" />
-      <Btn class="full" @click.stop.native="saveData('local')">ブラウザに保存</Btn>
-      <Btn class="full" @click.stop.native="saveData('file')">ファイルとして保存</Btn>
-      <Btn class="full" @click.stop.native="saveData('firebase')">データベースに保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('local')">ブラウザに保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('file')">ファイルとして保存</Btn>
+      <Btn class="full" @click.stop.native="modalSaveData('firebase')">データベースに保存</Btn>
       <Btn class="full cancel" @click.stop.native="dataInfo.isSave = false">キャンセル</Btn>
     </div>
     <div class="Modal__form" v-if="dataInfo.isLoad" @click.stop>
@@ -25,8 +25,8 @@
         class="full"
         @click.stop.native="getAnotherData('207f0f6c-4ef4-4df4-88be-67a169f8109c')"
       >サンプルマップ</Btn>
-      <template v-if="isLoggedIn">
-        <TitleGroup text="データベース"></TitleGroup>
+      <TitleGroup v-if="isLoggedIn" text="データベース"></TitleGroup>
+      <div class="Modal__list" v-if="isLoggedIn">
         <div class="Modal__item" v-for="item in userItems" :key="item.uuid">
           <Btn class="full" @click.stop.native="getAnotherData(item.uuid)">{{item.title}}</Btn>
           <div class="Modal__delete" @click="deleteMap(item)">
@@ -36,7 +36,7 @@
         <template v-if="!userItems.length">
           <div class="Modal__not-found">データはありませんでした</div>
         </template>
-      </template>
+      </div>
       <Btn class="full cancel" @click.stop.native="dataInfo.isLoad = false">キャンセル</Btn>
     </div>
     <div class="Modal__form" v-if="dataInfo.isAuth" @click.stop>
@@ -189,12 +189,21 @@ export default {
         }
       }
     },
+    modalSaveData(flag) {
+      this.saveData(flag)
+        .then(() => {
+          if (flag === "firebase" && this.$route.path === "/non-id")
+            this.$router.replace(this.dataInfo.uuid);
+        })
+        .catch(() => {
+          console.log("保存失敗");
+        });
+    },
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
       // 現在のデータを保存後データをリセット
       if (confirm("現在のマップを保存しますか？")) {
-        this.$store
-          .dispatch("saveData", "firebase")
+        this.saveData("firebase")
           .then(() => {
             this.getData(uuid);
             this.$router.push(uuid);
@@ -227,15 +236,6 @@ export default {
               this.deleteItem(uuid);
               this.$router.push("non-id");
             }
-            if (
-              this.$route.name === "id_map" ||
-              this.$route.name === "non_id_map"
-            ) {
-              this.$nextTick(() => {
-                // width_2の更新
-                this.$store.commit("updateNodeWidth_2");
-              });
-            }
           })
           .catch((err) => {
             console.log("err", err);
@@ -258,6 +258,7 @@ export default {
           this.dataInfo.isLoad = false;
           return;
         }
+        data.uid = null;
         this.initData(data);
       } else {
         var result = event.target.files[0];
@@ -265,6 +266,7 @@ export default {
         reader.readAsText(result);
         reader.addEventListener("load", () => {
           data = JSON.parse(reader.result);
+          data.uid = null;
           this.initData(data);
         });
       }
@@ -274,8 +276,8 @@ export default {
       this.updateData(data);
       data.nodes.forEach((item) => {
         item.width_2 = 0;
-        item.x = item.free.x;
-        item.y = item.free.y;
+        item.x = item.free.x * this.scale;
+        item.y = item.free.y * this.scale;
       });
       data.relations.forEach((item) => {
         item.base.node = data.nodes.find((x) => x.id === item.base.id);
@@ -305,11 +307,13 @@ export default {
         this.dataInfo.isLoading = false;
       }
       // width_2の更新
-      if (this.$route.path === "/map-free")
+      if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
+        console.log("initData");
         this.$nextTick(() => {
+          // width_2の更新
           this.$store.commit("updateNodeWidth_2");
-          this.dataInfo.isLoading = false;
         });
+      }
     },
     updateData(data) {
       // 過去のバージョンで足りていないデータを追加
@@ -385,6 +389,7 @@ export default {
       "isAuthStateChanged",
     ]),
     ...mapState([
+      "scale",
       "levels",
       "nodes",
       "relations",
@@ -395,6 +400,7 @@ export default {
       "addNodeForm",
       "contactInfo",
       "sidebar",
+      "editorInfo",
     ]),
   },
   watch: {
@@ -418,18 +424,18 @@ export default {
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
-        this.saveData("firebase")
-          .then()
-          .catch(() => {
-            console.log("保存失敗");
-          });
+        this.modalSaveData("firebase");
       }
-      if (e.key === "/") {
+      if (e.ctrlKey && e.key === "/") {
         e.preventDefault();
         this.sidebar.isOpen = true;
         this.$nextTick(() => {
           document.querySelector(".Sidebar__search input").focus();
         });
+      }
+      if (e.ctrlKey && e.key === " " && this.detailsMenu.node) {
+        e.preventDefault();
+        this.editorInfo.isOpen = !this.editorInfo.isOpen;
       }
     });
   },
@@ -465,9 +471,14 @@ export default {
       margin-bottom: 8px;
     }
   }
+  &__list {
+    max-height: calc(100% - 224px); //データベース以外を引いてる
+    overflow: auto;
+  }
   &__item {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 8px;
     &__title {
     }
   }

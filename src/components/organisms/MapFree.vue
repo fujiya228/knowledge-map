@@ -11,8 +11,8 @@
       class="Free__area"
       :class="{moving: isGraphMove}"
       @click="openAddNodeForm($event)"
-      :width="3000*scale"
-      :height="3000*scale"
+      :width="mapWidth*scale"
+      :height="mapHeight*scale"
     >
       <rect width="100%" height="100%" fill="url(#background)" />
       <Background />
@@ -54,7 +54,7 @@
     <div
       class="Free__editor"
       v-if="detailsMenu.node && editorInfo.isOpen"
-      @click.self="closeEditor()"
+      @pointerdown.self="closeEditor()"
       @touchmove.stop
       @pointermove.stop
     >
@@ -92,6 +92,8 @@ export default {
       canOpenAddNodeForm: true,
       pointerX: 0,
       pointerY: 0,
+      mapWidth: 5000,
+      mapHeight: 5000,
     };
   },
   methods: {
@@ -155,9 +157,9 @@ export default {
       let X = x + MapFree.scrollLeft - this.sidebar_width; // 現在のポインタ位置
       let Y = y + MapFree.scrollTop;
       if (x < 100 + this.sidebar_width) MapFree.scrollLeft -= 10;
-      if (x > this.width - 100 && X < 3000) MapFree.scrollLeft += 10;
+      if (x > this.width - 100 && X < this.mapWidth) MapFree.scrollLeft += 10;
       if (y < 100) MapFree.scrollTop -= 10;
-      if (y > this.height - 100 && Y < 3000) MapFree.scrollTop += 10;
+      if (y > this.height - 100 && Y < this.mapHeight) MapFree.scrollTop += 10;
       node.x = Math.floor(X);
       node.free.x = Math.floor(node.x / this.scale);
       node.y = Math.floor(Y - 48);
@@ -247,7 +249,7 @@ export default {
       this.contextMenu.flag_x = x < (this.width + this.sidebar_width) / 2;
       this.contextMenu.flag_y = y < (this.height + 48) / 2;
       this.contextMenu.x = this.contextMenu.flag_x ? x : x - 120;
-      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 208;
+      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 248;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
@@ -393,9 +395,6 @@ export default {
   stroke-width: 3px;
   stroke: black;
   // transition: 0.25s ease-in-out;
-  // 何故かlineにはtransitionが効かなかった pathで代用
-  // 後日、いらんくね？
-  // 次の日、レベル増減時にこいつだけ先に動くのは気持ちわるいので復活
   &.drag {
     transition: 0s;
   }

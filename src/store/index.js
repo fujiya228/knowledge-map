@@ -186,12 +186,21 @@ export default new Vuex.Store({
     editorInfo: {
       isOpen: false,
       isEditPage: false,
+      isRelationOpen: false,
+      isEditorOpen: true,
+      isPreviewOpen: false,
       ref: null,
       option: {
         theme: "snow",
+        // theme: "bubble",
         placeholder: "入力する",
         modules: {
-          toolbar: "#toolbar"
+          toolbar: "#toolbar",
+          // toolbar: [['bold', 'italic', 'underline', 'strike'], [{ 'list': 'ordered' }, { 'list': 'bullet' }], [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'color': [] }, { 'background': [] }], [{ 'font': [] }], [{ 'align': [] }], ['link', 'image'], ['clean']],
+          clipboard: {
+            matchVisual: false
+          },
+          markdownShortcuts: {}
         }
       }
     },
@@ -364,20 +373,20 @@ export default new Vuex.Store({
         isEdit: false,
         title: '',
         color: "#000000"
-      },
-        state.addNodeForm = {
-          isFree: false,
-          isCircle: false,
-          isTree: false,
-          isCard: false,
-          isRelation: false,
-          status: 0,
-          x: 0,
-          y: 0,
-          title: "",
-          level: 0,
-          pie: 0,
-        }
+      }
+      state.addNodeForm = {
+        isFree: false,
+        isCircle: false,
+        isTree: false,
+        isCard: false,
+        isRelation: false,
+        status: 0,
+        x: 0,
+        y: 0,
+        title: "",
+        level: 0,
+        pie: 0,
+      }
       state.contextMenu = {
         isOpen: false,
         flag_x: false,
@@ -398,12 +407,21 @@ export default new Vuex.Store({
       state.editorInfo = {
         isOpen: false,
         isEditPage: false,
+        isRelationOpen: false,
+        isEditorOpen: true,
+        isPreviewOpen: false,
         ref: null,
         option: {
           theme: "snow",
+          // theme: "bubble",
           placeholder: "入力する",
           modules: {
-            toolbar: "#toolbar"
+            toolbar: "#toolbar",
+            // toolbar: [['bold', 'italic', 'underline', 'strike'], [{ 'list': 'ordered' }, { 'list': 'bullet' }], [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'color': [] }, { 'background': [] }], [{ 'font': [] }], [{ 'align': [] }], ['link', 'image'], ['clean']],
+            clipboard: {
+              matchVisual: false
+            },
+            markdownShortcuts: {}
           }
         }
       }
@@ -535,8 +553,8 @@ export default new Vuex.Store({
         x: state.addNodeForm.x,
         y: state.addNodeForm.y,
         free: {
-          x: state.addNodeForm.x,
-          y: state.addNodeForm.y,
+          x: state.addNodeForm.x / state.scale,
+          y: state.addNodeForm.y / state.scale,
           isActive: state.addNodeForm.isFree,
         },
       });
@@ -666,7 +684,7 @@ export default new Vuex.Store({
       if (flag === "firebase" && !state.auth.userData.paid) {
         console.log(state.auth.userData)
         if (state.auth.userData.items.length >= 3 && state.dataInfo.uuid === undefined) {
-          alert('３個以上のマップを保存するには会員登録が必要です。')
+          alert('現状、マップの保存を３個に制限しています。今後、上限を増やしたり、条件を設けて開放する予定です。ご了承ください。')
           return;
         }
       }
@@ -681,7 +699,10 @@ export default new Vuex.Store({
       }
       else if (flag === 'firebase') {
         let item = state.auth.userData.items.find(item => item.uuid === state.dataInfo.uuid)
-        if (!item) return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
+        if (!item) {
+          console.log('listにありませんでした')
+          return; // 自分のもので無い場合は排除 TODO<=これって共有で編集権限ある場合には保存できんくてまずいからなんとかしてくれ
+        }
         item.title = state.dataInfo.title
         item.updated_at = state.dataInfo.updated_at
         state.auth.userData.latest = state.dataInfo.uuid
@@ -734,6 +755,7 @@ export default new Vuex.Store({
           resolve()
         }
         if (flag === 'firebase') {
+          console.log('saveData firebase')
           let mapsRef = firebase.firestore().collection("maps");
           let usersRef = firebase.firestore().collection("users");
           // firestoreに保存

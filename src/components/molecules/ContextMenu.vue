@@ -33,6 +33,7 @@
       <div class="Context-menu__title" v-if="contextMenu.node" @click.stop>
         <input type="text" v-model="contextMenu.node.title" />
       </div>
+      <div class="Context-menu__item" @click.stop="openEditor()">エディタ</div>
       <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
       <div class="Context-menu__item" @click.stop="makeRelation()">関連付ける</div>
       <div
@@ -64,6 +65,10 @@ export default {
     makeRelation() {
       this.$emit("makeRelation");
     },
+    openEditor() {
+      this.editorInfo.isOpen = true;
+      this.closeContextMenu();
+    },
     goEditPage() {
       this.$router.push(this.$route.path + "/" + this.contextMenu.node.id);
       this.closeContextMenu();
@@ -73,7 +78,7 @@ export default {
     statusColor: helpers.statusColor,
   },
   computed: {
-    ...mapState(["contextMenu", "statuses"]),
+    ...mapState(["contextMenu", "statuses", "editorInfo"]),
   },
 };
 </script>

@@ -62,7 +62,8 @@ export default {
     },
     goToPage(target) {
       if (target === "map") this.$router.push("."); // . で相対的に移動出来た！/付けたら思った動きをしないので注意
-      if (target === "edit") this.$router.push(this.detailsMenu.node.id);
+      if (target === "edit")
+        this.$router.push(this.$route.path + "/" + this.detailsMenu.node.id);
     },
     ...mapActions(["delNode"]),
     ...mapMutations(["resizeGraph"]),

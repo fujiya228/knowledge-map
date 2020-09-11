@@ -10,14 +10,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
-  faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
+  faPen, faCheck, faSave, faFile, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
   faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch, faExternalLinkAlt, faEye, faListUl,
   faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane, faCog
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faChevronUp, faArchive, faGripLines, faPlus, faMinus, faTimes, faArrowLeft, faExclamationCircle,
-  faPen, faCheck, faSave, faFileImport, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
+  faPen, faCheck, faSave, faFile, faSyncAlt, faEllipsisH, faBoxOpen, faSpinner,
   faAngleDoubleLeft, faEdit, faTrashAlt, faUserAlt, faSearch, faExternalLinkAlt, faEye, faListUl,
   faQuestionCircle, faProjectDiagram, faFlag, faPaperPlane, faCog
 )

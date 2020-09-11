@@ -25,8 +25,10 @@
         <div class="Sidebar__button__text">保存</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isLoad=true">
-        <Icon icon="file-import" />
-        <div class="Sidebar__button__text">読み込み</div>
+        <div class="Icon km-icon">
+          <img src="@/assets/km_icon_black.svg" />
+        </div>
+        <div class="Sidebar__button__text">マップ</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="createNewMap()">
         <Icon icon="plus" />
@@ -168,7 +170,7 @@ export default {
       }
     },
     sidebarAddNode() {
-      if (this.$route.path === "/map-free") {
+      if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
         let MapFree = document.getElementById("MapFree");
         this.addNodeForm.x =
           (this.width - this.$store.getters["sidebar_width"]) / 2 +
@@ -375,6 +377,17 @@ export default {
     &.selected {
       background: $color-main-l;
     }
+  }
+}
+.km-icon {
+  width: 24px;
+  height: 24px;
+  padding: 3px 0;
+  img {
+    display: block;
+    margin: 0 auto;
+    width: 18px;
+    height: 18px;
   }
 }
 .group-enter-active,
