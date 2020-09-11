@@ -413,9 +413,15 @@ export default new Vuex.Store({
         ref: null,
         option: {
           theme: "snow",
+          // theme: "bubble",
           placeholder: "入力する",
           modules: {
-            toolbar: "#toolbar"
+            toolbar: "#toolbar",
+            // toolbar: [['bold', 'italic', 'underline', 'strike'], [{ 'list': 'ordered' }, { 'list': 'bullet' }], [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'color': [] }, { 'background': [] }], [{ 'font': [] }], [{ 'align': [] }], ['link', 'image'], ['clean']],
+            clipboard: {
+              matchVisual: false
+            },
+            markdownShortcuts: {}
           }
         }
       }
