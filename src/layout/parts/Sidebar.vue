@@ -25,7 +25,17 @@
         <div class="Sidebar__button__text">保存</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isLoad=true">
-        <Icon icon="file" />
+        <div class="Icon km-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768" style>
+            <circle cx="128" cy="128" r="80" fill="black" />
+            <circle cx="640" cy="128" r="80" fill="black" />
+            <circle cx="640" cy="640" r="80" fill="black" />
+            <circle cx="224" cy="544" r="80" fill="black" />
+            <line x1="128" y1="128" x2="640" y2="128" stroke="black" stroke-width="40" />
+            <line x1="640" y1="128" x2="640" y2="640" stroke="black" stroke-width="40" />
+            <line x1="640" y1="128" x2="224" y2="544" stroke="black" stroke-width="40" />
+          </svg>
+        </div>
         <div class="Sidebar__button__text">マップ</div>
       </div>
       <div class="Sidebar__item Sidebar__button" @click="createNewMap()">
@@ -375,6 +385,15 @@ export default {
     &.selected {
       background: $color-main-l;
     }
+  }
+}
+.km-icon {
+  width: 24px;
+  height: 24px;
+  padding: 3px 0;
+  svg {
+    width: 18px;
+    height: 18px;
   }
 }
 .group-enter-active,
