@@ -249,7 +249,7 @@ export default {
       this.contextMenu.flag_x = x < (this.width + this.sidebar_width) / 2;
       this.contextMenu.flag_y = y < (this.height + 48) / 2;
       this.contextMenu.x = this.contextMenu.flag_x ? x : x - 120;
-      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 208;
+      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 248;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
