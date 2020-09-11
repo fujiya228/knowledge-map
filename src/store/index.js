@@ -373,20 +373,20 @@ export default new Vuex.Store({
         isEdit: false,
         title: '',
         color: "#000000"
-      },
-        state.addNodeForm = {
-          isFree: false,
-          isCircle: false,
-          isTree: false,
-          isCard: false,
-          isRelation: false,
-          status: 0,
-          x: 0,
-          y: 0,
-          title: "",
-          level: 0,
-          pie: 0,
-        }
+      }
+      state.addNodeForm = {
+        isFree: false,
+        isCircle: false,
+        isTree: false,
+        isCard: false,
+        isRelation: false,
+        status: 0,
+        x: 0,
+        y: 0,
+        title: "",
+        level: 0,
+        pie: 0,
+      }
       state.contextMenu = {
         isOpen: false,
         flag_x: false,
@@ -407,6 +407,9 @@ export default new Vuex.Store({
       state.editorInfo = {
         isOpen: false,
         isEditPage: false,
+        isRelationOpen: false,
+        isEditorOpen: true,
+        isPreviewOpen: false,
         ref: null,
         option: {
           theme: "snow",
