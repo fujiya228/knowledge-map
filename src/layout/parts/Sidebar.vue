@@ -82,6 +82,7 @@
         :key="node.id"
         :class="{selected: node == detailsMenu.node}"
         @click="goToNode(node)"
+        @dblclick="openEditor(node)"
       >
         <div class="Sidebar__node__title">{{node.title}}</div>
         <IconButton icon="trash-alt" @click.native="delNode(node)" />
@@ -162,12 +163,16 @@ export default {
       // console.log(this.$route.name);
       if (this.$route.name === "Edit") this.$router.push(node.id);
       else {
-        this.$store.dispatch("selectNode", node);
+        this.selectNode(node);
         let MapFree = document.getElementById("MapFree");
         let area_width = this.width - this.$store.getters["sidebar_width"];
         MapFree.scrollLeft = node.x - area_width / 2;
         MapFree.scrollTop = node.y - this.height / 2 + 48;
       }
+    },
+    openEditor() {
+      if (this.$route.name == "id_map" || this.$route.name == "non_id_map")
+        this.editorInfo.isOpen = true;
     },
     sidebarAddNode() {
       if (this.$route.name === "id_map" || this.$route.name === "non_id_map") {
@@ -191,7 +196,7 @@ export default {
       else this.status_query = status;
     },
     statusColor: helpers.statusColor,
-    ...mapActions(["delNode", "addNode"]),
+    ...mapActions(["delNode", "addNode", "selectNode"]),
   },
   computed: {
     ...mapState([
@@ -204,6 +209,7 @@ export default {
       "dataInfo",
       "statusInfo",
       "addNodeForm",
+      "editorInfo",
     ]),
     ...mapState({
       user: (state) => state.auth.user,
@@ -370,6 +376,7 @@ export default {
     &__title {
       width: calc(100% - 24px);
       @include ellipsis;
+      user-select: none;
     }
     &:hover {
       background: #ccc;
