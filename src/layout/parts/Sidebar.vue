@@ -2,7 +2,8 @@
   <div class="Sidebar" v-show="sidebar.isOpen">
     <div class="Sidebar__header">
       <div class="Sidebar__title">
-        <input type="text" v-model="dataInfo.title" />
+        <input type="text" v-model="dataInfo.title" v-if="isEditableMap" />
+        <div class="Sidebar__title__text" v-else v-tooltip="dataInfo.title">{{dataInfo.title}}</div>
       </div>
       <div class="Sidebar__close" @click="closeSidebar()">
         <Icon icon="angle-double-left" :size="32" :font="20" />
@@ -20,10 +21,6 @@
         <div class="Sidebar__button__text" v-if="user">{{user.email}}</div>
         <div class="Sidebar__button__text" v-else>ログイン</div>
       </div>
-      <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSave=true">
-        <Icon icon="save" />
-        <div class="Sidebar__button__text">保存</div>
-      </div>
       <div class="Sidebar__item Sidebar__button" @click="dataInfo.isLoad=true">
         <div class="Icon km-icon">
           <img src="@/assets/km_icon_black.svg" />
@@ -34,11 +31,23 @@
         <Icon icon="plus" />
         <div class="Sidebar__button__text">新規作成</div>
       </div>
-      <div class="Sidebar__item Sidebar__button" @click="statusInfo.isEdit=true">
+      <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSave=true" v-if="isEditableMap">
+        <Icon icon="save" />
+        <div class="Sidebar__button__text">保存</div>
+      </div>
+      <div
+        class="Sidebar__item Sidebar__button"
+        @click="statusInfo.isEdit=true"
+        v-if="isEditableMap"
+      >
         <Icon icon="flag" />
         <div class="Sidebar__button__text">ステータス</div>
       </div>
-      <div class="Sidebar__item Sidebar__button" @click="dataInfo.isSettings=true">
+      <div
+        class="Sidebar__item Sidebar__button"
+        @click="dataInfo.isSettings=true"
+        v-if="isEditableMap"
+      >
         <Icon icon="cog" />
         <div class="Sidebar__button__text">マップ設定</div>
       </div>
@@ -49,7 +58,12 @@
       <input type="text" v-model="query" />
     </div>
     <div class="Sidebar__item">
-      <IconButton icon="plus" :class="{active: isAddMode}" @click.native="isAddMode = !isAddMode" />
+      <IconButton
+        icon="plus"
+        :class="{active: isAddMode}"
+        @click.native="isAddMode = !isAddMode"
+        v-if="isEditableMap"
+      />
       <IconButton
         icon="flag"
         :class="{active: isStatusFilter}"
@@ -85,7 +99,7 @@
         @dblclick="openEditor(node)"
       >
         <div class="Sidebar__node__title">{{node.title}}</div>
-        <IconButton icon="trash-alt" @click.native="delNode(node)" />
+        <IconButton icon="trash-alt" @click.native="delNode(node)" v-if="isEditableMap" />
       </div>
       <div class="Sidebar__item" v-if="!nodeFilter.length">対象の要素はありません</div>
     </div>
@@ -94,7 +108,7 @@
 
 <script>
 import helpers from "@/helpers/helpers";
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
 import Btn from "@/components/atoms/Btn";
@@ -121,9 +135,9 @@ export default {
     },
     createNewMap() {
       this.dataInfo.isCreating = true;
-      // 現在のデータを保存後デー タをリセット
+      // 現在のデータを保存後データをリセット
       if (this.user) {
-        if (confirm("現在のマップを保存しますか？")) {
+        if (this.isEditableMap && confirm("現在のマップを保存しますか？")) {
           this.$store
             .dispatch("saveData", "firebase")
             .then(() => {
@@ -140,6 +154,7 @@ export default {
             });
         } else {
           this.$store.commit("reset_data");
+          this.dataInfo.uid = this.user.uid;
           this.dataInfo.isCreating = false;
           if (this.$route.path !== "/non-id") this.$router.push("/non-id");
         }
@@ -216,6 +231,7 @@ export default {
     ...mapState({
       user: (state) => state.auth.user,
     }),
+    ...mapGetters(["isEditableMap"]),
     nodeFilter() {
       // title部分一致検索（一致する部分がない場合-1を返すのを使う）
       return this.nodes.filter((item) => {
@@ -250,6 +266,10 @@ export default {
     line-height: 24px;
     padding: 4px;
     user-select: none;
+    &__text {
+      max-width: 184px;
+      @include ellipsis;
+    }
     input {
       box-sizing: border-box;
       max-width: 184px;
@@ -258,9 +278,7 @@ export default {
       line-height: 24px;
       border-radius: 3px;
       padding: 0 4px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      @include ellipsis;
       &:focus {
         background: #ccc;
       }

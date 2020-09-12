@@ -225,8 +225,9 @@ export default new Vuex.Store({
     sidebar_width(state) {
       return state.sidebar.isOpen ? 256 : 0;
     },
-    canEditMap(state) {
-      return state.auth.user.uid === state.dataInfo.uid
+    isEditableMap(state) {
+      let uid = state.auth.user ? state.auth.user.uid : false;
+      return uid === state.dataInfo.uid
     }
   },
   mutations: {
@@ -363,6 +364,7 @@ export default new Vuex.Store({
         isCreating: false,
         isLoading: false,
         runningText: "保存中...",
+        uid: undefined,
         uuid: undefined,
         title: "untitled",
         publicRead: false,
