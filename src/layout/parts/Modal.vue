@@ -23,6 +23,7 @@
       </Btn>
       <Btn
         class="full"
+        :class="{notActive: dataInfo.uuid === '207f0f6c-4ef4-4df4-88be-67a169f8109c'}"
         @click.stop.native="getAnotherData('207f0f6c-4ef4-4df4-88be-67a169f8109c')"
       >サンプルマップ</Btn>
       <TitleGroup v-if="isLoggedIn" text="データベース"></TitleGroup>
@@ -115,7 +116,7 @@ import helpers from "@/helpers/helpers";
 import draggable from "vuedraggable";
 import { ToggleButton } from "vue-js-toggle-button";
 
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
 import Btn from "@/components/atoms/Btn";
@@ -190,22 +191,23 @@ export default {
       }
     },
     modalSaveData(flag) {
-      this.saveData(flag)
-        .then(() => {
-          console.log("保存成功");
-          if (flag === "firebase" && this.$route.path === "/non-id")
-            this.$router.replace(this.dataInfo.uuid);
-        })
-        .catch((err) => {
-          console.log("保存失敗", err);
-          this.afterSaveError();
-        });
+      if (this.isEditableMap)
+        this.saveData(flag)
+          .then(() => {
+            console.log("保存成功");
+            if (flag === "firebase" && this.$route.path === "/non-id")
+              this.$router.replace(this.dataInfo.uuid);
+          })
+          .catch((err) => {
+            console.log("保存失敗", err);
+            this.afterSaveError();
+          });
     },
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
       // 現在のデータを保存後データをリセット
       // 編集権限がある場合は保存を確認
-      if (confirm("現在のマップを保存しますか？")) {
+      if (this.isEditableMap && confirm("現在のマップを保存しますか？")) {
         this.saveData("firebase")
           .then(() => {
             console.log("保存成功");
@@ -411,6 +413,7 @@ export default {
       "sidebar",
       "editorInfo",
     ]),
+    ...mapGetters(["isEditableMap"]),
   },
   watch: {
     isAuthStateChanged() {
@@ -498,5 +501,9 @@ export default {
   &__status__handle {
     cursor: move;
   }
+}
+.notActive {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>
