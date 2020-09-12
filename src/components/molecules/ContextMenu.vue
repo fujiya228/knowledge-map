@@ -30,24 +30,26 @@
           </div>
         </div>
       </div>
-      <div class="Context-menu__title" v-if="contextMenu.node" @click.stop>
-        <input type="text" v-model="contextMenu.node.title" />
-      </div>
-      <div class="Context-menu__item" @click.stop="openEditor()">エディタ</div>
-      <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
-      <div class="Context-menu__item" @click.stop="makeRelation()">関連付ける</div>
-      <div
-        class="Context-menu__item"
-        @click.stop="contextMenu.isStatus = !contextMenu.isStatus"
-      >ステータス</div>
-      <div class="Context-menu__item" @click.stop="goEditPage()">編集ページ</div>
+      <template v-if="isEditableMap">
+        <div class="Context-menu__title" v-if="contextMenu.node" @click.stop>
+          <input type="text" v-model="contextMenu.node.title" />
+        </div>
+        <div class="Context-menu__item delete" @click.stop="delNode(contextMenu.node)">削除</div>
+        <div class="Context-menu__item" @click.stop="makeRelation()">関連付ける</div>
+        <div
+          class="Context-menu__item"
+          @click.stop="contextMenu.isStatus = !contextMenu.isStatus"
+        >ステータス</div>
+      </template>
+      <div class="Context-menu__item" @click.stop="openEditor()">{{popupText}}</div>
+      <div class="Context-menu__item" @click.stop="goEditPage()">{{editPageText}}</div>
     </div>
   </div>
 </template>
 
 <script>
 import helpers from "@/helpers/helpers";
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
 import TitleGroup from "@/components/atoms/TitleGroup";
@@ -79,6 +81,13 @@ export default {
   },
   computed: {
     ...mapState(["contextMenu", "statuses", "editorInfo"]),
+    ...mapGetters(["isEditableMap"]),
+    popupText() {
+      return this.isEditableMap ? "エディタ" : "ポップアップ";
+    },
+    editPageText() {
+      return this.isEditableMap ? "編集ページ" : "閲覧ページ";
+    },
   },
 };
 </script>

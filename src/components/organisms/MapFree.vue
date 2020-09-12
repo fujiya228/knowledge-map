@@ -60,8 +60,18 @@
     >
       <div class="Free__editor__wrapper">
         <h2 class="Free__editor__title">
-          <input class="Free__editor__input" type="text" v-model="detailsMenu.node.title" />
-          <div class="Free__editor__to-edit" @click="goToEdit()">編集ページへ</div>
+          <input
+            class="Free__editor__input"
+            type="text"
+            v-model="detailsMenu.node.title"
+            v-if="isEditableMap"
+          />
+          <div
+            class="Free__editor__title__text"
+            v-else
+            v-tooltip="detailsMenu.node.title"
+          >{{detailsMenu.node.title}}</div>
+          <div class="Free__editor__to-edit" @click="goToEdit()">{{editPageText}}</div>
         </h2>
         <editor editorClass="free-editor" />
       </div>
@@ -98,6 +108,7 @@ export default {
   },
   methods: {
     async selectRelaitonNode(v_base) {
+      if (!this.isEditableMap) return;
       if (this.isMakingRelation) return; // ctrlを押しっぱなしでやるとtargetを押したときにも発火するのでそれを回避
       this.isMakingRelation = true;
       await this.selectNode(v_base); // contextMenuを経由してない時用
@@ -166,6 +177,7 @@ export default {
       node.free.y = Math.floor(node.y / this.scale);
     },
     onGhost(node) {
+      if (!this.isEditableMap) return;
       this.closeContextMenu();
       this.closeAddNodeForm();
       if (this.moveNodeInfo.isOn) return;
@@ -230,7 +242,7 @@ export default {
     },
     openAddNodeForm(event) {
       // console.log("openAddNodeForm:" + event.type);
-      if (!this.canOpenAddNodeForm) return;
+      if (!this.canOpenAddNodeForm || !this.isEditableMap) return;
       let MapFree = document.getElementById("MapFree");
       let x = event.pageX - this.sidebar_width;
       let y = event.pageY - 48;
@@ -246,10 +258,11 @@ export default {
       let e = event.type === "touchmove" ? event.changedTouches[0] : event;
       let x = e.pageX;
       let y = e.pageY;
+      let height = this.isEditableMap ? 248 : 80;
       this.contextMenu.flag_x = x < (this.width + this.sidebar_width) / 2;
       this.contextMenu.flag_y = y < (this.height + 48) / 2;
       this.contextMenu.x = this.contextMenu.flag_x ? x : x - 120;
-      this.contextMenu.y = this.contextMenu.flag_y ? y : y - 248;
+      this.contextMenu.y = this.contextMenu.flag_y ? y : y - height;
       this.contextMenu.isOpen = true;
       this.contextMenu.node = node;
       this.selectNode(node);
@@ -293,7 +306,7 @@ export default {
       "editorInfo",
       "sidebar",
     ]),
-    ...mapGetters(["isDetailsOpen"]),
+    ...mapGetters(["isDetailsOpen", "isEditableMap"]),
     sidebar_width() {
       return this.sidebar.isOpen ? 256 : 0;
     },
@@ -304,6 +317,9 @@ export default {
       set(val) {
         this.$store.commit("set_isMakingRelation", val);
       },
+    },
+    editPageText() {
+      return this.isEditableMap ? "編集ページ" : "閲覧ページ";
     },
   },
   watch: {
@@ -417,7 +433,6 @@ export default {
   background: rgba(27, 31, 35, 0.5);
   z-index: 500;
   // cursor: pointer;
-  user-select: none;
   &__wrapper {
     width: 80%;
     max-width: 800px;
@@ -429,11 +444,21 @@ export default {
     padding: 16px;
     border-bottom: 1px solid #ccc;
     box-sizing: border-box;
+    &__text {
+      width: calc(100% - 100px);
+      height: 28px;
+      line-height: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      @include ellipsis;
+    }
   }
   &__input {
     width: calc(100% - 100px);
     height: 28px;
     font-size: 24px;
+    font-weight: bold;
+    @include ellipsis;
   }
   &__to-edit {
     box-sizing: border-box;
