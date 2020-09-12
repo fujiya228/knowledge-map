@@ -288,6 +288,7 @@ export default {
         item.base.node = data.nodes.find((x) => x.id === item.base.id);
         item.target.node = data.nodes.find((x) => x.id === item.target.id);
       });
+      this.dataInfo.uid = data.uid;
       this.dataInfo.uuid = data.uuid;
       this.dataInfo.title = data.title;
       this.dataInfo.publicRead = data.publicRead;
