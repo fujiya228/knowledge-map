@@ -8,82 +8,89 @@
       >
         <Icon icon="list-ul" :class="{iconOn:editorInfo.isRelationOpen}" :size="24" :font="14" />
       </div>
-      <div
-        class="custom__button"
-        @click="editorInfo.isEditorOpen = !editorInfo.isEditorOpen"
-        v-tooltip="'エディター'"
-      >
-        <Icon icon="edit" :class="{iconOn:editorInfo.isEditorOpen}" :size="24" :font="14" />
-      </div>
-      <div
-        class="custom__button"
-        @click="editorInfo.isPreviewOpen = !editorInfo.isPreviewOpen"
-        v-tooltip="'プレビュー'"
-      >
-        <Icon icon="eye" :class="{iconOn:editorInfo.isPreviewOpen}" :size="24" :font="14" />
-      </div>
-      <div class="custom__button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
-        <Icon icon="external-link-alt" :size="24" :font="14" />
-      </div>
-      <button class="ql-bold">Bold</button>
-      <button class="ql-italic">Italic</button>
-      <button class="ql-underline">Underline</button>
-      <button class="ql-strike">Strike</button>
-      <button class="ql-blockquote">Blockquote</button>
-      <button class="ql-code-block">Code</button>
-      <button class="ql-list" value="ordered"></button>
-      <button class="ql-list" value="bullet"></button>
-      <button class="ql-script" value="sub"></button>
-      <button class="ql-script" value="super"></button>
-      <button class="ql-indent" value="+1"></button>
-      <button class="ql-indent" value="-1"></button>
-      <button class="ql-direction" value="rtl"></button>
-      <button class="ql-clean"></button>
-      <button class="ql-link"></button>
-      <button class="ql-video"></button>
-      <select class="ql-header">
-        <option value="1">h1</option>
-        <option value="2">h2</option>
-        <option value="3">h3</option>
-        <option value="4">h4</option>
-        <option value="5">h5</option>
-        <option value="6">h6</option>
-        <option selected>p</option>
-      </select>
-      <select class="ql-color"></select>
-      <select class="ql-background"></select>
-      <select class="ql-align"></select>
-      <select class="ql-size">
-        <option value="small"></option>
-        <option selected></option>
-        <option value="large"></option>
-        <option value="huge"></option>
-      </select>
-      <select class="ql-font">
-        <option selected="selected"></option>
-        <option value="serif"></option>
-        <option value="monospace"></option>
-      </select>
-      <div
-        class="custom__select"
-        :style="{borderColor:statusColor(detailsMenu.node.status)}"
-        @click="isSelectStatus = !isSelectStatus"
-      >
-        {{statusTitle(detailsMenu.node.status)}}
-        <div class="custom__select__container" v-show="isSelectStatus">
-          <div
-            class="custom__select__item"
-            :style="{background:statusColor(status.id)}"
-            @click="detailsMenu.node.status = status.id"
-            v-for="status in statuses"
-            :key="status.id"
-          >{{status.title}}</div>
+      <template v-if="isEditableMap">
+        <div
+          class="custom__button"
+          @click="editorInfo.isEditorOpen = !editorInfo.isEditorOpen"
+          v-tooltip="'エディター'"
+        >
+          <Icon icon="edit" :class="{iconOn:editorInfo.isEditorOpen}" :size="24" :font="14" />
         </div>
-      </div>
+        <div
+          class="custom__button"
+          @click="editorInfo.isPreviewOpen = !editorInfo.isPreviewOpen"
+          v-tooltip="'プレビュー'"
+        >
+          <Icon icon="eye" :class="{iconOn:editorInfo.isPreviewOpen}" :size="24" :font="14" />
+        </div>
+        <div class="custom__button" @click="clickCustomLink()" v-tooltip="'カスタムリンク'">
+          <Icon icon="external-link-alt" :size="24" :font="14" />
+        </div>
+        <button class="ql-bold">Bold</button>
+        <button class="ql-italic">Italic</button>
+        <button class="ql-underline">Underline</button>
+        <button class="ql-strike">Strike</button>
+        <button class="ql-blockquote">Blockquote</button>
+        <button class="ql-code-block">Code</button>
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+        <button class="ql-script" value="sub"></button>
+        <button class="ql-script" value="super"></button>
+        <button class="ql-indent" value="+1"></button>
+        <button class="ql-indent" value="-1"></button>
+        <button class="ql-direction" value="rtl"></button>
+        <button class="ql-clean"></button>
+        <button class="ql-link"></button>
+        <button class="ql-video"></button>
+        <select class="ql-header">
+          <option value="1">h1</option>
+          <option value="2">h2</option>
+          <option value="3">h3</option>
+          <option value="4">h4</option>
+          <option value="5">h5</option>
+          <option value="6">h6</option>
+          <option selected>p</option>
+        </select>
+        <select class="ql-color"></select>
+        <select class="ql-background"></select>
+        <select class="ql-align"></select>
+        <select class="ql-size">
+          <option value="small"></option>
+          <option selected></option>
+          <option value="large"></option>
+          <option value="huge"></option>
+        </select>
+        <select class="ql-font">
+          <option selected="selected"></option>
+          <option value="serif"></option>
+          <option value="monospace"></option>
+        </select>
+        <div
+          class="custom__select"
+          :style="{borderColor:statusColor(detailsMenu.node.status)}"
+          @click="isSelectStatus = !isSelectStatus"
+        >
+          {{statusTitle(detailsMenu.node.status)}}
+          <div class="custom__select__container" v-show="isSelectStatus">
+            <div
+              class="custom__select__item"
+              :style="{background:statusColor(status.id)}"
+              @click="detailsMenu.node.status = status.id"
+              v-for="status in statuses"
+              :key="status.id"
+            >{{status.title}}</div>
+          </div>
+        </div>
+      </template>
     </div>
     <div class="Editor__display" :class="editorClass">
       <div class="Editor__link" v-show="editorInfo.isRelationOpen" v-tooltip.right-start="'関連リンク'">
-        <div class="Editor__link__item" v-tooltip="'新規リンク作成'" @click="isMakeRelation = true">
+        <div
+          class="Editor__link__item"
+          v-tooltip="'新規リンク作成'"
+          @click="isMakeRelation = true"
+          v-if="isEditableMap"
+        >
           <Icon icon="plus" />
         </div>
         <div
@@ -94,7 +101,7 @@
           @click="goToNode(node)"
         >
           <div class="Editor__link__title">{{node.title}}</div>
-          <div class="Editor__link__icon" @click.stop="delRel(node)">
+          <div class="Editor__link__icon" @click.stop="delRel(node)" v-if="isEditableMap">
             <Icon icon="trash-alt" />
           </div>
         </div>
@@ -163,7 +170,7 @@ import Quill from "quill";
 import MarkdownShortcuts from "quill-markdown-shortcuts";
 
 import helpers from "@/helpers/helpers";
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import Icon from "@/components/atoms/Icon";
 
 Quill.register("modules/markdownShortcuts", MarkdownShortcuts);
@@ -273,6 +280,7 @@ export default {
       "editorInfo",
       "detailsMenu",
     ]),
+    ...mapGetters(["isEditableMap"]),
     isPopupOpen() {
       return this.isMakeCustomLink || this.isMakeRelation;
     },
@@ -292,6 +300,13 @@ export default {
     isDisplayOpen() {
       return this.editorInfo.isEditorOpen || this.editorInfo.isPreviewOpen;
     },
+  },
+  created() {
+    console.log("created");
+    if (!this.isEditableMap) {
+      this.editorInfo.isEditorOpen = false;
+      this.editorInfo.isPreviewOpen = true;
+    }
   },
 };
 </script>
