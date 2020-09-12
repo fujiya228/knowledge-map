@@ -95,7 +95,7 @@
       <div class="Modal__item">
         <div class="Modal__item__title">公開設定（読み取りのみ）</div>
         <ToggleButton
-          v-model="dataInfo.public"
+          v-model="dataInfo.publicRead"
           :speed="200"
           :height="24"
           :width="48"
@@ -290,7 +290,7 @@ export default {
       });
       this.dataInfo.uuid = data.uuid;
       this.dataInfo.title = data.title;
-      this.dataInfo.public = data.public;
+      this.dataInfo.publicRead = data.publicRead;
       this.dataInfo.nodeNum = data.nodeNum;
       this.dataInfo.statusNum = data.statusNum;
       this.dataInfo.tagNum = data.tagNum;
