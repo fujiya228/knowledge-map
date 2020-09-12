@@ -27,19 +27,14 @@
         <Icon icon="minus" />
       </div>
       <div class="Actions__text-button" @click="actionsResizeGraph('reset')" v-tooltip="'リセット'">リセット</div>
-      <template v-if="detailsMenu.node">
-        <div
-          class="Actions__icon-button"
-          v-if="isEditableMap"
-          @click="goToPage('edit')"
-          v-tooltip="'編集ページ'"
-        >
-          <Icon icon="edit" />
-        </div>
-        <div class="Actions__icon-button" v-else @click="goToPage('edit')" v-tooltip="'閲覧ページ'">
-          <Icon icon="eye" />
-        </div>
-      </template>
+      <div
+        class="Actions__icon-button"
+        v-if="detailsMenu.node"
+        @click="goToPage('edit')"
+        v-tooltip="editPageButton.text"
+      >
+        <Icon :icon="editPageButton.icon" />
+      </div>
     </template>
     <template v-if="editorInfo.isEditPage">
       <div class="Actions__icon-button" @click="goToPage('map')" v-tooltip="'マップページ'">
@@ -99,6 +94,11 @@ export default {
     isMapFree() {
       // これMapFreeにもあるから統一したい TODO
       return this.$route.name === "id_map" || this.$route.name === "non_id_map";
+    },
+    editPageButton() {
+      return this.isEditableMap
+        ? { icon: "edit", text: "編集ページ" }
+        : { icon: "eye", text: "閲覧ページ" };
     },
   },
 };
