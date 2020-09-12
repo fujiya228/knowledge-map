@@ -2,9 +2,19 @@
   <div class="Actions">
     <template v-if="detailsMenu.node">
       <div class="Actions__title">
-        <input type="text" v-model="detailsMenu.node.title" />
+        <input type="text" v-model="detailsMenu.node.title" v-if="isEditableMap" />
+        <div
+          class="Actions__title__text"
+          v-else
+          v-tooltip="detailsMenu.node.title"
+        >{{detailsMenu.node.title}}</div>
       </div>
-      <div class="Actions__icon-button" @click="delNode(detailsMenu.node)" v-tooltip="'削除'">
+      <div
+        class="Actions__icon-button"
+        @click="delNode(detailsMenu.node)"
+        v-tooltip="'削除'"
+        v-if="isEditableMap"
+      >
         <Icon icon="trash-alt" />
       </div>
     </template>
@@ -17,14 +27,19 @@
         <Icon icon="minus" />
       </div>
       <div class="Actions__text-button" @click="actionsResizeGraph('reset')" v-tooltip="'リセット'">リセット</div>
-      <div
-        class="Actions__icon-button"
-        v-if="detailsMenu.node"
-        @click="goToPage('edit')"
-        v-tooltip="'編集ページ'"
-      >
-        <Icon icon="edit" />
-      </div>
+      <template v-if="detailsMenu.node">
+        <div
+          class="Actions__icon-button"
+          v-if="isEditableMap"
+          @click="goToPage('edit')"
+          v-tooltip="'編集ページ'"
+        >
+          <Icon icon="edit" />
+        </div>
+        <div class="Actions__icon-button" v-else @click="goToPage('edit')" v-tooltip="'閲覧ページ'">
+          <Icon icon="eye" />
+        </div>
+      </template>
     </template>
     <template v-if="editorInfo.isEditPage">
       <div class="Actions__icon-button" @click="goToPage('map')" v-tooltip="'マップページ'">
@@ -39,7 +54,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import Icon from "@/components/atoms/Icon";
 export default {
   name: "Actions",
@@ -80,6 +95,7 @@ export default {
       "detailsMenu",
       "editorInfo",
     ]),
+    ...mapGetters(["isEditableMap"]),
     isMapFree() {
       // これMapFreeにもあるから統一したい TODO
       return this.$route.name === "id_map" || this.$route.name === "non_id_map";
@@ -139,6 +155,10 @@ export default {
     line-height: 24px;
     padding: 4px;
     user-select: none;
+    &__text {
+      max-width: 200px;
+      @include ellipsis;
+    }
     input {
       box-sizing: border-box;
       max-width: 200px;
@@ -147,9 +167,7 @@ export default {
       line-height: 24px;
       border-radius: 3px;
       padding: 0 4px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      @include ellipsis;
       &:focus {
         background: #eee;
       }
