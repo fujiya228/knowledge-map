@@ -94,7 +94,7 @@
 
 <script>
 import helpers from "@/helpers/helpers";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import Icon from "@/components/atoms/Icon";
 import IconButton from "@/components/atoms/IconButton";
 import Btn from "@/components/atoms/Btn";
@@ -130,8 +130,9 @@ export default {
               this.$store.commit("reset_data");
               this.$store.commit("graphArea");
             })
-            .catch(() => {
-              console.log("保存失敗");
+            .catch((err) => {
+              console.log("保存失敗", err);
+              this.afterSaveError();
             })
             .then(() => {
               this.dataInfo.isCreating = false;
@@ -197,6 +198,7 @@ export default {
     },
     statusColor: helpers.statusColor,
     ...mapActions(["delNode", "addNode", "selectNode"]),
+    ...mapMutations(["afterSaveError"]),
   },
   computed: {
     ...mapState([

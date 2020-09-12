@@ -528,6 +528,14 @@ export default new Vuex.Store({
         pair_id: payload.base.id,
       };
     },
+    afterSaveError(state) {
+      state.dataInfo.runningText = "保存に失敗しました";
+      setTimeout(() => {
+        state.dataInfo.isUserSaving = false;
+        state.dataInfo.isMapSaving = false;
+        state.dataInfo.runningText = "保存中...";
+      }, 3000);
+    }
   },
   actions: {
     addNode({ state, commit, dispatch }) {
@@ -736,7 +744,7 @@ export default new Vuex.Store({
       });
       var obj = JSON.stringify(data);
       // 各種保存
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         if (flag === 'local') {
           // LocalStorageの場合
           localStorage.setItem("data", obj);
@@ -761,44 +769,25 @@ export default new Vuex.Store({
           // firestoreに保存
           state.dataInfo.isMapSaving = true
           state.dataInfo.isUserSaving = true
+          // ここで作ったPromiseがfirebaseのreject拾ってくれる
           mapsRef
             .doc(state.dataInfo.uuid)
             .set(data, { merge: true })
             .then(() => {
               console.log("Success update to maps collection", state.dataInfo.uuid);
-              usersRef
-                .doc(state.auth.userData.uid)
-                .set(state.auth.userData, { merge: true })
-                .then(() => {
-                  console.log("Success update to users collection", state.auth.userData.uid);
-                })
-                .catch((error) => {
-                  console.log("Error update to users collection:", error);
-                  state.dataInfo.runningText = "保存に失敗しました"
-                  reject()
-                })
-                .then(() => {
-                  console.log('isUserSaving')
-                  state.dataInfo.runningText = "保存しました"
-                  setTimeout(() => {
-                    state.dataInfo.isUserSaving = false
-                    state.dataInfo.runningText = "保存中..."
-                  }, 3000)
-                  resolve()
-                })
+              state.dataInfo.isMapSaving = false
             })
-            .catch((error) => {
-              console.log("Error update to maps collection:", error);
-              state.dataInfo.runningText = "保存に失敗しました"
+          usersRef
+            .doc(state.auth.userData.uid)
+            .set(state.auth.userData, { merge: true })
+            .then(() => {
+              console.log("Success update to users collection", state.auth.userData.uid);
+              state.dataInfo.runningText = "保存しました"
               setTimeout(() => {
                 state.dataInfo.isUserSaving = false
                 state.dataInfo.runningText = "保存中..."
               }, 3000)
-              reject()
-            })
-            .then(() => {
-              console.log('isMapSaving')
-              state.dataInfo.isMapSaving = false
+              resolve()
             })
         }
         state.dataInfo.isSave = false;

@@ -192,24 +192,29 @@ export default {
     modalSaveData(flag) {
       this.saveData(flag)
         .then(() => {
+          console.log("保存成功");
           if (flag === "firebase" && this.$route.path === "/non-id")
             this.$router.replace(this.dataInfo.uuid);
         })
-        .catch(() => {
-          console.log("保存失敗");
+        .catch((err) => {
+          console.log("保存失敗", err);
+          this.afterSaveError();
         });
     },
     getAnotherData(uuid) {
       this.dataInfo.isLoading = true;
       // 現在のデータを保存後データをリセット
+      // 編集権限がある場合は保存を確認
       if (confirm("現在のマップを保存しますか？")) {
         this.saveData("firebase")
           .then(() => {
+            console.log("保存成功");
             this.getData(uuid);
             this.$router.push(uuid);
           })
-          .catch(() => {
-            console.log("保存失敗");
+          .catch((err) => {
+            console.log("保存失敗", err);
+            this.afterSaveError();
           })
           .then(() => {
             this.dataInfo.isLoading = false;
@@ -296,6 +301,9 @@ export default {
       this.$store.state.statuses = data.statuses;
       this.$store.state.tags = data.tags;
       this.detailsMenu.node = null;
+      for (let key in this.dataInfo) {
+        if (this.dataInfo[key] === undefined) this.dataInfo[key] = null;
+      }
       if (this.$route.params.node_id) {
         console.log("search now", this.$route.params.node_id);
         let node = helpers.searchNode(this.$route.params.node_id);
@@ -355,7 +363,7 @@ export default {
         });
     },
     ...mapActions(["saveData", "addStatus", "delStatus"]),
-    ...mapMutations(["reset_data"]),
+    ...mapMutations(["reset_data", "afterSaveError"]),
   },
   computed: {
     isModalOpen() {
